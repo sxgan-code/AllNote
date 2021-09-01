@@ -6,13 +6,13 @@
 ---
 ## BFC(块级格式化上下文)
 
-BFC(Block formatting context)
+`BFC`(`Block formatting context`)
 
 直译为"块级格式化上下文"。
 
 ### 元素的显示模式
 
-我们前面讲过 元素的显示模式 display。 
+我们前面讲过 元素的显示模式 `display`。 
 
 分为 块级元素   行内元素  行内块元素 ，其实，它还有很多其他显示模式。
 
@@ -20,13 +20,13 @@ BFC(Block formatting context)
 
 ### 那些元素会具有BFC的条件
 
-不是所有的元素模式都能产生BFC，w3c 规范： 
+不是所有的元素模式都能产生`BFC  w3c` 规范： 
 
-display 属性为 block, list-item, table 的元素，会产生BFC.
+`display `属性为 `block, list-item, table `的元素，会产生BFC.
 
 大家有么有发现这个三个都是用来布局最为合理的元素，因为他们就是用来可视化布局。
 
-注意其他的，display属性，比如 line 等等，他们创建的是 IFC ，我们暂且不研究。
+注意其他的，`display`属性，比如 line 等等，他们创建的是 IFC ，我们暂且不研究。
 
 这个BFC 有着具体的布局特性： 
 
