@@ -184,30 +184,31 @@ HTML（英文Hyper Text Markup Language的缩写）中文译为“超文本标�
 3. 把后缀名改为 .HTML。
 4. 右击--谷歌浏览器打开。
 
-~~~
-1 HTML标签：
+### 1 HTML标签：
 
 作用所有HTML中标签的一个根节点。
 
-2 head标签：
+### 2 head标签：
 
 作用：用于存放：
 
+```
 title,meta,base,style,script,link
+```
 
 注意在head标签中我们必须要设置的标签是title
 
-3.title标签：
+### 3.title标签：
 
 作用：让页面拥有一个属于自己的标题。
 
-4.body标签：
+### 4.body标签：
 
 作用：页面在的主体部分，用于存放所有的HTML标签：
 
+```
 p,h,a,b,u,i,s,em,del,ins,strong,img
-
-~~~
+```
 
 
 
@@ -223,7 +224,7 @@ p,h,a,b,u,i,s,em,del,ins,strong,img
 
   在HTML页面中，带有“< >”符号的元素被称为HTML标签，如上面提到的 &lt;HTML&gt;、&lt;head&gt;、&lt;body&gt;都是HTML标签。所谓标签就是放在“< >” 标签符中表示某个功能的编码命令，也称为HTML标签或 HTML元素
 
-1.双标签
+### 1.双标签
 
 ~~~html
 <标签名> 内容 </标签名>
@@ -235,7 +236,7 @@ p,h,a,b,u,i,s,em,del,ins,strong,img
 > 比如 <body>我是文字  </body>
 > ~~~
 
-2.单标签
+### 2.单标签
 
 ~~~html
 <标签名 />
@@ -254,7 +255,9 @@ p,h,a,b,u,i,s,em,del,ins,strong,img
 1.嵌套关系
 
 ```html
-<head>  <title> </title>  </head>
+<head>  
+    <title> </title>  
+</head>
 ```
 
 <img src="media/father.jpg">
@@ -270,9 +273,7 @@ p,h,a,b,u,i,s,em,del,ins,strong,img
 
 测试题：
 
-```
-请问下列哪个标签是错误的？
-```
+请问下列哪个标签是错误的？答案：C
 
 ```
 A  <head></head><body></body>
@@ -312,15 +313,11 @@ D  <body><div></div></body>
 
   <a href="key.HTML" target="_blank">sublime 一些常用快捷键  点我查看 </a>
 
-
-
-~~~
-再页面中输入 以下2个单词
-1.  html: 5   
-2.  !
-   在sublime里面然后按下tab键盘即可生成HTML骨架
-
-~~~
+```
+再页面中输入 以下单词
+html 
+在sublime里面然后按下tab键盘即可生成HTML骨架
+```
 
 
 
@@ -350,9 +347,7 @@ GBK包含全部中文字符    是GB2312的扩展，加入对繁体字的支持�
 
 UTF-8则包含全世界所有国家需要用到的字符
 
-```
-记住一点，以后我们统统使用UTF-8 字符集, 这样就避免出现字符集不统一而引起乱码的情况了。
-```
+==记住一点，以后我们统统使用UTF-8 字符集, 这样就避免出现字符集不统一而引起乱码的情况了。==
 
 # HTML标签的语义化
 
@@ -608,7 +603,7 @@ base 写到  <head>  </head>  之间
 
 ## 相对路径
 
-1. 图像文件和HTML文件位于同一文件夹：只需输入图像文件的名称即可，如&lt;img src="logo.gif" /&gt;。
+1. 图像文件和HTML文件位于同一文件夹：只需输入图像文件的名称即可，如 &lt;img src="logo.gif" /&gt; 。
 2. 图像文件位于HTML文件的下一级文件夹：输入文件夹名和文件名，之间用“/”隔开，如&lt;img src="img/img01/logo.gif" /&gt;。
 3. 图像文件位于HTML文件的上一级文件夹：在文件名之前加入“../” ，如果是上两级，则需要使用 “../ ../”，以此类推，如&lt;img src="../logo.gif" /&gt;。
 
@@ -674,11 +669,7 @@ base 写到  <head>  </head>  之间
 </ol>
 ```
 
-  所有特性基本与ul 一致。  
-
-  但是实际工作中， 较少用 ol ，因此我们用一句话来总结下 ol： 
-
-  <img src="media/1.jpg" />
+  所有特性基本与ul 一致。    
 
 
 
@@ -699,9 +690,7 @@ base 写到  <head>  </head>  之间
 </dl>
 ```
 
- <img src="media/2.jpg" /> 
-
-
+ 
 
 用的还可以：
 
@@ -804,13 +793,13 @@ ps:  这些地方用表格，你会觉得生活还是那么美好。。。。忍
 
 ## 合并单元格
 
-跨行合并：rowspan    跨列合并：colspan
+跨行合并：`rowspan`跨列合并：`colspan`
 
 合并单元格的思想：
 
 ​     将多个内容合并的时候，就会有多余的东西，把它删除。    例如 把 3个 td 合并成一个， 那就多余了2个，需要删除。
 
-​     公式：  删除的个数  =  合并的个数  - 1   
+​     公式：  `删除的个数  =  合并的个数  - 1   `
 
 ## 总结表格
 
@@ -853,7 +842,7 @@ ps:  这些地方用表格，你会觉得生活还是那么美好。。。。忍
 
 ##  label标签(理解)
 
-label 标签为 input 元素定义标注（标签）。
+`label `标签为 `input `元素定义标注（标签）。
 
 作用：  用于绑定一个表单元素, 当点击label标签的时候, 被绑定的表单元素就会获得输入焦点
 
@@ -894,7 +883,7 @@ for 属性规定 label 与哪个表单元素绑定。
 注意：
 
 1. &lt;select&gt;</select&gt;中至少应包含一对&lt;option></option&gt;。
-2. 在option 中定义selected =" selected "时，当前项即为默认选中项。
+2. 在option 中定义`selected =" selected "`时，当前项即为默认选中项。
 
 ## 表单域
 
@@ -908,11 +897,11 @@ for 属性规定 label 与哪个表单元素绑定。
 
 常用属性：
 
-1. Action
+1. `Action`
    在表单收集到信息后，需要将信息传递给服务器进行处理，action属性用于指定接收并处理表单数据的服务器程序的url地址。
-2. method
+2. `method`
    用于设置表单数据的提交方式，其取值为get或post。
-3. name
+3. `name`
    用于指定表单的名称，以区分同一个页面中的多个表单。
 
 注意：  每个表单都应该有自己表单域。
@@ -928,46 +917,49 @@ for 属性规定 label 与哪个表单元素绑定。
 
 ## 字符设定
 
-- <meta http-equiv="charset" content="utf-8">：HTML与XHTML中建议这样去写
-- <meta charset="utf-8">：HTML5的标签中建议这样去写
+```html
+<meta http-equiv="charset" content="utf-8">：HTML与XHTML中建议这样去写
+<meta charset="utf-8">：HTML5的标签中建议这样去写
+```
+
 
 ## 常用新标签
 
-- header：定义文档的页眉
-- nav：定义导航链接的部分
-- footer：定义文档或节的页脚
-- article：标签规定独立的自包含内容
-- section：定义文档中的节（section、区段）
-- aside：定义其所处内容之外的内容
+- `header`：定义文档的页眉
+- `nav`：定义导航链接的部分
+- `footer`：定义文档或节的页脚
+- `article`：标签规定独立的自包含内容
+- `section`：定义文档中的节（section、区段）
+- `aside`：定义其所处内容之外的内容
 
 ## 常用新属性
 
-| **属性******           | **用法******                               | **含义******                |
-| -------------------- | ---------------------------------------- | ------------------------- |
-| **placeholder******  | <input type="text" placeholder="请输入用户名"> | 占位符提供可描述输入字段预期值的提示信息      |
-| **autofocus******    | <input type="text" autofocus>            | 规定当页面加载时 input 元素应该自动获得焦点 |
-| **multiple******     | <input type="file" multiple>             | 多文件上传                     |
-| **autocomplete****** | <input type="text" autocomplete="off">   | 规定表单是否应该启用自动完成功能          |
-| **required******     | <input type="text" required>             | 必填项                       |
-| **accesskey******    | <input type="text" accesskey="s">        | 规定激活（使元素获得焦点）元素的快捷键       |
+| 属性         | 用法                                           | 含义                                        |
+| ------------ | ---------------------------------------------- | ------------------------------------------- |
+| placeholder  | <input type="text" placeholder="请输入用户名"> | 占位符提供可描述输入字段预期值的提示信息    |
+| autofocus    | <input type="text" autofocus>                  | 规定当页面加载时 input 元素应该自动获得焦点 |
+| multiple     | <input type="file" multiple>                   | 多文件上传                                  |
+| autocomplete | <input type="text" autocomplete="off">         | 规定表单是否应该启用自动完成功能            |
+| required     | <input type="text" required>                   | 必填项                                      |
+| accesskey    | <input type="text" accesskey="s">              | 规定激活（使元素获得焦点）元素的快捷键      |
 
 
 
 ## 新增的type属性值：
 
-| **类型******       | **使用示例******            | **含义****** |
-| ---------------- | ----------------------- | ---------- |
-| **email******    | <input type="email">    | 输入邮箱格式     |
-| **tel******      | <input type="tel">      | 输入手机号码格式   |
-| **url******      | <input type="url">      | 输入url格式    |
-| **number******   | <input type="number">   | 输入数字格式     |
-| **search******   | <input type="search">   | 搜索框（体现语义化） |
-| **range******    | <input type="range">    | 自由拖动滑块     |
-| **time******     | <input type="time">     |            |
-| **date******     | <input type="date">     |            |
-| **datetime****** | <input type="datetime"> |            |
-| **month******    | <input type="month">    |            |
-| **week******     | <input type="week">     |            |
+| 类型     | 使用示例                | 含义                 |
+| -------- | ----------------------- | -------------------- |
+| email    | <input type="email">    | 输入邮箱格式         |
+| tel      | <input type="tel">      | 输入手机号码格式     |
+| url      | <input type="url">      | 输入url格式          |
+| number   | <input type="number">   | 输入数字格式         |
+| search   | <input type="search">   | 搜索框（体现语义化） |
+| range    | <input type="range">    | 自由拖动滑块         |
+| time     | <input type="time">     |                      |
+| date     | <input type="date">     |                      |
+| datetime | <input type="datetime"> |                      |
+| month    | <input type="month">    |                      |
+| week     | <input type="week">     |                      |
 
 ## 综合案例
 
@@ -1005,18 +997,17 @@ for 属性规定 label 与哪个表单元素绑定。
 
 ## 多媒体标签
 
-- embed：标签定义嵌入的内容
+- `embed`：标签定义嵌入的内容
 
-- audio：播放音频
+- `audio`：播放音频
 
-- video：播放视频
-
+- ``video``：播放视频
 
 ### 多媒体 embed（会使用）
 
-embed可以用来插入各种多媒体，格式可以是 Midi、Wav、AIFF、AU、MP3等等。url为音频或视频文件及其路径，可以是相对路径或绝对路径。
+`embed`可以用来插入各种多媒体，格式可以是 Midi、Wav、AIFF、AU、MP3等等。`url`为音频或视频文件及其路径，可以是`相对路径或绝对路径`。
 
-因为兼容性问题，我们这里只讲解 插入网络视频， 后面H5会讲解 audio 和video 视频多媒体。 
+因为兼容性问题，我们这里只讲解 插入网络视频， 后面H5会讲解 `audio `和`video `视频多媒体。 
 
 ```html
 <embed src="http://player.youku.com/player.php/sid/XMTI4MzM2MDIwOA==/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
@@ -1043,7 +1034,7 @@ HTML5通过<audio>标签来解决音频播放的问题。
 
 autoplay 自动播放
 
-controls 是否显不默认播放控件
+controls 是否显示默认播放控件
 
 loop 循环播放
 
@@ -1081,7 +1072,7 @@ height 设置播放窗口的高度
 
 ![1498468086199](media/1498468086199.png) 
 
-**多浏览器支持的方案，如下图******
+多浏览器支持的方案，如下图
 
 ![1498468097509](media/1498468097509.png)
 

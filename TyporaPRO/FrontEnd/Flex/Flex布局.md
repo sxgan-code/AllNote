@@ -16,7 +16,7 @@ Flex布局将成为未来布局的首选方案。本文介绍Flex布局的语法
 
 以下内容主要参考了下面两篇文章：[A Complete Guide to Flexbox](https://links.jianshu.com/go?to=https%3A%2F%2Fcss-tricks.com%2Fsnippets%2Fcss%2Fa-guide-to-flexbox%2F)和[A Visual Guide to CSS3 Flexbox Properties](https://links.jianshu.com/go?to=https%3A%2F%2Fscotch.io%2Ftutorials%2Fa-visual-guide-to-css3-flexbox-properties)。
 
-一、Flex布局是什么？
+# 一、Flex布局是什么？
 
 Flex是Flexible Box的缩写，意为”弹性布局”，用来为盒状模型提供最大的灵活性。
 
@@ -34,7 +34,7 @@ Webkit内核的浏览器，必须加上-webkit前缀。
 
 注意，设为Flex布局以后，子元素的float、clear和vertical-align属性将失效。
 
-二、基本概念
+# 二、基本概念
 
 采用Flex布局的元素，称为Flex容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为Flex项目（flex item），简称”项目”。
 
@@ -44,7 +44,7 @@ Webkit内核的浏览器，必须加上-webkit前缀。
 
 项目默认沿主轴排列。单个项目占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size。
 
-三、容器的属性
+# 三、容器的属性
 
 以下6个属性设置在容器上。
 
@@ -168,7 +168,7 @@ space-around：每根轴线两侧的间隔都相等。所以，轴线之间的�
 
 stretch（默认值）：轴线占满整个交叉轴。
 
-四、项目的属性
+# 四、项目的属性
 
 以下6个属性设置在项目上。
 
