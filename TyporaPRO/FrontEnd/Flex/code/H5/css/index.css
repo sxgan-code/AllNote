@@ -160,7 +160,7 @@ div{
     flex: 1;
     line-height: 44px;
 }
-.nav-common div [class^=nav-common-ico]{
+.nav-common div [class^="nav-common-ico"]{
     background: url('../img/hotel.png') no-repeat 0 0;
     background-size: 121px 44px;
     height: 44px;
