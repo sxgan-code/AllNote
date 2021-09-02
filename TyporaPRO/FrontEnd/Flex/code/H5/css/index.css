@@ -1,0 +1,229 @@
+body {
+    max-width: 540px;
+    min-width: 320px;
+    margin: 0 auto;
+    font: normal 14px/1.5 Tahoma, "Lucida Grande", Verdana, "Microsoft Yahei", STXihei, hei;
+    color: #000;
+    background: #f2f2f2;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+*{
+    margin: 0;
+    padding: 0;
+}
+a{
+    text-decoration: none;
+    color: #222;
+    font-size: 12px;
+}
+ol,ul,li{
+    list-style: none;
+
+}
+div{
+    box-sizing: border-box;
+}
+/*搜索模块*/
+.search-header{
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    height: 44px;
+    width: 100%;
+    /*background-color: palegoldenrod;*/
+    min-width: 320px;
+    max-width: 540px;
+    display: flex;
+    background: #F6F6F6;
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+}
+.search{
+    flex: 1;
+    height: 26px;
+    line-height: 24px;
+    margin: 7px 10px ;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding-left: 24px;
+    font-size: 12px;
+    color: #8c8c8c;
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+}
+.search::before{
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 9px;
+    background: url('../img/sprite.png') no-repeat -60px -280px;
+    background-size: 104px 328px;
+    width: 13px;
+    height: 13px;
+    margin: 6px 6px;
+
+}
+.search-my{
+    width: 44px;
+    height: 44px;
+    /*background: salmon;*/
+    text-align: center;
+    font-size: 12px;
+    color: rgb(9,159,222);
+}
+.search-my::before{
+    content: "";
+    display: block;
+    width: 22px;
+    height: 24px;
+    background: url('../img/sprite.png') no-repeat -59px -194px;
+    background-size: 104px auto;
+    margin:0 11px;
+}
+/*轮播图*/
+.carousel{
+    margin: 47px 5px 0;
+}
+.carousel img{
+    width: 100%;
+}
+/*局部导航*/
+.local-nav{
+    display: flex;
+    margin: 2px 8px;
+    padding: 0 8px;
+    height: 64px;
+    background-color: #FFF;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.3);
+}
+.local-nav li{
+    flex:1;
+    height: 64px;
+    /*margin: 0 1px;*/
+}
+.local-nav a{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+[class^="local-nav-ico"]{
+    width: 32px;
+    height: 32px;
+    margin-top: 8px;
+    background: url("../img/localnav_bg.png") no-repeat 0 0;
+    background-size: 32px 160px;
+}
+.local-nav-font{
+    font-size: 12px;
+    margin: 3px 0;
+}
+.local-nav-ico-icon2{
+    background-position: 0 -32px;
+}
+.local-nav-ico-icon3{
+    background-position: 0 -64px;
+}
+.local-nav-ico-icon4{
+    background-position: 0 -96px;
+}
+.local-nav-ico-icon5{
+    background-position: 0 -128px;
+}
+/*主导航*/
+.main-nav{
+    display: flex;
+    margin: 0 2px 3px;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 8px;
+}
+.nav-common{
+    display: flex;
+    height: 88px;
+    width: 100%;
+    /*background-color: palegoldenrod;*/
+    margin: 2px 0;
+}
+.nav-common div{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.nav-common div:nth-child(-n+2){
+    border-right: 1px solid #fff;
+}
+.nav-common div .nav-common-font{
+    flex: 1;
+    line-height: 44px;
+}
+.nav-common div [class^=nav-common-ico]{
+    background: url('../img/hotel.png') no-repeat 0 0;
+    background-size: 121px 44px;
+    height: 44px;
+    width: 121px;
+}
+.main-nav .nav-common:nth-child(1){
+    background: linear-gradient(to right,#F96B52,#F99A4B);
+}
+.main-nav .nav-common:nth-child(2){
+    background: linear-gradient(to right,#4991EB,#51BBEB);
+}
+.main-nav .nav-common:nth-child(3){
+    background: linear-gradient(to right,#33C2A4,#69D559);
+}
+/*十个小图标*/
+.ico-server{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2px 8px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.3);
+}
+.ico-server .server-item{
+    flex: 20%;
+    height: 55px;
+}
+.server-item a{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.server-item [class^="item-ico"]{
+    margin: 6px 0 3px;
+    background: url('../img/subnav-bg.png') no-repeat 0 0;
+    background-size: 24px 300px;
+    width: 22px;
+    height: 25px;
+}
+.server-item .item-ico2{
+    background-position: 0 -26px;
+}
+.server-item .item-ico3{
+    background-position: 0 -54px;
+}
+.server-item .item-ico4{
+    background-position: 0 -85px;
+}
+.server-item .item-ico5{
+    background-position: 0 -115px;
+}
+.server-item .item-ico6{
+    background-position: 0 -140px;
+}
+.server-item .item-ico7{
+    background-position: 0 -170px;
+}
+.server-item .item-ico8{
+    background-position: 0 -200px;
+}
+.server-item .item-ico9{
+    background-position: 0 -225px;
+}
+.server-item .item-ico10{
+    background-position: 0 -250px;
+}
