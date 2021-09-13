@@ -1216,6 +1216,8 @@ import {get,post} from "./http";
 
 //============数据================
 export const getAllData =() => get(`test2`);
+//根据性别查询歌手
+export const getSingerOfSex = (sex) => get(`singer/singerOfSex?sex=${sex}`);
 ```
 
 ### 在组件中调用
