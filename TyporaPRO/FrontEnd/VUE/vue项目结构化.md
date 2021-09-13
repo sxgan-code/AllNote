@@ -1396,12 +1396,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * @Author AnHui_XiaoYang
- * @Email 939209948@qq.com
- * @Date 2021/5/10 17:49
- * @Description
- */
+
 @SpringBootConfiguration
 public class CorsConfig implements WebMvcConfigurer {
     @Override
