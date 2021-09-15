@@ -803,7 +803,7 @@ public class MainApp {
 Your Message : Hello World!
 ```
 
-## 3、Spring ApplicationContext 容器
+## 3、ApplicationContext 容器
 
 Application Context 是 BeanFactory 的子接口，也被称为 Spring 上下文。
 
@@ -811,15 +811,16 @@ Application Context 是 spring 中较高级的容器。和 BeanFactory 类似，
 
 `ApplicationContext `包含 `BeanFactory `所有的功能，一般情况下，相对于 `BeanFactory`，`ApplicationContext `会更加优秀。当然，`BeanFactory `仍可以在轻量级应用中使用，比如移动设备或者基于 `applet `的应用程序。
 
-最常被使用的 `ApplicationContext `接口实现：
+### 常用ApplicationContext接口实现：
 
-- `FileSystemXmlApplicationContext`：该容器从 XML 文件中加载已被定义的 bean。在这里，你需要提供给构造器 XML 文件的完整路径。
-- `ClassPathXmlApplicationContext`：该容器从 XML 文件中加载已被定义的 bean。在这里，你不需要提供 XML 文件的完整路径，只需正确配置 CLASSPATH 环境变量即可，因为，容器会从 CLASSPATH 中搜索 bean 配置文件。
-- `WebXmlApplicationContext`：该容器会在一个 web 应用程序的范围内加载在 XML 文件中已被定义的 bean。
+> - ==`FileSystemXmlApplicationContext`==：该容器从 XML 文件中加载已被定义的 bean。在这里，你需要提供给构造器 XML 文件的完整路径。
+> - ==`ClassPathXmlApplicationContext `==：该容器从 XML 文件中加载已被定义的 bean。在这里，你不需要提供 XML 文件的完整路径，只需正确配置 CLASSPATH 环境变量即可，因为，容器会从 CLASSPATH 中搜索 bean 配置文件。
+> - ==`WebXmlApplicationContext`==：该容器会在一个 web 应用程序的范围内加载在 XML 文件中已被定义的 bean。
+>
 
 我们已经在 Spring Hello World Example章节中看到过 ClassPathXmlApplicationContext 容器，并且，在基于 spring 的 web 应用程序这个独立的章节中，我们讨论了很多关于 WebXmlApplicationContext。所以，接下来，让我们看一个关于 `FileSystemXmlApplicationContext `的例子。
 
-### 例子:
+#### 例子:
 
 假设我们已经，按照下面的步骤，我们可以创建一个 Spring 应用程序。
 
@@ -888,4 +889,951 @@ public class MainApp {
 ```java
 Your Message : Hello World!
 ```
+
+## 4、Bean 定义
+
+被称作 bean 的对象是构成应用程序的支柱也是由 Spring IoC 容器管理的。bean 是一个被实例化，组装，并通过 Spring IoC 容器所管理的对象。这些 bean 是由用容器提供的配置元数据创建的，例如，已经在先前章节看到的，在 XML 的表单中的 定义。
+
+bean 定义包含称为**配置元数据**的信息，下述容器也需要知道配置元数据：
+
+- 如何创建一个 bean
+- bean 的生命周期的详细信息
+- bean 的依赖关系
+
+上述所有的配置元数据转换成一组构成每个 bean 定义的下列属性。
+
+| 属性                     | 描述                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| class                    | 这个属性是强制性的，并且指定用来创建 bean 的 bean 类。       |
+| name                     | 这个属性指定唯一的 bean 标识符。在基于 XML 的配置元数据中，你可以使用 ID 和/或 name 属性来指定 bean 标识符。 |
+| scope                    | 这个属性指定由特定的 bean 定义创建的对象的作用域，它将会在 bean 作用域的章节中进行讨论。 |
+| constructor-arg          | 它是用来注入依赖关系的，并会在接下来的章节中进行讨论。       |
+| properties               | 它是用来注入依赖关系的，并会在接下来的章节中进行讨论。       |
+| autowiring mode          | 它是用来注入依赖关系的，并会在接下来的章节中进行讨论。       |
+| lazy-initialization mode | 延迟初始化的 bean 告诉 IoC 容器在它第一次被请求时，而不是在启动时去创建一个 bean 实例。 |
+| initialization 方法      | 在 bean 的所有必需的属性被容器设置之后，调用回调方法。它将会在 bean 的生命周期章节中进行讨论。 |
+| destruction 方法         | 当包含该 bean 的容器被销毁时，使用回调方法。它将会在 bean 的生命周期章节中进行讨论。 |
+
+### **Bean 与 Spring 容器的关系**
+
+下图表达了Bean 与 Spring 容器之间的关系：
+
+![Spring Bean](image/1604037368126454.png)
+
+### Spring 配置元数据
+
+Spring IoC 容器完全由实际编写的配置元数据的格式解耦。有下面三个重要的方法把配置元数据提供给 Spring 容器：
+
+- 基于 XML 的配置文件
+- 基于注解的配置
+- 基于 Java 的配置
+
+提示：对于基于 XML 的配置，Spring 2.0 以后使用 Schema 的格式，使得不同类型的配置拥有了自己的命名空间，使配置文件更具扩展性。
+
+你已经看到了如何把基于 XML 的配置元数据提供给容器，但是让我们看看另一个基于 XML 配置文件的例子，这个配置文件中有不同的 bean 定义，包括延迟初始化，初始化方法和销毁方法的：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- A simple bean definition -->
+   <bean id="..." class="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- A bean definition with lazy init set on -->
+   <bean id="..." class="..." lazy-init="true">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- A bean definition with initialization method -->
+   <bean id="..." class="..." init-method="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- A bean definition with destruction method -->
+   <bean id="..." class="..." destroy-method="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- more bean definitions go here -->
+
+</beans>
+```
+
+在上述示例中：
+
+①xmlns="http://www.springframework.org/schema/beans"，默认命名空间：它没有空间名，用于Spring Bean的定义；
+
+②xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"，xsi命名空间：这个命名空间用于为每个文档中命名空间指定相应的Schema样式文件，是标准组织定义的标准命名空间。
+
+## 5、Bean 的作用域
+
+当在 Spring 中定义一个 bean 时，你必须声明该 bean 的作用域的选项。例如，为了强制 Spring 在每次需要时都产生一个新的 bean 实例，你应该声明 bean 的作用域的属性为 **prototype**。同理，如果你想让 Spring 在每次需要时都返回同一个bean实例，你应该声明 bean 的作用域的属性为 **singleton**（单例）。
+
+Spring 框架支持以下五个作用域，分别为 singleton、prototype、request、session 和 global session，5种作用域说明如下所示，
+
+注意，如果你使用 web-aware ApplicationContext 时，其中三个是可用的。   
+
+| 作用域         | 描述                                                         |
+| -------------- | ------------------------------------------------------------ |
+| singleton      | 在spring IoC容器仅存在一个Bean实例，Bean以单例方式存在，默认值 |
+| prototype      | 每次从容器中调用Bean时，都返回一个新的实例，即每次调用getBean()时，相当于执行newXxxBean() |
+| request        | 每次HTTP请求都会创建一个新的Bean，该作用域仅适用于WebApplicationContext环境 |
+| session        | 同一个HTTP Session共享一个Bean，不同Session使用不同的Bean，仅适用于WebApplicationContext环境 |
+| global-session | 一般用于Portlet应用环境，该作用域仅适用于WebApplicationContext环境 |
+
+本章将讨论前两个范围，当我们将讨论有关` web-aware Spring ApplicationContext `时，其余三个将被讨论。
+
+### singleton 作用域：
+
+singleton 是默认的作用域，也就是说，当定义 Bean 时，如果没有指定作用域配置项，则 Bean 的作用域被默认为 singleton。
+
+当一个bean的作用域为 Singleton，那么 Spring IoC 容器中只会存在一个共享的 bean 实例，并且所有对 bean 的请求，只要 id 与该 bean 定义相匹配，则只会返回 bean 的同一实例。
+
+也就是说，当将一个 bean 定义设置为 singleton 作用域的时候，Spring IoC 容器只会创建该 bean 定义的唯一实例。
+
+Singleton 是单例类型，就是在创建起容器时就同时自动创建了一个 bean 的对象，不管你是否使用，他都存在了，每次获取到的对象都是同一个对象。注意，Singleton 作用域是 Spring 中的缺省作用域。你可以在 bean 的配置文件中设置作用域的属性为 singleton，如下所示：
+
+```xml
+<!-- A bean definition with singleton scope -->
+<bean id="..." class="..." scope="singleton">
+    <!-- collaborators and configuration for this bean go here -->
+</bean>
+```
+
+#### 例子
+
+我们在适当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，在 *Spring Hello World Example* 章节解释。 |
+| 3    | 在 *com.tutorialspoint* 包中创建 Java 类 *HelloWorld* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下。 |
+
+这里是 **HelloWorld.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class HelloWorld {
+   private String message;
+   public void setMessage(String message){
+      this.message  = message;
+   }
+   public void getMessage(){
+      System.out.println("Your Message : " + message);
+   }
+}
+```
+
+下面是 MainApp.java 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+      HelloWorld objA = (HelloWorld) context.getBean("helloWorld");
+      objA.setMessage("I'm object A");
+      objA.getMessage();
+      HelloWorld objB = (HelloWorld) context.getBean("helloWorld");
+      objB.getMessage();
+   }
+}
+```
+
+下面是 singleton 作用域必需的配置文件 **Beans.xml**：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="helloWorld" class="com.tutorialspoint.HelloWorld" 
+      scope="singleton">
+   </bean>
+
+</beans>
+```
+
+一旦你创建源代码和 bean 配置文件完成后，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下信息：
+
+```java
+Your Message : I'm object A
+Your Message : I'm object A
+```
+
+### prototype 作用域
+
+当一个 bean 的作用域为 Prototype，表示一个 bean 定义对应多个对象实例。Prototype 作用域的 bean 会导致在每次对该 bean 请求（将其注入到另一个 bean 中，或者以程序的方式调用容器的 getBean() 方法）时都会创建一个新的 bean 实例。Prototype 是原型类型，它在我们创建容器的时候并没有实例化，而是当我们获取bean的时候才会去创建一个对象，而且我们每次获取到的对象都不是同一个对象。根据经验，对有状态的 bean 应该使用 prototype 作用域，而对无状态的bean则应该使用 singleton 作用域。
+
+为了定义 prototype 作用域，你可以在 bean 的配置文件中设置作用域的属性为 prototype，如下所示：
+
+```xml
+<!-- A bean definition with singleton scope -->
+<bean id="..." class="..." scope="prototype">
+   <!-- collaborators and configuration for this bean go here -->
+</bean>
+```
+
+#### 例子
+
+我们在适当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包*com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，解释见 *Spring Hello World Example* 章节。 |
+| 3    | 在 *com.tutorialspoint* 包中创建 Java 类 *HelloWorld* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 配置文件*Beans.xml*。          |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 **HelloWorld.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+public class HelloWorld {
+   private String message;
+
+   public void setMessage(String message){
+      this.message  = message;
+   }
+
+   public void getMessage(){
+      System.out.println("Your Message : " + message);
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+      HelloWorld objA = (HelloWorld) context.getBean("helloWorld");
+      objA.setMessage("I'm object A");
+      objA.getMessage();
+      HelloWorld objB = (HelloWorld) context.getBean("helloWorld");
+      objB.getMessage();
+   }
+}
+```
+
+下面是 **prototype** 作用域必需的配置文件 Beans.xml：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="helloWorld" class="com.tutorialspoint.HelloWorld" 
+      scope="prototype">
+   </bean>
+
+</beans>
+```
+
+一旦你创建源代码和 Bean 配置文件完成后，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下信息：
+
+```java
+Your Message : I'm object A
+Your Message : null
+```
+
+## 6、Bean 的生命周期
+
+理解 Spring bean 的生命周期很容易。当一个 bean 被实例化时，它可能需要执行一些初始化使它转换成可用状态。同样，当 bean 不再需要，并且从容器中移除时，可能需要做一些清除工作。
+
+尽管还有一些在 Bean 实例化和销毁之间发生的活动，但是本章将只讨论两个重要的生命周期回调方法，它们在 bean 的初始化和销毁的时候是必需的。
+
+为了定义安装和拆卸一个 bean，我们只要声明带有 **init-method** 和/或 **destroy-method** 参数的 。`init-method` 属性指定一个方法，在实例化 bean 时，立即调用该方法。同样，destroy-method 指定一个方法，只有从容器中移除 bean 之后，才能调用该方法。
+
+Bean的生命周期可以表达为：Bean的定义——Bean的初始化——Bean的使用——Bean的销毁
+
+### 初始化回调
+
+*org.springframework.beans.factory.InitializingBean* 接口指定一个单一的方法：
+
+```java
+void afterPropertiesSet() throws Exception;
+```
+
+因此，你可以简单地实现上述接口和初始化工作可以在 afterPropertiesSet() 方法中执行，如下所示：
+
+```java
+public class ExampleBean implements InitializingBean {
+   public void afterPropertiesSet() {
+      // do some initialization work
+   }
+}
+```
+
+在基于 XML 的配置元数据的情况下，你也可以使用 **init-method** 属性来指定带有 void 无参数方法的名称。例如：
+
+```xml
+<bean id="exampleBean" class="examples.ExampleBean" init-method="init"/>
+```
+
+下面是类的定义：
+
+```java
+public class ExampleBean {
+   public void init() {
+      // do some initialization work
+   }
+}
+```
+
+### 销毁回调
+
+*org.springframework.beans.factory.DisposableBean* 接口指定一个单一的方法：
+
+```java
+void destroy() throws Exception;
+```
+
+因此，你可以简单地实现上述接口并且结束工作可以在 destroy() 方法中执行，如下所示：
+
+```java
+public class ExampleBean implements DisposableBean {
+   public void destroy() {
+      // do some destruction work
+   }
+}
+```
+
+在基于 XML 的配置元数据的情况下，你可以使用 **destroy-method** 属性来指定带有 void 无参数方法的名称。例如：
+
+```xml
+<bean id="exampleBean" class="examples.ExampleBean" destroy-method="destroy"/>
+```
+
+下面是类的定义：
+
+```java
+public class ExampleBean {
+   public void destroy() {
+      // do some destruction work
+   }
+}
+```
+
+如果你在非 web 应用程序环境中使用 `Spring `的 `IoC `容器；例如在丰富的客户端桌面环境中；那么在 JVM 中你要注册关闭 hook。这样做可以确保正常关闭，为了让所有的资源都被释放，可以在单个 `beans `上调用 `destroy `方法。
+
+建议你不要使用 `InitializingBean `或者 `DisposableBean `的回调方法，因为 `XML `配置在命名方法上提供了极大的灵活性。
+
+#### 例子
+
+我们在适当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，解释见 *Spring Hello World Example* 章节。 |
+| 3    | 在 *com.tutorialspoint* 包中创建 Java 类 *HelloWorld* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 **HelloWorld.java** 的文件的内容：
+
+```java
+package com.tutorialspoint;
+
+public class HelloWorld {
+   private String message;
+
+   public void setMessage(String message){
+      this.message  = message;
+   }
+   public void getMessage(){
+      System.out.println("Your Message : " + message);
+   }
+   public void init(){
+      System.out.println("Bean is going through init.");
+   }
+   public void destroy(){
+      System.out.println("Bean will destroy now.");
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容。在这里，你需要注册一个在 AbstractApplicationContext 类中声明的关闭 hook 的 **registerShutdownHook()** 方法。它将确保正常关闭，并且调用相关的 destroy 方法。
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      AbstractApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+      HelloWorld obj = (HelloWorld) context.getBean("helloWorld");
+      obj.getMessage();
+      context.registerShutdownHook();
+   }
+}
+```
+
+下面是 init 和 destroy 方法必需的配置文件 **Beans.xml** 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="helloWorld" 
+       class="com.tutorialspoint.HelloWorld"
+       init-method="init" destroy-method="destroy">
+       <property name="message" value="Hello World!"/>
+   </bean>
+
+</beans>
+```
+
+一旦你创建源代码和 bean 配置文件完成后，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下信息：
+
+```java
+Bean is going through init.
+Your Message : Hello World!
+Bean will destroy now.
+```
+
+### 默认的初始化和销毁方法
+
+如果你有太多具有相同名称的初始化或者销毁方法的 Bean，那么你不需要在每一个 bean 上声明**初始化方法**和**销毁方法**。框架使用 元素中的 **default-init-method** 和 **default-destroy-method** 属性提供了灵活地配置这种情况，如下所示：
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+    default-init-method="init" 
+    default-destroy-method="destroy">
+
+   <bean id="..." class="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+</beans>
+```
+
+## 7、Bean 后置处理器
+
+Bean 后置处理器允许在调用初始化方法前后对 Bean 进行额外的处理。
+
+`BeanPostProcessor `接口定义回调方法，你可以实现该方法来提供自己的实例化逻辑，依赖解析逻辑等。你也可以在 `Spring` 容器通过插入一个或多个 `BeanPostProcessor` 的实现来完成实例化，配置和初始化一个`bean`之后实现一些自定义逻辑回调方法。
+
+你可以配置多个 `BeanPostProcessor `接口，通过设置 `BeanPostProcessor `实现的` Ordered `接口提供的` order` 属性来控制这些` BeanPostProcessor` 接口的执行顺序。
+
+`BeanPostProcessor` 可以对` bean`（或对象）实例进行操作，这意味着 `Spring IoC` 容器实例化一个 `bean` 实例，然后 `BeanPostProcessor` 接口进行它们的工作。
+
+### 注意：
+
+`ApplicationContext` 会自动检测由 `BeanPostProcessor` 接口的实现定义的 `bean`，注册这些` bean` 为后置处理器，然后通过在容器中创建` bean`，在适当的时候调用它。
+
+在你自定义的` BeanPostProcessor` 接口实现类中，要实现以下的两个抽象方法`BeanPostProcessor.postProcessBeforeInitialization(Object, String)` 和 `BeanPostProcessor.postProcessAfterInitialization(Object, String)` 和，注意命名要准确
+
+在你自定义的BeanPostProcessor 接口实现类中，要实现以下的两个抽象方法 `BeanPostProcessor.postProcessBeforeInitialization(Object, String)` 和 BeanPostProcessor.postProcessAfterInitialization(Object, String) 和，注意命名要准确下文中编写，注册和使用 BeanPostProcessor。
+
+
+下面的例子显示如何在 `ApplicationContext` 的上下文中编写，注册和使用 `BeanPostProcessor`。
+
+我们在适当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 `Spring `应用程序：
+
+| 步骤 | 描述                                                         |
+| :--- | :----------------------------------------------------------- |
+| 1    | 创建一个名称为 *`SpringExample`* 的项目，并且在创建项目的` **src** `文件夹中创建一个包 *`com.tutorialspoint`*。 |
+| 2    | 使用` *Add External JARs* `选项，添加所需的` Spring` 库，解释见 `*Spring Hello World Example* `章节。 |
+| 3    | 在 `*com.tutorialspoint* `包中创建 Java 类 *`HelloWorld`*、`*InitHelloWorld*`**和 *`MainApp`*。 |
+| 4    | 在` **src** `文件夹中创建` Beans `配置文件` *Beans.xml*`。   |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 HelloWorld.java 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class HelloWorld {
+   private String message;
+   public void setMessage(String message){
+      this.message  = message;
+   }
+   public void getMessage(){
+      System.out.println("Your Message : " + message);
+   }
+   public void init(){
+      System.out.println("Bean is going through init.");
+   }
+   public void destroy(){
+      System.out.println("Bean will destroy now.");
+   }
+}
+```
+
+这是实现` BeanPostProcessor `的非常简单的例子，它在任何 `bean` 的初始化的之前和之后输入该 `bean` 的名称。你可以在初始化 `bean `的之前和之后实现更复杂的逻辑，因为你有两个访问内置 `bean` 对象的后置处理程序的方法。
+
+这里是 InitHelloWorld.java 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.BeansException;
+public class InitHelloWorld implements BeanPostProcessor {
+   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+      System.out.println("BeforeInitialization : " + beanName);
+      return bean;  // you can return any other object as well
+   }
+   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+      System.out.println("AfterInitialization : " + beanName);
+      return bean;  // you can return any other object as well
+   }
+}
+```
+
+下面是 MainApp.java 文件的内容。在这里，你需要注册一个在 `AbstractApplicationContext` 类中声明的关闭` hook` 的 `registerShutdownHook() `方法。它将确保正常关闭，并且调用相关的 `destroy` 方法。
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      AbstractApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+      HelloWorld obj = (HelloWorld) context.getBean("helloWorld");
+      obj.getMessage();
+      context.registerShutdownHook();
+   }
+}
+```
+
+下面是 `init` 和 `destroy` 方法需要的配置文件 Beans.xml 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="helloWorld" class="com.tutorialspoint.HelloWorld"
+       init-method="init" destroy-method="destroy">
+       <property name="message" value="Hello World!"/>
+   </bean>
+
+   <bean class="com.tutorialspoint.InitHelloWorld" />
+
+</beans>
+```
+
+一旦你创建源代码和 `bean` 配置文件完成后，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下信息：
+
+```java
+BeforeInitialization : helloWorld
+Bean is going through init.
+AfterInitialization : helloWorld
+Your Message : Hello World!
+Bean will destroy now.
+```
+
+## 8、Bean 定义继承
+
+bean 定义可以包含很多的配置信息，包括构造函数的参数，属性值，容器的具体信息例如初始化方法，静态工厂方法名，等等。
+
+子 bean 的定义继承父定义的配置数据。子定义可以根据需要重写一些值，或者添加其他值。
+
+Spring Bean 定义的继承与 Java 类的继承无关，但是继承的概念是一样的。你可以定义一个父 bean 的定义作为模板和其他子 bean 就可以从父 bean 中继承所需的配置。
+
+当你使用基于 XML 的配置元数据时，通过使用父属性，指定父 bean 作为该属性的值来表明子 bean 的定义。
+
+### 例子
+
+我们在适当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，解释见 *Spring Hello World Example* 章节。 |
+| 3    | 在 *com.tutorialspoint* 包中创建 Java 类 *HelloWorld*、*HelloChina* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+下面是配置文件 **Beans.xml**，在该配置文件中我们定义有两个属性 *message1* 和 *message2* 的 “helloWorld” bean。然后，使用 **parent** 属性把 “helloChina” bean 定义为 “helloWorld” bean 的孩子。这个子 bean 继承 *message2* 的属性，重写 *message1* 的属性，并且引入一个属性 *message3*。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="helloWorld" class="com.tutorialspoint.HelloWorld">
+      <property name="message1" value="Hello World!"/>
+      <property name="message2" value="Hello Second World!"/>
+   </bean>
+
+   <bean id="helloChina" class="com.tutorialspoint.HelloChina" parent="helloWorld">
+      <property name="message1" value="Hello China!"/>
+      <property name="message3" value="Namaste China!"/>
+   </bean>
+
+</beans>
+```
+
+这里是 **HelloWorld.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class HelloWorld {
+   private String message1;
+   private String message2;
+   public void setMessage1(String message){
+      this.message1  = message;
+   }
+   public void setMessage2(String message){
+      this.message2  = message;
+   }
+   public void getMessage1(){
+      System.out.println("World Message1 : " + message1);
+   }
+   public void getMessage2(){
+      System.out.println("World Message2 : " + message2);
+   }
+}
+```
+
+这里是 **HelloChina.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+public class HelloChina {
+   private String message1;
+   private String message2;
+   private String message3;
+
+   public void setMessage1(String message){
+      this.message1  = message;
+   }
+
+   public void setMessage2(String message){
+      this.message2  = message;
+   }
+
+   public void setMessage3(String message){
+      this.message3  = message;
+   }
+
+   public void getMessage1(){
+      System.out.println("China Message1 : " + message1);
+   }
+
+   public void getMessage2(){
+      System.out.println("China Message2 : " + message2);
+   }
+
+   public void getMessage3(){
+      System.out.println("China Message3 : " + message3);
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+
+      HelloWorld objA = (HelloWorld) context.getBean("helloWorld");
+
+      objA.getMessage1();
+      objA.getMessage2();
+
+      HelloChina objB = (HelloChina) context.getBean("helloChina");
+      objB.getMessage1();
+      objB.getMessage2();
+      objB.getMessage3();
+   }
+}
+```
+
+一旦你创建源代码和 bean 配置文件完成后，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下信息：
+
+```java
+World Message1 : Hello World!
+World Message2 : Hello Second World!
+China Message1 : Hello China!
+China Message2 : Hello Second World!
+China Message3 : Namaste China!
+```
+
+在这里你可以观察到，我们创建 “helloChina” bean 的同时并没有传递 message2，但是由于 Bean 定义的继承，所以它传递了 message2。
+
+### Bean 定义模板
+
+你可以创建一个 Bean 定义模板，不需要花太多功夫它就可以被其他子 bean 定义使用。在定义一个 Bean 定义模板时，你不应该指定**类**的属性，而应该指定带 **true** 值的**抽象**属性，如下所示：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="beanTeamplate" abstract="true">
+      <property name="message1" value="Hello World!"/>
+      <property name="message2" value="Hello Second World!"/>
+      <property name="message3" value="Namaste China!"/>
+   </bean>
+
+   <bean id="helloChina" class="com.tutorialspoint.HelloChina" parent="beanTeamplate">
+      <property name="message1" value="Hello China!"/>
+      <property name="message3" value="Namaste China!"/>
+   </bean>
+
+</beans>
+```
+
+父 bean 自身不能被实例化，因为它是不完整的，而且它也被明确地标记为抽象的。当一个定义是抽象的，它仅仅作为一个纯粹的模板 bean 定义来使用的，充当子定义的父定义使用。
+
+# 五、依赖注入
+
+每个基于应用程序的 java 都有几个对象，由这些对象一起工作来呈现出终端用户所看到的工作的应用程序。当编写一个复杂的 Java 应用程序时，应用程序类应该尽可能独立于其他 Java 类来增加这些类重用的可能性，并且在做单元测试时，测试独立于其他类的独立性。`依赖注入（或有时称为布线）`有助于把这些类粘合在一起，同时保持他们独立。
+
+假设你有一个包含文本编辑器组件的应用程序，并且你想要提供拼写检查。标准代码看起来是这样的：
+
+```java
+public class TextEditor {
+   private SpellChecker spellChecker;  
+   public TextEditor() {
+      spellChecker = new SpellChecker();
+   }
+}
+```
+
+在这里我们所做的就是创建一个 TextEditor 和 SpellChecker 之间的依赖关系。而在控制反转IoC的场景中，我们会这样做：
+
+```java
+public class TextEditor {
+   private SpellChecker spellChecker;
+   public TextEditor(SpellChecker spellChecker) {
+      this.spellChecker = spellChecker;
+   }
+}
+```
+
+在这里，TextEditor 不应该担心 SpellChecker 的实现。SpellChecker 将会独立实现，并且在 TextEditor 实例化的时候将提供给 TextEditor，整个过程是由 Spring 框架的控制。
+
+在这里，我们已经从 TextEditor 中删除了全面控制，并且把它保存到其他地方（即 XML 配置文件），且依赖关系（即 SpellChecker 类）通过**类构造函数**被注入到 TextEditor 类中。因此，控制流通过依赖注入（DI）已经“反转”，因为你已经有效地委托依赖关系到一些外部系统。
+
+依赖注入的**第二种方法**是通过 TextEditor 类的 **Setter 方法**，我们将创建 SpellChecker 实例，该实例将被用于调用 setter 方法来初始化 TextEditor 的属性。
+
+因此，DI 主要有两种变体和下面的两个子章将结合实例涵盖它们：
+
+| 序号 | 依赖注入类型 & 描述                                          |
+| ---- | ------------------------------------------------------------ |
+| 1    | [Constructor-based dependency injection](https://www.w3cschool.cn/wkspring/t7n41mm7.html)当容器调用带有多个参数的构造函数类时，实现基于构造函数的 DI，每个代表在其他类中的一个依赖关系。 |
+| 2    | [Setter-based dependency injection](https://www.w3cschool.cn/wkspring/yqdx1mm5.html)基于 setter 方法的 DI 是通过在调用无参数的构造函数或无参数的静态工厂方法实例化 bean 之后容器调用 beans 的 setter 方法来实现的。 |
+
+你可以混合这两种方法，基于构造函数和基于 setter 方法的 DI，然而使用有强制性依存关系的构造函数和有可选依赖关系的 setter是一个好的做法。
+
+代码是 DI 原理的清洗机，当对象与它们的依赖关系被提供时，解耦效果更明显。对象不查找它的依赖关系，也不知道依赖关系的位置或类，而这一切都由 Spring 框架控制的。
+
+## 1、构造函数注入
+
+当容器调用带有一组参数的类构造函数时，基于构造函数的 DI 就完成了，其中每个参数代表一个对其他类的依赖。
+
+接下来，我们将通过示例来理解 Spring 基于构造函数的依赖注入。
+
+### 类的注入
+
+下面的例子显示了一个类 TextEditor，只能用构造函数注入来实现依赖注入。
+
+让我们用 Eclipse IDE 适当地工作，并按照以下步骤创建一个 Spring 应用程序。
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并在创建的项目中的 **src** 文件夹下创建包 *com.tutorialspoint* 。 |
+| 2    | 使用 *Add External JARs* 选项添加必需的 Spring 库，解释见 *Spring Hello World Example* chapter. |
+| 3    | 在 *com.tutorialspoint* 包下创建 Java类 *TextEditor*，*SpellChecker* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹下创建 Beans 的配置文件 *Beans.xml* 。      |
+| 5    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容并按照如下所示的方法运行应用程序。 |
+
+这是 **TextEditor.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class TextEditor {
+   private SpellChecker spellChecker;
+   public TextEditor(SpellChecker spellChecker) {
+      System.out.println("Inside TextEditor constructor." );
+      this.spellChecker = spellChecker;
+   }
+   public void spellCheck() {
+      spellChecker.checkSpelling();
+   }
+}
+```
+
+下面是另一个依赖类文件 **SpellChecker.java** 的内容：
+
+```java
+package com.tutorialspoint;
+public class SpellChecker {
+   public SpellChecker(){
+      System.out.println("Inside SpellChecker constructor." );
+   }
+   public void checkSpelling() {
+      System.out.println("Inside checkSpelling." );
+   } 
+}
+```
+
+以下是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      TextEditor te = (TextEditor) context.getBean("textEditor");
+      te.spellCheck();
+   }
+}
+```
+
+下面是配置文件 **Beans.xml** 的内容，它有基于构造函数注入的配置：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor">
+      <constructor-arg ref="spellChecker"/>
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="spellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+当你完成了创建源和 bean 配置文件后，让我们开始运行应用程序。如果你的应用程序运行顺利的话，那么将会输出下述所示消息：
+
+```java
+Inside SpellChecker constructor.
+Inside TextEditor constructor.
+Inside checkSpelling.
+```
+
+### 多个类注入:
+
+注释：上面这个例子里，将依赖类 SpellChecker.java注入到TextEditor.java 文件。
+
+如此，便称为依赖注入。
+
+如果存在不止一个参数时，当把参数传递给构造函数时，可能会存在歧义。要解决这个问题，那么构造函数的参数在 bean 定义中的顺序就是把这些参数提供给适当的构造函数的顺序就可以了。
+
+考虑下面的类:
+
+```java
+package x.y;
+public class Foo {
+   public Foo(Bar bar, Baz baz) {
+      // ...
+   }
+}
+```
+
+下述配置文件工作顺利：
+
+```xml
+<beans>
+   <bean id="foo" class="x.y.Foo">
+      <constructor-arg ref="bar"/>
+      <constructor-arg ref="baz"/>
+   </bean>
+
+   <bean id="bar" class="x.y.Bar"/>
+   <bean id="baz" class="x.y.Baz"/>
+</beans>
+```
+
+### 常用类型的构造方法注入
+
+让我们再检查一下我们传递给构造函数不同类型的位置。考虑下面的类：
+
+```java
+package x.y;
+public class Foo {
+   public Foo(int year, String name) {
+      // ...
+   }
+}
+```
+
+如果你使用` type` 属性显式的指定了构造函数参数的类型，容器也可以使用与简单类型匹配的类型。例如：
+
+```xml
+<beans>
+
+   <bean id="exampleBean" class="examples.ExampleBean">
+      <constructor-arg type="int" value="2001"/>
+      <constructor-arg type="java.lang.String" value="Zara"/>
+   </bean>
+
+</beans>
+```
+
+最后并且也是最好的传递构造函数参数的方式，使用` index` 属性来显式的指定构造函数参数的索引。下面是基于索引为 0 的例子，如下所示：
+
+```xml
+<beans>
+
+   <bean id="exampleBean" class="examples.ExampleBean">
+      <constructor-arg index="0" value="2001"/>
+      <constructor-arg index="1" value="Zara"/>
+   </bean>
+
+</beans>
+```
+
+最后，如果你想要向一个对象传递一个引用，你需要使用 标签的 **ref** 属性，如果你想要直接传递值，那么你应该使用如上所示的 **value** 属性。
 
