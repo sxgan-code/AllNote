@@ -1837,3 +1837,3632 @@ public class Foo {
 
 最后，如果你想要向一个对象传递一个引用，你需要使用 标签的 **ref** 属性，如果你想要直接传递值，那么你应该使用如上所示的 **value** 属性。
 
+## 2、注入集合
+
+你已经看到了如何使用 **value** 属性来配置基本数据类型和在你的 bean 配置文件中使用`<property>`标签的 **ref** 属性来配置对象引用。这两种情况下处理奇异值传递给一个 bean。
+
+现在如果你想传递多个值，如 Java Collection 类型 List、Set、Map 和 Properties，应该怎么做呢。为了处理这种情况，Spring 提供了四种类型的集合的配置元素，如下所示：
+
+| 元素    | 描述                                                        |
+| :------ | :---------------------------------------------------------- |
+| <list>  | 它有助于连线，如注入一列值，允许重复。                      |
+| <set>   | 它有助于连线一组值，但不能重复。                            |
+| <map>   | 它可以用来注入名称-值对的集合，其中名称和值可以是任何类型。 |
+| <props> | 它可以用来注入名称-值对的集合，其中名称和值都是字符串类型。 |
+
+你可以使用`<list>`或`<set>`来连接任何 `java.util.Collection` 的实现或数组。
+
+你会遇到两种情况（a）传递集合中直接的值（b）传递一个 bean 的引用作为集合的元素。
+
+### 例子
+
+我们在适当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| :--- | :----------------------------------------------------------- |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包 *com.tutorialspoint* 。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，解释见 *Spring Hello World Example* 章节。 option as explained in the chapter. |
+| 3    | 在 *com.tutorialspoint* 包中创建Java类*TextEditor*、*SpellChecker* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建的所有Java文件和Bean配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 **JavaCollection.java** 文件的内容：
+
+
+
+```java
+package com.tutorialspoint;
+import java.util.*;
+public class JavaCollection {
+   List addressList;
+   Set  addressSet;
+   Map  addressMap;
+   Properties addressProp;
+   // a setter method to set List
+   public void setAddressList(List addressList) {
+      this.addressList = addressList;
+   }
+   // prints and returns all the elements of the list.
+   public List getAddressList() {
+      System.out.println("List Elements :"  + addressList);
+      return addressList;
+   }
+   // a setter method to set Set
+   public void setAddressSet(Set addressSet) {
+      this.addressSet = addressSet;
+   }
+   // prints and returns all the elements of the Set.
+   public Set getAddressSet() {
+      System.out.println("Set Elements :"  + addressSet);
+      return addressSet;
+   }
+   // a setter method to set Map
+   public void setAddressMap(Map addressMap) {
+      this.addressMap = addressMap;
+   }  
+   // prints and returns all the elements of the Map.
+   public Map getAddressMap() {
+      System.out.println("Map Elements :"  + addressMap);
+      return addressMap;
+   }
+   // a setter method to set Property
+   public void setAddressProp(Properties addressProp) {
+      this.addressProp = addressProp;
+   } 
+   // prints and returns all the elements of the Property.
+   public Properties getAddressProp() {
+      System.out.println("Property Elements :"  + addressProp);
+      return addressProp;
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      JavaCollection jc=(JavaCollection)context.getBean("javaCollection");
+      jc.getAddressList();
+      jc.getAddressSet();
+      jc.getAddressMap();
+      jc.getAddressProp();
+   }
+}
+```
+
+下面是配置所有类型的集合的配置文件 **Beans.xml** 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for javaCollection -->
+   <bean id="javaCollection" class="com.tutorialspoint.JavaCollection">
+
+      <!-- results in a setAddressList(java.util.List) call -->
+      <property name="addressList">
+         <list>
+            <value>INDIA</value>
+            <value>Pakistan</value>
+            <value>USA</value>
+            <value>USA</value>
+         </list>
+      </property>
+
+      <!-- results in a setAddressSet(java.util.Set) call -->
+      <property name="addressSet">
+         <set>
+            <value>INDIA</value>
+            <value>Pakistan</value>
+            <value>USA</value>
+            <value>USA</value>
+        </set>
+      </property>
+
+      <!-- results in a setAddressMap(java.util.Map) call -->
+      <property name="addressMap">
+         <map>
+            <entry key="1" value="INDIA"/>
+            <entry key="2" value="Pakistan"/>
+            <entry key="3" value="USA"/>
+            <entry key="4" value="USA"/>
+         </map>
+      </property>
+
+      <!-- results in a setAddressProp(java.util.Properties) call -->
+      <property name="addressProp">
+         <props>
+            <prop key="one">INDIA</prop>
+            <prop key="two">Pakistan</prop>
+            <prop key="three">USA</prop>
+            <prop key="four">USA</prop>
+         </props>
+      </property>
+
+   </bean>
+
+</beans>
+```
+
+一旦你创建源代码和 bean 配置文件完成后，我们就可以运行该应用程序。你应该注意这里不需要配置文件。如果你的应用程序一切都正常，将输出以下信息：
+
+```java
+List Elements :[INDIA, Pakistan, USA, USA]
+Set Elements :[INDIA, Pakistan, USA]
+Map Elements :{1=INDIA, 2=Pakistan, 3=USA, 4=USA}
+Property Elements :{two=Pakistan, one=INDIA, three=USA, four=USA}
+```
+
+### 注入 Bean 引用
+
+下面的 Bean 定义将帮助你理解如何注入 bean 的引用作为集合的元素。甚至你可以将引用和值混合在一起，如下所示：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Bean Definition to handle references and values -->
+   <bean id="..." class="...">
+
+      <!-- Passing bean reference  for java.util.List -->
+      <property name="addressList">
+         <list>
+            <ref bean="address1"/>
+            <ref bean="address2"/>
+            <value>Pakistan</value>
+         </list>
+      </property>
+
+      <!-- Passing bean reference  for java.util.Set -->
+      <property name="addressSet">
+         <set>
+            <ref bean="address1"/>
+            <ref bean="address2"/>
+            <value>Pakistan</value>
+         </set>
+      </property>
+
+      <!-- Passing bean reference  for java.util.Map -->
+      <property name="addressMap">
+         <map>
+            <entry key="one" value="INDIA"/>
+            <entry key ="two" value-ref="address1"/>
+            <entry key ="three" value-ref="address2"/>
+         </map>
+      </property>
+
+   </bean>
+
+</beans>
+```
+
+为了使用上面的 bean 定义，你需要定义 setter 方法，它们应该也能够是用这种方式来处理引用。
+
+### 注入 null 和空字符串的值
+
+如果你需要传递一个空字符串作为值，那么你可以传递它，如下所示：
+
+```xml
+<bean id="..." class="exampleBean">
+   <property name="email" value=""/>
+</bean>
+```
+
+前面的例子相当于 Java 代码：exampleBean.setEmail("")。
+
+如果你需要传递一个 NULL 值，那么你可以传递它，如下所示：
+
+```xml
+<bean id="..." class="exampleBean">
+   <property name="email"><null/></property>
+</bean>
+```
+
+前面的例子相当于 Java 代码：exampleBean.setEmail(null)。
+
+# 六、Beans 自动装配
+
+你已经学会如何使用`<bean>`元素来声明 bean 和通过使用 XML 配置文件中的`<constructor-arg>`和`<property>`元素来注入 。
+
+Spring 容器可以在不使用`<constructor-arg>`和`<property>` 元素的情况下**自动装配**相互协作的 bean 之间的关系，这有助于减少编写一个大的基于 Spring 的应用程序的 XML 配置的数量。
+
+## 1、自动装配模式
+
+下列自动装配模式，它们可用于指示 Spring 容器为来使用自动装配进行依赖注入。你可以使用`<bean>`元素的 **autowire** 属性为一个 bean 定义指定自动装配模式。
+
+| 模式                                                         | 描述                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| no                                                           | 这是默认的设置，它意味着没有自动装配，你应该使用显式的bean引用来连线。你不用为了连线做特殊的事。在依赖注入章节你已经看到这个了。 |
+| [byName](https://www.w3cschool.cn/wkspring/fwdz1mmb.html)    | 由属性名自动装配。Spring 容器看到在 XML 配置文件中 bean 的自动装配的属性设置为 byName。然后尝试匹配，并且将它的属性与在配置文件中被定义为相同名称的 beans 的属性进行连接。 |
+| [byType](https://www.w3cschool.cn/wkspring/8dhy1mmd.html)    | 由属性数据类型自动装配。Spring 容器看到在 XML 配置文件中 bean 的自动装配的属性设置为 byType。然后如果它的**类型**匹配配置文件中的一个确切的 bean 名称，它将尝试匹配和连接属性的类型。如果存在不止一个这样的 bean，则一个致命的异常将会被抛出。 |
+| [constructor](https://www.w3cschool.cn/wkspring/jtlb1mmf.html) | 类似于 byType，但该类型适用于构造函数参数类型。如果在容器中没有一个构造函数参数类型的 bean，则一个致命错误将会发生。 |
+| autodetect（3.0版本不支持）                                  | Spring首先尝试通过 constructor 使用自动装配来连接，如果它不执行，Spring 尝试通过 byType 来自动装配。 |
+
+可以使用 **byType** 或者 **constructor** 自动装配模式来连接数组和其他类型的集合。
+
+##  2、自动装配的局限性
+
+当自动装配始终在同一个项目中使用时，它的效果最好。如果通常不使用自动装配，它可能会使开发人员混淆的使用它来连接只有一个或两个 bean 定义。不过，自动装配可以显著减少需要指定的属性或构造器参数，但你应该在使用它们之前考虑到自动装配的局限性和缺点。
+
+| 限制         | 描述                                                         |
+| ------------ | ------------------------------------------------------------ |
+| 重写的可能性 | 你可以使用总是重写自动装配的 <constructor-arg>和 <property> 设置来指定依赖关系。 |
+| 原始数据类型 | 你不能自动装配所谓的简单类型包括基本类型，字符串和类。       |
+| 混乱的本质   | 自动装配不如显式装配精确，所以如果可能的话尽可能使用显式装配。 |
+
+## 3、自动装配 byName
+
+这种模式由属性名称指定自动装配。Spring 容器看作 beans，在 XML 配置文件中 beans 的 *auto-wire* 属性设置为 *byName*。然后，它尝试将它的属性与配置文件中定义为相同名称的 beans 进行匹配和连接。如果找到匹配项，它将注入这些 beans，否则，它将抛出异常。
+
+例如，在配置文件中，如果一个 bean 定义设置为自动装配 *byName*，并且它包含 *spellChecker* 属性（即，它有一个 *setSpellChecker(...)* 方法），那么 Spring 就会查找定义名为 *spellChecker* 的 bean，并且用它来设置这个属性。你仍然可以使用 <property> 标签连接其余的属性。下面的例子将说明这个概念。
+
+让我们在恰当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在已创建的项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，在 *Spring Hello World Example* 章节中已说明。 |
+| 3    | 在 *com.tutorialspoint* 包中创建 Java 类 *TextEditor*，*SpellChecker* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 的配置文件 *Beans.xml*。       |
+| 5    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并运行该应用程序，正如下面解释的一样。 |
+
+这里是 **TextEditor.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class TextEditor {
+   private SpellChecker spellChecker;
+   private String name;
+   public void setSpellChecker( SpellChecker spellChecker ){
+      this.spellChecker = spellChecker;
+   }
+   public SpellChecker getSpellChecker() {
+      return spellChecker;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+   public void spellCheck() {
+      spellChecker.checkSpelling();
+   }
+}
+```
+
+下面是另一个依赖类文件 **SpellChecker.java** 的内容：
+
+```java
+package com.tutorialspoint;
+public class SpellChecker {
+   public SpellChecker() {
+      System.out.println("Inside SpellChecker constructor." );
+   }
+   public void checkSpelling() {
+      System.out.println("Inside checkSpelling." );
+   }   
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      TextEditor te = (TextEditor) context.getBean("textEditor");
+      te.spellCheck();
+   }
+}
+```
+
+下面是在正常情况下的配置文件 **Beans.xml** 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor">
+       <property name="spellChecker" ref="spellChecker" />
+       <property name="name" value="Generic Text Editor" />
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="spellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+但是，如果你要使用自动装配 “byName”，那么你的 XML 配置文件将成为如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor" 
+      autowire="byName">
+      <property name="name" value="Generic Text Editor" />
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="spellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+一旦你完成了创建源代码和 bean 的配置文件，我们就可以运行该应用程序。如果你的应用程序一切都正常，它将打印下面的消息：
+
+```java
+Inside SpellChecker constructor.
+Inside checkSpelling.
+```
+
+## 4、自动装配 byType
+
+这种模式由属性类型指定自动装配。`Spring` 容器看作 `beans`，在 `XML` 配置文件中 `beans` 的 *`autowire`* 属性设置为 *`byType`*。然后，如果它的 **`type`** 恰好与配置文件中 `beans` 名称中的一个相匹配，它将尝试匹配和连接它的属性。如果找到匹配项，它将注入这些 `beans`，否则，它将抛出异常。
+
+例如，在配置文件中，如果一个 `bean` 定义设置为自动装配 *`byType`*，并且它包含 *`SpellChecker`* 类型的 *`spellChecker`* 属性，那么 `Spring` 就会查找类型为 *`SpellChecker`* 的 `bean`，并且用它来设置这个属性。你仍然可以使用 <`property`> 标签连接其余属性。下面的例子将说明这个概念，你会发现和上面的例子没有什么区别，除了 `XML` 配置文件已经被改变。
+
+让我们在恰当的位置使用`Eclipse IDE`，然后按照下面的步骤来创建一个 `Spring` 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *`SpringExample`* 的项目，并且在已创建的项目的 **`src`** 文件夹中创建一个包 *`com.tutorialspoint`*。 |
+| 2    | 使用 *`Add External JARs`* 选项，添加所需的 `Spring` 库，在 *`Spring Hello World Example`* 章节中已说明。 |
+| 3    | 在 *`com.tutorialspoint`* 包中创建` Java` 类 *`TextEditor`*，*`SpellChecker`* 和 *`MainApp`*。 |
+| 4    | 在 **`src`** 文件夹中创建 `Beans` 的配置文件 *`Beans.xml`*。 |
+| 5    | 最后一步是创建所有 `Java` 文件和 `Bean `配置文件的内容，并运行该应用程序，正如下面解释的一样。 |
+
+这里是 **`TextEditor.java`** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class TextEditor {
+   private SpellChecker spellChecker;
+   private String name;
+   public void setSpellChecker( SpellChecker spellChecker ) {
+      this.spellChecker = spellChecker;
+   }
+   public SpellChecker getSpellChecker() {
+      return spellChecker;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+   public void spellCheck() {
+      spellChecker.checkSpelling();
+   }
+}
+```
+
+下面是另一个依赖类文件 **`SpellChecker.java`** 的内容：
+
+```java
+package com.tutorialspoint;
+public class SpellChecker {
+   public SpellChecker(){
+      System.out.println("Inside SpellChecker constructor." );
+   }
+   public void checkSpelling() {
+      System.out.println("Inside checkSpelling." );
+   }   
+}
+```
+
+下面是 **`MainApp.java`** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      TextEditor te = (TextEditor) context.getBean("textEditor");
+      te.spellCheck();
+   }
+}
+```
+
+下面是在正常情况下的配置文件 **`Beans.xml`** 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor">
+      <property name="spellChecker" ref="spellChecker" />
+      <property name="name" value="Generic Text Editor" />
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="spellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+但是，如果你要使用自动装配` “byType”`，那么你的 `XML `配置文件将成为如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor" 
+      autowire="byType">
+      <property name="name" value="Generic Text Editor" />
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="SpellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+一旦你完成了创建源代码和 `bean` 的配置文件，我们就可以运行该应用程序。如果你的应用程序一切都正常，它将打印下面的消息：
+
+```java
+Inside SpellChecker constructor.
+Inside checkSpelling.
+```
+
+## 5、构造函数自动装配
+
+这种模式与 *byType* 非常相似，但它应用于构造器参数。Spring 容器看作 beans，在 XML 配置文件中 beans 的 *autowire* 属性设置为 *constructor*。然后，它尝试把它的构造函数的参数与配置文件中 beans 名称中的一个进行匹配和连线。如果找到匹配项，它会注入这些 bean，否则，它会抛出异常。
+
+例如，在配置文件中，如果一个 bean 定义设置为通过*构造函数*自动装配，而且它有一个带有 *SpellChecker* 类型的参数之一的构造函数，那么 Spring 就会查找定义名为 *SpellChecker* 的 bean，并用它来设置构造函数的参数。你仍然可以使用 <constructor-arg> 标签连接其余属性。下面的例子将说明这个概念。
+
+让我们在恰当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在已创建的项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库，在 *Spring Hello World Example* 章节中已说明。 |
+| 3    | 在 *com.tutorialspoint* 包中创建 Java 类 *TextEditor*，*SpellChecker* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹中创建 Beans 的配置文件 *Beans.xml*。       |
+| 5    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并运行该应用程序，正如下面解释的一样。 |
+
+这里是 **TextEditor.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class TextEditor {
+   private SpellChecker spellChecker;
+   private String name;
+   public TextEditor( SpellChecker spellChecker, String name ) {
+      this.spellChecker = spellChecker;
+      this.name = name;
+   }
+   public SpellChecker getSpellChecker() {
+      return spellChecker;
+   }
+   public String getName() {
+      return name;
+   }
+   public void spellCheck() {
+      spellChecker.checkSpelling();
+   }
+}
+```
+
+下面是另一个依赖类文件 **SpellChecker.java** 的内容：
+
+```java
+package com.tutorialspoint;
+public class SpellChecker {
+   public SpellChecker(){
+      System.out.println("Inside SpellChecker constructor." );
+   }
+   public void checkSpelling()
+   {
+      System.out.println("Inside checkSpelling." );
+   }  
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      TextEditor te = (TextEditor) context.getBean("textEditor");
+      te.spellCheck();
+   }
+}
+```
+
+下面是在正常情况下的配置文件 **Beans.xml** 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor">
+      <constructor-arg  ref="spellChecker" />
+      <constructor-arg  value="Generic Text Editor"/>
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="spellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+但是，如果你要使用自动装配 “by constructor”，那么你的 XML 配置文件将成为如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!-- Definition for textEditor bean -->
+   <bean id="textEditor" class="com.tutorialspoint.TextEditor" 
+      autowire="constructor">
+      <constructor-arg value="Generic Text Editor"/>
+   </bean>
+
+   <!-- Definition for spellChecker bean -->
+   <bean id="SpellChecker" class="com.tutorialspoint.SpellChecker">
+   </bean>
+
+</beans>
+```
+
+一旦你完成了创建源代码和 bean 的配置文件，我们就可以运行该应用程序。如果你的应用程序一切都正常，它将打印下面的消息：
+
+```java
+Inside SpellChecker constructor.
+Inside checkSpelling.
+```
+
+# 七、基于注解的配置
+
+从 Spring 2.5 开始就可以使用**注解**来配置依赖注入。而不是采用 XML 来描述一个 bean 连线，你可以使用相关类，方法或字段声明的注解，将 bean 配置移动到组件类本身。
+
+在 XML 注入之前进行注解注入，因此后者的配置将通过两种方式的属性连线被前者重写。
+
+注解连线在默认情况下在 Spring 容器中不打开。因此，在可以使用基于注解的连线之前，我们将需要在我们的 Spring 配置文件中启用它。所以如果你想在 Spring 应用程序中使用的任何注解，可以考虑到下面的配置文件。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+   <context:annotation-config/>
+   <!-- bean definitions go here -->
+
+</beans>
+```
+
+一旦 被配置后，你就可以开始注解你的代码，表明 Spring 应该自动连接值到属性，方法和构造函数。让我们来看看几个重要的注解，并且了解它们是如何工作的：
+
+| 序号 | 注解 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | [@Required](https://www.w3cschool.cn/wkspring/9sle1mmh.html)@Required 注解应用于 bean 属性的 setter 方法。 |
+| 2    | [@Autowired](https://www.w3cschool.cn/wkspring/rw2h1mmj.html)@Autowired 注解可以应用到 bean 属性的 setter 方法，非 setter 方法，构造函数和属性。 |
+| 3    | [@Qualifier](https://www.w3cschool.cn/wkspring/knqr1mm2.html)通过指定确切的将被连线的 bean，@Autowired 和 @Qualifier 注解可以用来删除混乱。 |
+| 4    | [JSR-250 Annotations](https://www.w3cschool.cn/wkspring/lmsq1mm4.html)Spring 支持 JSR-250 的基础的注解，其中包括了 @Resource，@PostConstruct 和 @PreDestroy 注解。 |
+
+## 1、@Required 注解
+
+**@Required** 注解应用于 bean 属性的 setter 方法，它表明受影响的 bean 属性在配置时必须放在 XML 配置文件中，否则容器就会抛出一个 BeanInitializationException 异常。下面显示的是一个使用 @Required 注解的示例。
+
+示例：
+
+让我们使 Eclipse IDE 处于工作状态，请按照下列步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并且在所创建项目的 **src** 文件夹下创建一个名为 *com.tutorialspoint* 的包。 |
+| 2    | 使用 *Add External JARs* 选项添加所需的 Spring 库文件，就如在 *Spring Hello World Example* 章节中解释的那样。 |
+| 3    | 在 *com.tutorialspoint* 包下创建 Java 类 *Student* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并且按如下解释的那样运行应用程序。 |
+
+下面是 **Student.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.beans.factory.annotation.Required;
+public class Student {
+   private Integer age;
+   private String name;
+   @Required
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      return age;
+   }
+   @Required
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+      Student student = (Student) context.getBean("student");
+      System.out.println("Name : " + student.getName() );
+      System.out.println("Age : " + student.getAge() );
+   }
+}
+```
+
+下面是配置文件 **Beans.xml:** 文件的内容：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+   <context:annotation-config/>
+
+   <!-- Definition for student bean -->
+   <bean id="student" class="com.tutorialspoint.Student">
+      <property name="name"  value="Zara" />
+
+      <!-- try without passing age and check the result -->
+      <!-- property name="age"  value="11"-->
+   </bean>
+
+</beans>
+```
+
+一旦你已经完成的创建了源文件和 bean 配置文件，让我们运行一下应用程序。如果你的应用程序一切都正常的话，这将引起 *BeanInitializationException* 异常，并且会输出一下错误信息和其他日志消息：
+
+```java
+Property 'age' is required for bean 'student'
+```
+
+下一步，在你按照如下所示从 “age” 属性中删除了注解，你可以尝试运行上面的示例：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+   <context:annotation-config/>
+
+   <!-- Definition for student bean -->
+   <bean id="student" class="com.tutorialspoint.Student">
+      <property name="name"  value="Zara" />
+      <property name="age"  value="11"/>
+   </bean>
+
+</beans>
+```
+
+现在上面的示例将产生如下结果：
+
+```json
+Name : Zara
+Age : 11
+```
+
+## 2、@Autowired 注解
+
+使用 Spring 开发时，进行配置主要有两种方式，一是 xml 的方式，二是 java config 的方式。Spring 技术自身也在不断的发展和改变，从当前 Springboot 的火热程度来看，java config 的应用是越来越广泛了，在使用 java config 的过程当中，我们不可避免的会有各种各样的注解打交道，其中，我们使用最多的注解应该就是 @Autowired 注解了。这个注解的功能就是为我们注入一个定义好的 bean。
+
+### @Autowired 是什么？
+
+@Autowired 这个注解我们经常在使用，现在，我想问的是，它的作用到底是什么呢?
+
+首先，我们从所属范围来看，事实上这个注解是属于 Spring 的容器配置的一个注解，与它同属容器配置的注解还有：@Required,@Primary, @Qualifier 等等。因此 @Autowired 注解是一个用于容器 ( container ) 配置的注解。
+
+其次，我们可以直接从字面意思来看，@autowired 注解来源于英文单词 autowire,这个单词的意思是自动装配的意思。自动装配又是什么意思？这个词语本来的意思是指的一些工业上的用机器代替人口，自动将一些需要完成的组装任务，或者别的一些任务完成。而在 Spring 的世界当中，自动装配指的就是使用将 Spring 容器中的 bean 自动的和我们需要这个 bean 的类组装在一起。
+
+### @Autowired 注解用法
+
+在分析这个注解的实现原理之前，我们不妨先来回顾一下 @Autowired 注解的用法。
+
+将 @Autowired 注解应用于构造函数，如以下示例所示
+
+```java
+public class MovieRecommender {
+ 
+    private final CustomerPreferenceDao customerPreferenceDao;
+ 
+    @Autowired
+    public MovieRecommender(CustomerPreferenceDao customerPreferenceDao) {
+        this.customerPreferenceDao = customerPreferenceDao;
+    }
+ 
+    // ...
+}
+```
+
+将 @Autowired 注解应用于 setter 方法
+
+```java
+public class SimpleMovieLister {
+ 
+    private MovieFinder movieFinder;
+ 
+    @Autowired
+    public void setMovieFinder(MovieFinder movieFinder) {
+        this.movieFinder = movieFinder;
+    }
+ 
+    // ...
+}
+```
+
+将 @Autowired 注解应用于具有任意名称和多个参数的方法
+
+```java
+public class MovieRecommender {
+ 
+    private MovieCatalog movieCatalog;
+ 
+    private CustomerPreferenceDao customerPreferenceDao;
+ 
+    @Autowired
+    public void prepare(MovieCatalog movieCatalog,CustomerPreferenceDao customerPreferenceDao) {
+        this.movieCatalog = movieCatalog;
+        this.customerPreferenceDao = customerPreferenceDao;
+    }
+ 
+    // ...
+}
+```
+
+您也可以将 @Autowired 注解应用于字段，或者将其与构造函数混合，如以下示例所示
+
+```java
+public class MovieRecommender {
+ 
+    private final CustomerPreferenceDao customerPreferenceDao;
+ 
+    @Autowired
+    private MovieCatalog movieCatalog;
+ 
+    @Autowired
+    public MovieRecommender(CustomerPreferenceDao customerPreferenceDao) {
+        this.customerPreferenceDao = customerPreferenceDao;
+    }
+ 
+    // ...
+}
+```
+
+直接应用于字段是我们使用的最多的一种方式，但是使用构造方法注入从代码层面却是更加好的。除此之外，还有以下不太常见的几种方式
+
+将 @Autowired 注解添加到需要该类型数组的字段或方法，则 Spring 会从 ApplicationContext 中搜寻符合指定类型的所有 bean，如以下示例所示：
+
+```java
+public class MovieRecommender {
+ 
+    @Autowired
+    private MovieCatalog[] movieCatalogs;
+ 
+    // ...
+}
+```
+
+数组可以，我们可以马上举一反三，那容器也可以吗，答案是肯定的，下面是 set 以及 map 的例子：
+
+```java
+public class MovieRecommender {
+ 
+    private Set<MovieCatalog> movieCatalogs;
+ 
+    @Autowired
+    public void setMovieCatalogs(Set<MovieCatalog> movieCatalogs) {
+        this.movieCatalogs = movieCatalogs;
+    }
+ 
+    // ...
+}
+public class MovieRecommender {
+ 
+    private Map<String, MovieCatalog> movieCatalogs;
+ 
+    @Autowired
+    public void setMovieCatalogs(Map<String, MovieCatalog> movieCatalogs) {
+        this.movieCatalogs = movieCatalogs;
+    }
+ 
+    // ...
+}
+```
+
+以上就是 @Autowired 注解的主要使用方式，经常使用 Spring 的话应该对其中常用的几种不会感到陌生。
+
+## 3、@Qualifier 注解
+
+可能会有这样一种情况，当你创建多个具有相同类型的 bean 时，并且想要用一个属性只为它们其中的一个进行装配，在这种情况下，你可以使用 **@Qualifier** 注解和 **@Autowired** 注解通过指定哪一个真正的 bean 将会被装配来消除混乱。下面显示的是使用 @Qualifier 注解的一个示例。
+
+示例:
+
+让我们使 Eclipse IDE 处于工作状态，请按照下列步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并且在所创建项目的 **src** 文件夹下创建一个名为 *com.tutorialspoint* 的包。 |
+| 2    | 使用 *Add External JARs* 选项添加所需的 Spring 库文件，就如在 *Spring Hello World Example* 章节中解释的那样。 |
+| 3    | 在 *com.tutorialspoint* 包下创建 Java 类 *Student*，*Profile* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并且按如下解释的那样运行应用程序。 |
+
+这里是 **Student.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class Student {
+   private Integer age;
+   private String name;
+   public void setAge(Integer age) {
+      this.age = age;
+   }   
+   public Integer getAge() {
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }  
+   public String getName() {
+      return name;
+   }
+}
+```
+
+这里是 **Profile.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+public class Profile {
+   @Autowired
+   @Qualifier("student1")
+   private Student student;
+   public Profile(){
+      System.out.println("Inside Profile constructor." );
+   }
+   public void printAge() {
+      System.out.println("Age : " + student.getAge() );
+   }
+   public void printName() {
+      System.out.println("Name : " + student.getName() );
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
+      Profile profile = (Profile) context.getBean("profile");
+      profile.printAge();
+      profile.printName();
+   }
+}
+```
+
+考虑下面配置文件 **Beans.xml** 的示例：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+   <context:annotation-config/>
+
+   <!-- Definition for profile bean -->
+   <bean id="profile" class="com.tutorialspoint.Profile">
+   </bean>
+
+   <!-- Definition for student1 bean -->
+   <bean id="student1" class="com.tutorialspoint.Student">
+      <property name="name"  value="Zara" />
+      <property name="age"  value="11"/>
+   </bean>
+
+   <!-- Definition for student2 bean -->
+   <bean id="student2" class="com.tutorialspoint.Student">
+      <property name="name"  value="Nuha" />
+      <property name="age"  value="2"/>
+   </bean>
+
+</beans>
+```
+
+一旦你在源文件和 bean 配置文件中完成了上面两处改变，让我们运行一下应用程序。如果你的应用程序一切都正常的话，这将会输出以下消息：
+
+```json
+Inside Profile constructor.
+Age : 11
+Name : Zara
+```
+
+## 4、JSR-250 注释
+
+Spring还使用基于 JSR-250 注释，它包括 @PostConstruct， @PreDestroy 和 @Resource 注释。因为你已经有了其他的选择，尽管这些注释并不是真正所需要的，但是关于它们仍然让我给出一个简短的介绍。
+
+### @PostConstruct 和 @PreDestroy 注释：
+
+为了定义一个 bean 的安装和卸载，我们使用 **init-method** 和/或 **destroy-method** 参数简单的声明一下 。init-method 属性指定了一个方法，该方法在 bean 的实例化阶段会立即被调用。同样地，destroy-method 指定了一个方法，该方法只在一个 bean 从容器中删除之前被调用。
+
+你可以使用 **@PostConstruct** 注释作为初始化回调函数的一个替代，**@PreDestroy** 注释作为销毁回调函数的一个替代，其解释如下示例所示。
+
+示例：
+
+让我们使 Eclipse IDE 处于工作状态，请按照下列步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并且在所创建项目的 **src** 文件夹下创建一个名为 *com.tutorialspoint* 的包。 |
+| 2    | 使用 *Add External JARs* 选项添加所需的 Spring 库文件，就如在 *Spring Hello World Example* 章节中解释的那样。 |
+| 3    | 在 *com.tutorialspoint* 包下创建 Java 类 *HelloWorld* 和 *MainApp*。 |
+| 4    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 5    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并且按如下解释的那样运行应用程序。 |
+
+这里是 **HelloWorld.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import javax.annotation.*;
+public class HelloWorld {
+   private String message;
+   public void setMessage(String message){
+      this.message  = message;
+   }
+   public String getMessage(){
+      System.out.println("Your Message : " + message);
+      return message;
+   }
+   @PostConstruct
+   public void init(){
+      System.out.println("Bean is going through init.");
+   }
+   @PreDestroy
+   public void destroy(){
+      System.out.println("Bean will destroy now.");
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容。这里你需要注册一个关闭钩 **registerShutdownHook()** 方法，该方法在 AbstractApplicationContext 类中被声明。这将确保一个完美的关闭并调用相关的销毁方法。
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      AbstractApplicationContext context = 
+                          new ClassPathXmlApplicationContext("Beans.xml");
+      HelloWorld obj = (HelloWorld) context.getBean("helloWorld");
+      obj.getMessage();
+      context.registerShutdownHook();
+   }
+}
+```
+
+下面是配置文件 **Beans.xml**，该文件在初始化和销毁方法中需要使用。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+   <context:annotation-config/>
+
+   <bean id="helloWorld" 
+       class="com.tutorialspoint.HelloWorld"
+       init-method="init" destroy-method="destroy">
+       <property name="message" value="Hello World!"/>
+   </bean>
+
+</beans>
+```
+
+一旦你在源文件和 bean 配置文件中完成了上面两处改变，让我们运行一下应用程序。如果你的应用程序一切都正常的话，这将会输出以下消息：
+
+```json
+Bean is going through init.
+Your Message : Hello World!
+Bean will destroy now.
+```
+
+### @Resource 注释：
+
+你可以在字段中或者 setter 方法中使用 **@Resource** 注释，它和在 Java EE 5 中的运作是一样的。@Resource 注释使用一个 ‘name’ 属性，该属性以一个 bean 名称的形式被注入。你可以说，它遵循 **by-name** 自动连接语义，如下面的示例所示：
+
+```java
+package com.tutorialspoint;
+import javax.annotation.Resource;
+public class TextEditor {
+   private SpellChecker spellChecker;
+   @Resource(name= "spellChecker")
+   public void setSpellChecker( SpellChecker spellChecker ){
+      this.spellChecker = spellChecker;
+   }
+   public SpellChecker getSpellChecker(){
+      return spellChecker;
+   }
+   public void spellCheck(){
+      spellChecker.checkSpelling();
+   }
+}
+```
+
+如果没有明确地指定一个 ‘name’，默认名称源于字段名或者 setter 方法。在字段的情况下，它使用的是字段名；在一个 setter 方法情况下，它使用的是 bean 属性名称。
+
+## 5、基于 Java 的配置
+
+到目前为止，你已经看到如何使用 XML 配置文件来配置 Spring bean。如果你熟悉使用 XML 配置，那么我会说，不需要再学习如何进行基于 Java 的配置是，因为你要达到相同的结果，可以使用其他可用的配置。
+
+基于 Java 的配置选项，可以使你在不用配置 XML 的情况下编写大多数的 Spring，但是一些有帮助的基于 Java 的注解，解释如下：
+
+### @Configuration 和 @Bean 注解
+
+带有 **@Configuration** 的注解类表示这个类可以使用 Spring IoC 容器作为 bean 定义的来源。**@Bean** 注解告诉 Spring，一个带有 @Bean 的注解方法将返回一个对象，该对象应该被注册为在 Spring 应用程序上下文中的 bean。最简单可行的 @Configuration 类如下所示：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.annotation.*;
+@Configuration
+public class HelloWorldConfig {
+   @Bean 
+   public HelloWorld helloWorld(){
+      return new HelloWorld();
+   }
+}
+```
+
+上面的代码将等同于下面的 XML 配置：
+
+```xml
+<beans>
+   <bean id="helloWorld" class="com.tutorialspoint.HelloWorld" />
+</beans>
+```
+
+在这里，带有 @Bean 注解的方法名称作为 bean 的 ID，它创建并返回实际的 bean。你的配置类可以声明多个 @Bean。一旦定义了配置类，你就可以使用 *AnnotationConfigApplicationContext* 来加载并把他们提供给 Spring 容器，如下所示：
+
+```java
+public static void main(String[] args) {
+   ApplicationContext ctx = 
+   new AnnotationConfigApplicationContext(HelloWorldConfig.class); 
+   HelloWorld helloWorld = ctx.getBean(HelloWorld.class);
+   helloWorld.setMessage("Hello World!");
+   helloWorld.getMessage();
+}
+```
+
+你可以加载各种配置类，如下所示：
+
+```java
+public static void main(String[] args) {
+   AnnotationConfigApplicationContext ctx = 
+   new AnnotationConfigApplicationContext();
+   ctx.register(AppConfig.class, OtherConfig.class);
+   ctx.register(AdditionalConfig.class);
+   ctx.refresh();
+   MyService myService = ctx.getBean(MyService.class);
+   myService.doStuff();
+}
+```
+
+例子
+
+让我们在恰当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库,解释见 *Spring Hello World Example* 章节。 |
+| 3    | 因为你是使用基于 java 的注解，所以你还需要添加来自 Java 安装目录的 *CGLIB.jar* 和可以从 *asm.ow2.org* 中下载的 ASM.jar 库。 |
+| 4    | 在 *com.tutorialspoint* 包中创建 Java 类 *HelloWorldConfig*、*HelloWorld* 和 *MainApp*。 |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 **HelloWorldConfig.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.annotation.*;
+@Configuration
+public class HelloWorldConfig {
+   @Bean 
+   public HelloWorld helloWorld(){
+      return new HelloWorld();
+   }
+}
+```
+
+这里是 **HelloWorld.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+public class HelloWorld {
+   private String message;
+
+   public void setMessage(String message){
+      this.message  = message;
+   }
+
+   public void getMessage(){
+      System.out.println("Your Message : " + message);
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
+
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext ctx = 
+      new AnnotationConfigApplicationContext(HelloWorldConfig.class);
+
+      HelloWorld helloWorld = ctx.getBean(HelloWorld.class);
+
+      helloWorld.setMessage("Hello World!");
+      helloWorld.getMessage();
+   }
+}
+```
+
+一旦你完成了创建所有的源文件并添加所需的额外的库后，我们就可以运行该应用程序。你应该注意这里不需要配置文件。如果你的应用程序一切都正常，将输出以下信息：
+
+```json
+Your Message : Hello World!
+```
+
+### 注入 Bean 的依赖性
+
+当 @Beans 依赖对方时，表达这种依赖性非常简单，只要有一个 bean 方法调用另一个，如下所示：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.annotation.*;
+@Configuration
+public class AppConfig {
+   @Bean
+   public Foo foo() {
+      return new Foo(bar());
+   }
+   @Bean
+   public Bar bar() {
+      return new Bar();
+   }
+}
+```
+
+这里，foo Bean 通过构造函数注入来接收参考基准。现在，让我们看到一个正在执行的例子：
+
+例子:
+
+让我们在恰当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 *SpringExample* 的项目，并且在创建项目的 **src** 文件夹中创建一个包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项，添加所需的 Spring 库,解释见 *Spring Hello World Example* 章节。 |
+| 3    | 因为你是使用基于 java 的注解，所以你还需要添加来自 Java 安装目录的 *CGLIB.jar* 和可以从 *asm.ow2.org* 中下载的 ASM.jar 库。 |
+| 4    | 在 *com.tutorialspoint* 包中创建 Java 类 *TextEditorConfig*、*TextEditor*、*SpellChecker* 和 *MainApp*。 |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 **TextEditorConfig.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.annotation.*;
+@Configuration
+public class TextEditorConfig {
+   @Bean 
+   public TextEditor textEditor(){
+      return new TextEditor( spellChecker() );
+   }
+   @Bean 
+   public SpellChecker spellChecker(){
+      return new SpellChecker( );
+   }
+}
+```
+
+这里是 TextEditor.java 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class TextEditor {
+   private SpellChecker spellChecker;
+   public TextEditor(SpellChecker spellChecker){
+      System.out.println("Inside TextEditor constructor." );
+      this.spellChecker = spellChecker;
+   }
+   public void spellCheck(){
+      spellChecker.checkSpelling();
+   }
+}
+```
+
+下面是另一个依赖的类文件 **SpellChecker.java** 的内容：
+
+```java
+package com.tutorialspoint;
+public class SpellChecker {
+   public SpellChecker(){
+      System.out.println("Inside SpellChecker constructor." );
+   }
+   public void checkSpelling(){
+      System.out.println("Inside checkSpelling." );
+   }
+
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
+
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext ctx = 
+      new AnnotationConfigApplicationContext(TextEditorConfig.class);
+
+      TextEditor te = ctx.getBean(TextEditor.class);
+
+      te.spellCheck();
+   }
+}
+```
+
+一旦你完成了创建所有的源文件并添加所需的额外的库后，我们就可以运行该应用程序。你应该注意这里不需要配置文件。如果你的应用程序一切都正常，将输出以下信息：
+
+```json
+Inside SpellChecker constructor.
+Inside TextEditor constructor.
+Inside checkSpelling.
+```
+
+### @Import 注解:
+
+**@import** 注解允许从另一个配置类中加载 @Bean 定义。考虑 ConfigA 类，如下所示：
+
+```java
+@Configuration
+public class ConfigA {
+   @Bean
+   public A a() {
+      return new A(); 
+   }
+}
+```
+
+你可以在另一个 Bean 声明中导入上述 Bean 声明，如下所示：
+
+```java
+@Configuration
+@Import(ConfigA.class)
+public class ConfigB {
+   @Bean
+   public B b() {
+      return new B(); 
+   }
+}
+```
+
+现在，当实例化上下文时，不需要同时指定 ConfigA.class 和 ConfigB.class，只有 ConfigB 类需要提供，如下所示：
+
+```java
+public static void main(String[] args) {
+   ApplicationContext ctx = 
+   new AnnotationConfigApplicationContext(ConfigB.class);
+   // now both beans A and B will be available...
+   A a = ctx.getBean(A.class);
+   B b = ctx.getBean(B.class);
+}
+```
+
+### 生命周期回调
+
+@Bean 注解支持指定任意的初始化和销毁的回调方法，就像在 bean 元素中 Spring 的 XML 的初始化方法和销毁方法的属性：
+
+```java
+public class Foo {
+   public void init() {
+      // initialization logic
+   }
+   public void cleanup() {
+      // destruction logic
+   }
+}
+
+@Configuration
+public class AppConfig {
+   @Bean(initMethod = "init", destroyMethod = "cleanup" )
+   public Foo foo() {
+      return new Foo();
+   }
+}
+```
+
+指定 Bean 的范围：
+
+默认范围是单实例，但是你可以重写带有 @Scope 注解的该方法，如下所示：
+
+```java
+@Configuration
+public class AppConfig {
+   @Bean
+   @Scope("prototype")
+   public Foo foo() {
+      return new Foo();
+   }
+}
+```
+
+## 6、事件处理
+
+你已经看到了在所有章节中 Spring 的核心是 **ApplicationContext**，它负责管理 beans 的完整生命周期。当加载 beans 时，ApplicationContext 发布某些类型的事件。例如，当上下文启动时，ContextStartedEvent 发布，当上下文停止时，ContextStoppedEvent 发布。
+
+通过 ApplicationEvent 类和 ApplicationListener 接口来提供在 ApplicationContext 中处理事件。如果一个 bean 实现 ApplicationListener，那么每次 ApplicationEvent 被发布到 ApplicationContext 上，那个 bean 会被通知。
+
+Spring 提供了以下的标准事件：
+
+| 序号 | Spring 内置事件 & 描述                                       |
+| ---- | ------------------------------------------------------------ |
+| 1    | **ContextRefreshedEvent**ApplicationContext 被初始化或刷新时，该事件被发布。这也可以在 ConfigurableApplicationContext 接口中使用 refresh() 方法来发生。 |
+| 2    | **ContextStartedEvent**当使用 ConfigurableApplicationContext 接口中的 start() 方法启动 ApplicationContext 时，该事件被发布。你可以调查你的数据库，或者你可以在接受到这个事件后重启任何停止的应用程序。 |
+| 3    | **ContextStoppedEvent**当使用 ConfigurableApplicationContext 接口中的 stop() 方法停止 ApplicationContext 时，发布这个事件。你可以在接受到这个事件后做必要的清理的工作。 |
+| 4    | **ContextClosedEvent**当使用 ConfigurableApplicationContext 接口中的 close() 方法关闭 ApplicationContext 时，该事件被发布。一个已关闭的上下文到达生命周期末端；它不能被刷新或重启。 |
+| 5    | **RequestHandledEvent**这是一个 web-specific 事件，告诉所有 bean HTTP 请求已经被服务。 |
+
+由于 Spring 的事件处理是单线程的，所以如果一个事件被发布，直至并且除非所有的接收者得到的该消息，该进程被阻塞并且流程将不会继续。因此，如果事件处理被使用，在设计应用程序时应注意。
+
+### 监听上下文事件
+
+为了监听上下文事件，一个 bean 应该实现只有一个方法 **onApplicationEvent()** 的 ApplicationListener 接口。因此，我们写一个例子来看看事件是如何传播的，以及如何可以用代码来执行基于某些事件所需的任务。
+
+让我们在恰当的位置使用 Eclipse IDE，然后按照下面的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 SpringExample 的项目，并且在创建项目的 **src** 文件夹中创建一个包 com.tutorialspoint。 |
+| 2    | 使用 Add External JARs 选项，添加所需的 Spring 库，解释见 Spring Hello World Example 章节。 |
+| 3    | 在 com.tutorialspoint 包中创建 Java 类 HelloWorld、CStartEventHandler、CStopEventHandler 和 MainApp。 |
+| 4    | 在 **src** 文件夹中创建 Bean 的配置文件 Beans.xml。          |
+| 5    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这里是 **HelloWorld.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class HelloWorld {
+   private String message;
+   public void setMessage(String message){
+      this.message  = message;
+   }
+   public void getMessage(){
+      System.out.println("Your Message : " + message);
+   }
+}
+```
+
+下面是 **CStartEventHandler.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextStartedEvent;
+public class CStartEventHandler 
+   implements ApplicationListener<ContextStartedEvent>{
+   public void onApplicationEvent(ContextStartedEvent event) {
+      System.out.println("ContextStartedEvent Received");
+   }
+}
+```
+
+下面是 **CStopEventHandler.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextStoppedEvent;
+public class CStopEventHandler 
+   implements ApplicationListener<ContextStoppedEvent>{
+   public void onApplicationEvent(ContextStoppedEvent event) {
+      System.out.println("ContextStoppedEvent Received");
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class MainApp {
+   public static void main(String[] args) {
+      ConfigurableApplicationContext context = 
+      new ClassPathXmlApplicationContext("Beans.xml");
+
+      // Let us raise a start event.
+      context.start();
+
+      HelloWorld obj = (HelloWorld) context.getBean("helloWorld");
+
+      obj.getMessage();
+
+      // Let us raise a stop event.
+      context.stop();
+   }
+}
+```
+
+下面是配置文件 **Beans.xml** 文件：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="helloWorld" class="com.tutorialspoint.HelloWorld">
+      <property name="message" value="Hello World!"/>
+   </bean>
+
+   <bean id="cStartEventHandler" 
+         class="com.tutorialspoint.CStartEventHandler"/>
+
+   <bean id="cStopEventHandler" 
+         class="com.tutorialspoint.CStopEventHandler"/>
+
+</beans>
+```
+
+一旦你完成了创建源和 bean 的配置文件，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下消息：
+
+```json
+ContextStartedEvent Received
+Your Message : Hello World!
+ContextStoppedEvent Received
+```
+
+## 7、自定义事件
+
+编写和发布自己的自定义事件有许多步骤。按照在这一章给出的说明来编写，发布和处理自定义 Spring 事件。
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名称为 SpringExample 的项目，并且在创建项目的 **src** 文件夹中创建一个包 com.tutorialspoint。 |
+| 2    | 使用 Add External JARs 选项，添加所需的 Spring 库，解释见 Spring Hello World Example 章节。 |
+| 3    | 通过扩展 **ApplicationEvent**,创建一个事件类 CustomEvent。这个类必须定义一个默认的构造函数，它应该从 ApplicationEvent 类中继承的构造函数。 |
+| 4    | 一旦定义事件类，你可以从任何类中发布它，假定 EventClassPublisher 实现了 ApplicationEventPublisherAware。你还需要在 XML 配置文件中声明这个类作为一个 bean，之所以容器可以识别 bean 作为事件发布者，是因为它实现了 ApplicationEventPublisherAware 接口。 |
+| 5    | 发布的事件可以在一个类中被处理，假定 EventClassHandler 实现了 ApplicationListener 接口，而且实现了自定义事件的 onApplicationEvent 方法。 |
+| 6    | 在 **src** 文件夹中创建 bean 的配置文件 Beans.xml 和 MainApp 类，它可以作为一个 Spring 应用程序来运行。 |
+| 7    | 最后一步是创建的所有 Java 文件和 Bean 配置文件的内容，并运行应用程序，解释如下所示。 |
+
+这个是 **CustomEvent.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationEvent;
+public class CustomEvent extends ApplicationEvent{ 
+   public CustomEvent(Object source) {
+      super(source);
+   }
+   public String toString(){
+      return "My Custom Event";
+   }
+}
+```
+
+下面是 **CustomEventPublisher.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+public class CustomEventPublisher 
+   implements ApplicationEventPublisherAware {
+   private ApplicationEventPublisher publisher;
+   public void setApplicationEventPublisher
+              (ApplicationEventPublisher publisher){
+      this.publisher = publisher;
+   }
+   public void publish() {
+      CustomEvent ce = new CustomEvent(this);
+      publisher.publishEvent(ce);
+   }
+}
+```
+
+下面是 **CustomEventHandler.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationListener;
+public class CustomEventHandler 
+   implements ApplicationListener<CustomEvent>{
+   public void onApplicationEvent(CustomEvent event) {
+      System.out.println(event.toString());
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ConfigurableApplicationContext context = 
+      new ClassPathXmlApplicationContext("Beans.xml");    
+      CustomEventPublisher cvp = 
+      (CustomEventPublisher) context.getBean("customEventPublisher");
+      cvp.publish();  
+      cvp.publish();
+   }
+}
+```
+
+下面是配置文件 **Beans.xml**：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <bean id="customEventHandler" 
+      class="com.tutorialspoint.CustomEventHandler"/>
+
+   <bean id="customEventPublisher" 
+      class="com.tutorialspoint.CustomEventPublisher"/>
+
+</beans>
+```
+
+一旦你完成了创建源和 bean 的配置文件后，我们就可以运行该应用程序。如果你的应用程序一切都正常，将输出以下信息：
+
+```json
+My Custom Event
+My Custom Event
+```
+
+# 八、AOP
+
+Spring 框架的一个关键组件是**面向切面的编程**(AOP)框架。面向切面的编程需要把程序逻辑分解成不同的部分称为所谓的关注点。跨一个应用程序的多个点的功能被称为**横切关注点**，这些横切关注点在概念上独立于应用程序的业务逻辑。在软件开发过程中有各种各样的很好的切面的例子，如日志记录、审计、声明式事务、安全性和缓存等。
+
+在 OOP 中，关键单元模块度是类，而在 AOP 中单元模块度是切面。依赖注入帮助你对应用程序对象相互解耦合，AOP 可以帮助你从它们所影响的对象中对横切关注点解耦。AOP 像是编程语言的触发物，如 Perl，.NET，Java 或者其他语言。
+
+Spring AOP 模块提供拦截器来拦截一个应用程序，例如，当执行一个方法时，你可以在方法执行之前或之后添加额外的功能。
+
+## 1、AOP 术语
+
+在我们开始使用 AOP 工作之前，让我们熟悉一下 AOP 概念和术语。这些术语并不特定于 Spring，而是与 AOP 有关的。
+
+| 项            | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| Aspect        | 一个模块具有一组提供横切需求的 APIs。例如，一个日志模块为了记录日志将被 AOP 方面调用。应用程序可以拥有任意数量的方面，这取决于需求。 |
+| Join point    | 在你的应用程序中它代表一个点，你可以在插件 AOP 方面。你也能说，它是在实际的应用程序中，其中一个操作将使用 Spring AOP 框架。 |
+| Advice        | 这是实际行动之前或之后执行的方法。这是在程序执行期间通过 Spring AOP 框架实际被调用的代码。 |
+| Pointcut      | 这是一组一个或多个连接点，通知应该被执行。你可以使用表达式或模式指定切入点正如我们将在 AOP 的例子中看到的。 |
+| Introduction  | 引用允许你添加新方法或属性到现有的类中。                     |
+| Target object | 被一个或者多个方面所通知的对象，这个对象永远是一个被代理对象。也称为被通知对象。 |
+| Weaving       | Weaving 把方面连接到其它的应用程序类型或者对象上，并创建一个被通知的对象。这些可以在编译时，类加载时和运行时完成。 |
+
+## 2、通知的类型
+
+Spring 方面可以使用下面提到的五种通知工作：
+
+| 通知           | 描述                                                         |
+| -------------- | ------------------------------------------------------------ |
+| 前置通知       | 在一个方法执行之前，执行通知。                               |
+| 后置通知       | 在一个方法执行之后，不考虑其结果，执行通知。                 |
+| 返回后通知     | 在一个方法执行之后，只有在方法成功完成时，才能执行通知。     |
+| 抛出异常后通知 | 在一个方法执行之后，只有在方法退出抛出异常时，才能执行通知。 |
+| 环绕通知       | 在建议方法调用之前和之后，执行通知。                         |
+
+## 3、实现自定义方面
+
+Spring 支持 **@AspectJ annotation style** 的方法和**基于模式**的方法来实现自定义方面。这两种方法已经在下面两个子节进行了详细解释。
+
+| 方法                                                         | 描述                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [XML Schema based](https://www.w3cschool.cn/wkspring/omps1mm6.html) | 方面是使用常规类以及基于配置的 XML 来实现的。                |
+| [@AspectJ based](https://www.w3cschool.cn/wkspring/k4q21mm8.html) | @AspectJ 引用一种声明方面的风格作为带有 Java 5 注释的常规 Java 类注释。 |
+
+## 4、基于 AOP 的 XML架构
+
+为了在本节的描述中使用 aop 命名空间标签，你需要导入 spring-aop j架构，如下所述：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+
+   <!-- bean definition & AOP specific configuration -->
+
+</beans>
+```
+
+你还需要在你的应用程序的 CLASSPATH 中使用以下 AspectJ 库文件。这些库文件在一个 AspectJ 装置的 ‘lib’ 目录中是可用的，否则你可以在 Internet 中下载它们。(注：aspectjweaver.jar 已包含其他包)
+
+> - aspectjrt.jar
+> - aspectjweaver.jar
+> - aspectj.jar
+> - aopalliance.jar
+
+### 　声明一个 aspect
+
+一个 **aspect** 是使用 元素声明的，支持的 bean 是使用 **ref** 属性引用的，如下所示：
+
+```xml
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+   ...
+   </aop:aspect>
+</aop:config>
+<bean id="aBean" class="...">
+...
+</bean>
+```
+
+这里，“aBean” 将被配置和依赖注入，就像前面的章节中你看到的其他的 Spring bean 一样。
+
+### 声明一个切入点
+
+一个**切入点**有助于确定使用不同建议执行的感兴趣的连接点（即方法）。在处理基于配置的 XML 架构时，切入点将会按照如下所示定义：
+
+```xml
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+   <aop:pointcut id="businessService"
+      expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+   ...
+   </aop:aspect>
+</aop:config>
+<bean id="aBean" class="...">
+...
+</bean>
+```
+
+下面的示例定义了一个名为 “businessService” 的切入点，该切入点将与 com.tutorialspoint 包下的 Student 类中的 getName() 方法相匹配：
+
+```xml
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+   <aop:pointcut id="businessService"
+      expression="execution(* com.tutorialspoint.Student.getName(..))"/>
+   ...
+   </aop:aspect>
+</aop:config>
+<bean id="aBean" class="...">
+...
+</bean>
+```
+
+### 声明建议
+
+你可以在<aop:aspect>中使用<aop:{通知类型名}>元素声明任意五种类型的通知，如下：
+
+```xml
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+      <aop:pointcut id="businessService"
+         expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+      <!-- a before advice definition -->
+      <aop:before pointcut-ref="businessService" 
+         method="doRequiredTask"/>
+      <!-- an after advice definition -->
+      <aop:after pointcut-ref="businessService" 
+         method="doRequiredTask"/>
+      <!-- an after-returning advice definition -->
+      <!--The doRequiredTask method must have parameter named retVal -->
+      <aop:after-returning pointcut-ref="businessService"
+         returning="retVal"
+         method="doRequiredTask"/>
+      <!-- an after-throwing advice definition -->
+      <!--The doRequiredTask method must have parameter named ex -->
+      <aop:after-throwing pointcut-ref="businessService"
+         throwing="ex"
+         method="doRequiredTask"/>
+      <!-- an around advice definition -->
+      <aop:around pointcut-ref="businessService" 
+         method="doRequiredTask"/>
+   ...
+   </aop:aspect>
+</aop:config>
+<bean id="aBean" class="...">
+...
+</bean>
+```
+
+你可以对不同的建议使用相同的 **doRequiredTask** 或者不同的方法。这些方法将会作为 aspect 模块的一部分来定义。
+
+### 基于 AOP 的 XML 架构的示例
+
+为了理解上面提到的基于 AOP 的 XML 架构的概念，让我们编写一个示例，可以实现几个建议。为了在我们的示例中使用几个建议，让我们使 Eclipse IDE 处于工作状态，然后按照如下步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并且在所创建项目的 **src** 文件夹下创建一个名为 *com.tutorialspoint* 的包。 |
+| 2    | 使用 *Add External JARs* 选项添加所需的 Spring 库文件，就如在 *Spring Hello World Example* 章节中解释的那样。 |
+| 3    | 在项目中添加 Spring AOP 指定的库文件 **aspectjrt.jar， aspectjweaver.jar** 和 **aspectj.jar**。 |
+| 4    | 在 *com.tutorialspoint* 包下创建 Java 类 **Logging**， *Student* 和 *MainApp*。 |
+| 5    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 6    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并且按如下解释的那样运行应用程序。 |
+
+这里是 **Logging.java** 文件的内容。这实际上是 aspect 模块的一个示例，它定义了在各个点调用的方法。
+
+```java
+package com.tutorialspoint;
+public class Logging {
+   /** 
+    * This is the method which I would like to execute
+    * before a selected method execution.
+    */
+   public void beforeAdvice(){
+      System.out.println("Going to setup student profile.");
+   }
+   /** 
+    * This is the method which I would like to execute
+    * after a selected method execution.
+    */
+   public void afterAdvice(){
+      System.out.println("Student profile has been setup.");
+   }
+   /** 
+    * This is the method which I would like to execute
+    * when any method returns.
+    */
+   public void afterReturningAdvice(Object retVal){
+      System.out.println("Returning:" + retVal.toString() );
+   }
+   /**
+    * This is the method which I would like to execute
+    * if there is an exception raised.
+    */
+   public void AfterThrowingAdvice(IllegalArgumentException ex){
+      System.out.println("There has been an exception: " + ex.toString());   
+   }  
+}
+```
+
+下面是 **Student.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class Student {
+   private Integer age;
+   private String name;
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      System.out.println("Age : " + age );
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      System.out.println("Name : " + name );
+      return name;
+   }  
+   public void printThrowException(){
+       System.out.println("Exception raised");
+       throw new IllegalArgumentException();
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      Student student = (Student) context.getBean("student");
+      student.getName();
+      student.getAge();      
+      student.printThrowException();
+   }
+}
+```
+
+下面是配置文件 **Beans.xml**：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+
+   <aop:config>
+      <aop:aspect id="log" ref="logging">
+         <aop:pointcut id="selectAll" 
+         expression="execution(* com.tutorialspoint.*.*(..))"/>
+         <aop:before pointcut-ref="selectAll" method="beforeAdvice"/>
+         <aop:after pointcut-ref="selectAll" method="afterAdvice"/>
+         <aop:after-returning pointcut-ref="selectAll" 
+                              returning="retVal"
+                              method="afterReturningAdvice"/>
+         <aop:after-throwing pointcut-ref="selectAll" 
+                             throwing="ex"
+                             method="afterThrowingAdvice"/>
+      </aop:aspect>
+   </aop:config>
+
+   <!-- Definition for student bean -->
+   <bean id="student" class="com.tutorialspoint.Student">
+      <property name="name"  value="Zara" />
+      <property name="age"  value="11"/>      
+   </bean>
+
+   <!-- Definition for logging aspect -->
+   <bean id="logging" class="com.tutorialspoint.Logging"/> 
+
+</beans>
+```
+
+一旦你已经完成的创建了源文件和 bean 配置文件，让我们运行一下应用程序。如果你的应用程序一切都正常的话，这将会输出以下消息：
+
+```json
+Going to setup student profile.
+Name : Zara
+Student profile has been setup.
+Returning:Zara
+Going to setup student profile.
+Age : 11
+Student profile has been setup.
+Returning:11
+Going to setup student profile.
+Exception raised
+Student profile has been setup.
+There has been an exception: java.lang.IllegalArgumentException
+.....
+other exception content
+```
+
+让我们来解释一下上面定义的在 com.tutorialspoint 中 选择所有方法的 。让我们假设一下，你想要在一个特殊的方法之前或者之后执行你的建议，你可以通过替换使用真实类和方法名称的切入点定义中的星号（*）来定义你的切入点来缩短你的执行。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+
+   <aop:config>
+   <aop:aspect id="log" ref="logging">
+      <aop:pointcut id="selectAll" 
+      expression="execution(* com.tutorialspoint.Student.getName(..))"/>
+      <aop:before pointcut-ref="selectAll" method="beforeAdvice"/>
+      <aop:after pointcut-ref="selectAll" method="afterAdvice"/>
+   </aop:aspect>
+   </aop:config>
+
+   <!-- Definition for student bean -->
+   <bean id="student" class="com.tutorialspoint.Student">
+      <property name="name"  value="Zara" />
+      <property name="age"  value="11"/>      
+   </bean>
+
+   <!-- Definition for logging aspect -->
+   <bean id="logging" class="com.tutorialspoint.Logging"/> 
+
+</beans>
+```
+
+如果你想要执行通过这些更改之后的示例应用程序，这将会输出以下消息：
+
+```json
+Going to setup student profile.
+Name : Zara
+Student profile has been setup.
+Age : 11
+Exception raised
+.....
+other exception content
+```
+
+## 5、AOP 的 @AspectJ
+
+@AspectJ 作为通过 Java 5 注释注释的普通的 Java 类，它指的是声明 aspects 的一种风格。通过在你的基于架构的 XML 配置文件中包含以下元素，@AspectJ 支持是可用的。
+
+```xml
+<aop:aspectj-autoproxy/>
+```
+
+你还需要在你的应用程序的 CLASSPATH 中使用以下 AspectJ 库文件。这些库文件在一个 AspectJ 装置的 ‘lib’ 目录中是可用的，如果没有，你可以在 Internet 中下载它们。
+
+> - aspectjrt.jar
+> - aspectjweaver.jar
+> - aspectj.jar
+> - aopalliance.jar
+
+### 声明一个 aspect
+
+Aspects 类和其他任何正常的 bean 一样，除了它们将会用 @AspectJ 注释之外，它和其他类一样可能有方法和字段，如下所示：
+
+```java
+package org.xyz;
+import org.aspectj.lang.annotation.Aspect;
+@Aspect
+public class AspectModule {
+}
+```
+
+它们将在 XML 中按照如下进行配置，就和其他任何 bean 一样：
+
+```xml
+<bean id="myAspect" class="org.xyz.AspectModule">
+   <!-- configure properties of aspect here as normal -->
+</bean>
+```
+
+### 声明一个切入点
+
+一个**切入点**有助于确定使用不同建议执行的感兴趣的连接点（即方法）。在处理基于配置的 XML 架构时，切入点的声明有两个部分：
+
+- 一个切入点表达式决定了我们感兴趣的哪个方法会真正被执行。
+- 一个切入点标签包含一个名称和任意数量的参数。方法的真正内容是不相干的，并且实际上它应该是空的。
+
+下面的示例中定义了一个名为 ‘businessService’ 的切入点，该切入点将与 com.xyz.myapp.service 包下的类中可用的每一个方法相匹配：
+
+```java
+import org.aspectj.lang.annotation.Pointcut;
+@Pointcut("execution(* com.xyz.myapp.service.*.*(..))") // expression 
+private void businessService() {}  // signature
+```
+
+下面的示例中定义了一个名为 ‘getname’ 的切入点，该切入点将与 com.tutorialspoint 包下的 Student 类中的 getName() 方法相匹配：
+
+```java
+import org.aspectj.lang.annotation.Pointcut;
+@Pointcut("execution(* com.tutorialspoint.Student.getName(..))") 
+private void getname() {}
+```
+
+### 声明建议
+
+你可以使用 @{ADVICE-NAME} 注释声明五个建议中的任意一个，如下所示。这假设你已经定义了一个切入点标签方法 businessService()：
+
+```java
+@Before("businessService()")
+public void doBeforeTask(){
+ ...
+}
+@After("businessService()")
+public void doAfterTask(){
+ ...
+}
+@AfterReturning(pointcut = "businessService()", returning="retVal")
+public void doAfterReturnningTask(Object retVal){
+  // you can intercept retVal here.
+  ...
+}
+@AfterThrowing(pointcut = "businessService()", throwing="ex")
+public void doAfterThrowingTask(Exception ex){
+  // you can intercept thrown exception here.
+  ...
+}
+@Around("businessService()")
+public void doAroundTask(){
+ ...
+}
+```
+
+你可以为任意一个建议定义你的切入点内联。下面是在建议之前定义内联切入点的一个示例：
+
+```java
+@Before("execution(* com.xyz.myapp.service.*.*(..))")
+public doBeforeTask(){
+ ...
+}
+```
+
+### 基于 AOP 的 @AspectJ 示例
+
+为了理解上面提到的关于基于 AOP 的 @AspectJ 的概念，让我们编写一个示例，可以实现几个建议。为了在我们的示例中使用几个建议，让我们使 Eclipse IDE 处于工作状态，然后按照如下步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并且在所创建项目的 **src** 文件夹下创建一个名为 *com.tutorialspoint* 的包。 |
+| 2    | 使用 *Add External JARs* 选项添加所需的 Spring 库文件，就如在 *Spring Hello World Example* 章节中解释的那样。 |
+| 3    | 在项目中添加 Spring AOP 指定的库文件 **aspectjrt.jar， aspectjweaver.jar** 和 **aspectj.jar**。 |
+| 4    | 在 *com.tutorialspoint* 包下创建 Java 类 **Logging**， *Student* 和 *MainApp*。 |
+| 5    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 6    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并且按如下解释的那样运行应用程序。 |
+
+这里是 **Logging.java** 文件的内容。这实际上是 aspect 模块的一个示例，它定义了在各个点调用的方法。
+
+```java
+package com.tutorialspoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
+@Aspect
+public class Logging {
+   /** Following is the definition for a pointcut to select
+    *  all the methods available. So advice will be called
+    *  for all the methods.
+    */
+   @Pointcut("execution(* com.tutorialspoint.*.*(..))")
+   private void selectAll(){}
+   /** 
+    * This is the method which I would like to execute
+    * before a selected method execution.
+    */
+   @Before("selectAll()")
+   public void beforeAdvice(){
+      System.out.println("Going to setup student profile.");
+   }
+   /** 
+    * This is the method which I would like to execute
+    * after a selected method execution.
+    */
+   @After("selectAll()")
+   public void afterAdvice(){
+      System.out.println("Student profile has been setup.");
+   }
+   /** 
+    * This is the method which I would like to execute
+    * when any method returns.
+    */
+   @AfterReturning(pointcut = "selectAll()", returning="retVal")
+   public void afterReturningAdvice(Object retVal){
+      System.out.println("Returning:" + retVal.toString() );
+   }
+   /**
+    * This is the method which I would like to execute
+    * if there is an exception raised by any method.
+    */
+   @AfterThrowing(pointcut = "selectAll()", throwing = "ex")
+   public void AfterThrowingAdvice(IllegalArgumentException ex){
+      System.out.println("There has been an exception: " + ex.toString());   
+   }  
+}
+```
+
+下面是 **Student.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class Student {
+   private Integer age;
+   private String name;
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      System.out.println("Age : " + age );
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      System.out.println("Name : " + name );
+      return name;
+   }
+   public void printThrowException(){
+      System.out.println("Exception raised");
+      throw new IllegalArgumentException();
+   }
+}
+```
+
+下面是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      Student student = (Student) context.getBean("student");
+      student.getName();
+      student.getAge();     
+      student.printThrowException();
+   }
+}
+```
+
+下面是配置文件 **Beans.xml**：
+
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+
+    <aop:aspectj-autoproxy/>
+
+   <!-- Definition for student bean -->
+   <bean id="student" class="com.tutorialspoint.Student">
+      <property name="name"  value="Zara" />
+      <property name="age"  value="11"/>      
+   </bean>
+
+   <!-- Definition for logging aspect -->
+   <bean id="logging" class="com.tutorialspoint.Logging"/> 
+
+</beans>
+```
+
+一旦你已经完成的创建了源文件和 bean 配置文件，让我们运行一下应用程序。如果你的应用程序一切都正常的话，这将会输出以下消息：
+
+```java
+Going to setup student profile.
+Name : Zara
+Student profile has been setup.
+Returning:Zara
+Going to setup student profile.
+Age : 11
+Student profile has been setup.
+Returning:11
+Going to setup student profile.
+Exception raised
+Student profile has been setup.
+There has been an exception: java.lang.IllegalArgumentException
+.....
+other exception content
+```
+
+# 九、Spring JDBC 框架
+
+在使用普通的 JDBC 数据库时，就会很麻烦的写不必要的代码来处理异常，打开和关闭数据库连接等。但 Spring JDBC 框架负责所有的低层细节，从开始打开连接，准备和执行 SQL 语句，处理异常，处理事务，到最后关闭连接。
+
+所以当从数据库中获取数据时，你所做的是定义连接参数，指定要执行的 SQL 语句，每次迭代完成所需的工作。
+
+Spring JDBC 提供几种方法和数据库中相应的不同的类与接口。我将给出使用 **JdbcTemplate** 类框架的经典和最受欢迎的方法。这是管理所有数据库通信和异常处理的中央框架类。
+
+## 1、概述
+
+### JdbcTemplate 类
+
+JdbcTemplate 类执行 SQL 查询、更新语句和存储过程调用，执行迭代结果集和提取返回参数值。它也捕获 JDBC 异常并转换它们到 org.springframework.dao 包中定义的通用类、更多的信息、异常层次结构。
+
+*JdbcTemplate* 类的实例是*线程安全*配置的。所以你可以配置 JdbcTemplate 的单个实例，然后将这个共享的引用安全地注入到多个 DAOs 中。
+
+使用 JdbcTemplate 类时常见的做法是在你的 Spring 配置文件中配置数据源，然后共享数据源 bean 依赖注入到 DAO 类中，并在数据源的设值函数中创建了 JdbcTemplate。
+
+### 配置数据源
+
+我们在数据库 **TEST** 中创建一个数据库表 **Student**。假设你正在使用 MySQL 数据库，如果你使用其他数据库，那么你可以改变你的 DDL 和相应的 SQL 查询。
+
+```sql
+CREATE TABLE Student(
+   ID   INT NOT NULL AUTO_INCREMENT,
+   NAME VARCHAR(20) NOT NULL,
+   AGE  INT NOT NULL,
+   PRIMARY KEY (ID)
+);
+```
+
+现在，我们需要提供一个数据源到 JdbcTemplate 中，所以它可以配置本身来获得数据库访问。你可以在 XML 文件中配置数据源，其中一段代码如下所示：
+
+```xml
+<bean id="dataSource"
+class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+   <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+   <property name="url" value="jdbc:mysql://localhost:3306/TEST"/>
+   <property name="username" value="root"/>
+   <property name="password" value="password"/>
+</bean>
+```
+
+### 数据访问对象（DAO）
+
+DAO 代表常用的数据库交互的数据访问对象。DAOs 提供一种方法来读取数据并将数据写入到数据库中，它们应该通过一个接口显示此功能，应用程序的其余部分将访问它们。
+
+在 Spring 中，数据访问对象(DAO)支持很容易用统一的方法使用数据访问技术，如 JDBC、Hibernate、JPA 或者 JDO。
+
+### 执行 SQL 语句
+
+我们看看如何使用 SQL 和 jdbcTemplate 对象在数据库表中执行 CRUD(创建、读取、更新和删除)操作。
+
+查询一个整数类型：
+
+```java
+String SQL = "select count(*) from Student";
+int rowCount = jdbcTemplateObject.queryForInt( SQL );
+```
+
+查询一个 long 类型：
+
+```java
+String SQL = "select count(*) from Student";
+long rowCount = jdbcTemplateObject.queryForLong( SQL );
+```
+
+一个使用绑定变量的简单查询：
+
+```java
+String SQL = "select age from Student where id = ?";
+int age = jdbcTemplateObject.queryForInt(SQL, new Object[]{10});
+```
+
+查询字符串：
+
+```java
+String SQL = "select name from Student where id = ?";
+String name = jdbcTemplateObject.queryForObject(SQL, new Object[]{10}, String.class);
+```
+
+查询并返回一个对象：
+
+```java
+String SQL = "select * from Student where id = ?";
+Student student = jdbcTemplateObject.queryForObject(SQL, 
+                  new Object[]{10}, new StudentMapper());
+public class StudentMapper implements RowMapper<Student> {
+   public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
+      Student student = new Student();
+      student.setID(rs.getInt("id"));
+      student.setName(rs.getString("name"));
+      student.setAge(rs.getInt("age"));
+      return student;
+   }
+}
+```
+
+查询并返回多个对象：
+
+```java
+String SQL = "select * from Student";
+List<Student> students = jdbcTemplateObject.query(SQL,
+                         new StudentMapper());
+public class StudentMapper implements RowMapper<Student> {
+   public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
+      Student student = new Student();
+      student.setID(rs.getInt("id"));
+      student.setName(rs.getString("name"));
+      student.setAge(rs.getInt("age"));
+      return student;
+   }
+}
+```
+
+在表中插入一行：
+
+```java
+String SQL = "insert into Student (name, age) values (?, ?)";
+jdbcTemplateObject.update( SQL, new Object[]{"Zara", 11} );
+```
+
+更新表中的一行：
+
+```java
+String SQL = "update Student set name = ? where id = ?";
+jdbcTemplateObject.update( SQL, new Object[]{"Zara", 10} );
+```
+
+从表中删除一行：
+
+```java
+String SQL = "delete Student where id = ?";
+jdbcTemplateObject.update( SQL, new Object[]{20} );
+```
+
+### 执行 DDL 语句
+
+你可以使用 *jdbcTemplate* 中的 **execute(..)** 方法来执行任何 SQL 语句或 DDL 语句。下面是一个使用 CREATE 语句创建一个表的示例：
+
+```sql
+String SQL = "CREATE TABLE Student( " +
+   "ID   INT NOT NULL AUTO_INCREMENT, " +
+   "NAME VARCHAR(20) NOT NULL, " +
+   "AGE  INT NOT NULL, " +
+   "PRIMARY KEY (ID));"
+jdbcTemplateObject.execute( SQL );
+```
+
+### Spring JDBC 框架例子
+
+基于上述概念，让我们看看一些重要的例子来帮助你理解在 Spring 中使用 JDBC 框架：
+
+| 序号 | 例子 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | [Spring JDBC Example](https://www.w3cschool.cn/wkspring/iuck1mma.html)这个例子将解释如何编写一个简单的基于 Spring 应用程序的 JDBC。 |
+| 2    | [SQL Stored Procedure in Spring](https://www.w3cschool.cn/wkspring/3yh61mmc.html)学习在使用 Spring 中的 JDBC 时如何调用 SQL 存储过程。 |
+
+## 2、Spring JDBC 示例
+
+想要理解带有 jdbc 模板类的 Spring JDBC 框架的相关概念，让我们编写一个简单的示例，来实现下述 Student 表的所有 CRUD 操作。
+
+```sql
+CREATE TABLE Student(
+   ID   INT NOT NULL AUTO_INCREMENT,
+   NAME VARCHAR(20) NOT NULL,
+   AGE  INT NOT NULL,
+   PRIMARY KEY (ID)
+);
+```
+
+在继续之前，让我们适当地使用 Eclipse IDE 并按照如下所示的步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并在创建的项目中的 **src** 文件夹下创建包 *com.tutorialspoint*。 |
+| 2    | 使用 *Add External JARs* 选项添加必需的 Spring 库，解释见 *Spring Hello World Example* 章节。 |
+| 3    | 在项目中添加 Spring JDBC 指定的最新的库 **mysql-connector-java.jar**，**org.springframework.jdbc.jar** 和 **org.springframework.transaction.jar**。如果这些库不存在，你可以下载它们。 |
+| 4    | 创建 DAO 接口 *StudentDAO* 并列出所有必需的方法。尽管这一步不是必需的而且你可以直接编写 *StudentJDBCTemplate* 类，但是作为一个好的实践，我们最好还是做这一步。 |
+| 5    | 在 *com.tutorialspoint* 包下创建其他的必需的 Java 类 *Student*，*StudentMapper*，*StudentJDBCTemplate* 和 *MainApp* 。 |
+| 6    | 确保你已经在 TEST 数据库中创建了 **Student** 表。并确保你的 MySQL 服务器运行正常，且你可以使用给出的用户名和密码读/写访问数据库。 |
+| 7    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 8    | 最后一步是创建所有的 Java 文件和 Bean 配置文件的内容并按照如下所示的方法运行应用程序。 |
+
+以下是数据访问对象接口文件 **StudentDAO.java** 的内容：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+public interface StudentDAO {
+   /** 
+    * This is the method to be used to initialize
+    * database resources ie. connection.
+    */
+   public void setDataSource(DataSource ds);
+   /** 
+    * This is the method to be used to create
+    * a record in the Student table.
+    */
+   public void create(String name, Integer age);
+   /** 
+    * This is the method to be used to list down
+    * a record from the Student table corresponding
+    * to a passed student id.
+    */
+   public Student getStudent(Integer id);
+   /** 
+    * This is the method to be used to list down
+    * all the records from the Student table.
+    */
+   public List<Student> listStudents();
+   /** 
+    * This is the method to be used to delete
+    * a record from the Student table corresponding
+    * to a passed student id.
+    */
+   public void delete(Integer id);
+   /** 
+    * This is the method to be used to update
+    * a record into the Student table.
+    */
+   public void update(Integer id, Integer age);
+}
+```
+
+下面是 **Student.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class Student {
+   private Integer age;
+   private String name;
+   private Integer id;
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+   public void setId(Integer id) {
+      this.id = id;
+   }
+   public Integer getId() {
+      return id;
+   }
+}
+```
+
+以下是 **StudentMapper.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+public class StudentMapper implements RowMapper<Student> {
+   public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
+      Student student = new Student();
+      student.setId(rs.getInt("id"));
+      student.setName(rs.getString("name"));
+      student.setAge(rs.getInt("age"));
+      return student;
+   }
+}
+```
+
+下面是为定义的 DAO 接口 StudentDAO 的实现类文件 **StudentJDBCTemplate.java**：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+public class StudentJDBCTemplate implements StudentDAO {
+   private DataSource dataSource;
+   private JdbcTemplate jdbcTemplateObject; 
+   public void setDataSource(DataSource dataSource) {
+      this.dataSource = dataSource;
+      this.jdbcTemplateObject = new JdbcTemplate(dataSource);
+   }
+   public void create(String name, Integer age) {
+      String SQL = "insert into Student (name, age) values (?, ?)";     
+      jdbcTemplateObject.update( SQL, name, age);
+      System.out.println("Created Record Name = " + name + " Age = " + age);
+      return;
+   }
+   public Student getStudent(Integer id) {
+      String SQL = "select * from Student where id = ?";
+      Student student = jdbcTemplateObject.queryForObject(SQL, 
+                        new Object[]{id}, new StudentMapper());
+      return student;
+   }
+   public List<Student> listStudents() {
+      String SQL = "select * from Student";
+      List <Student> students = jdbcTemplateObject.query(SQL, 
+                                new StudentMapper());
+      return students;
+   }
+   public void delete(Integer id){
+      String SQL = "delete from Student where id = ?";
+      jdbcTemplateObject.update(SQL, id);
+      System.out.println("Deleted Record with ID = " + id );
+      return;
+   }
+   public void update(Integer id, Integer age){
+      String SQL = "update Student set age = ? where id = ?";
+      jdbcTemplateObject.update(SQL, age, id);
+      System.out.println("Updated Record with ID = " + id );
+      return;
+   }
+}
+```
+
+以下是 **MainApp.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.tutorialspoint.StudentJDBCTemplate;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      StudentJDBCTemplate studentJDBCTemplate = 
+      (StudentJDBCTemplate)context.getBean("studentJDBCTemplate");    
+      System.out.println("------Records Creation--------" );
+      studentJDBCTemplate.create("Zara", 11);
+      studentJDBCTemplate.create("Nuha", 2);
+      studentJDBCTemplate.create("Ayan", 15);
+      System.out.println("------Listing Multiple Records--------" );
+      List<Student> students = studentJDBCTemplate.listStudents();
+      for (Student record : students) {
+         System.out.print("ID : " + record.getId() );
+         System.out.print(", Name : " + record.getName() );
+         System.out.println(", Age : " + record.getAge());
+      }
+      System.out.println("----Updating Record with ID = 2 -----" );
+      studentJDBCTemplate.update(2, 20);
+      System.out.println("----Listing Record with ID = 2 -----" );
+      Student student = studentJDBCTemplate.getStudent(2);
+      System.out.print("ID : " + student.getId() );
+      System.out.print(", Name : " + student.getName() );
+      System.out.println(", Age : " + student.getAge());      
+   }
+}
+```
+
+下述是配置文件 **Beans.xml** 的内容：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+   <!-- Initialization for data source -->
+   <bean id="dataSource" 
+      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://localhost:3306/TEST"/>
+      <property name="username" value="root"/>
+      <property name="password" value="password"/>
+   </bean>
+
+   <!-- Definition for studentJDBCTemplate bean -->
+   <bean id="studentJDBCTemplate" 
+      class="com.tutorialspoint.StudentJDBCTemplate">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+
+</beans>
+```
+
+当你完成创建源和 bean 配置文件后，运行应用程序。如果你的应用程序一切运行顺利的话，将会输出如下所示的消息：
+
+```java
+------Records Creation--------
+Created Record Name = Zara Age = 11
+Created Record Name = Nuha Age = 2
+Created Record Name = Ayan Age = 15
+------Listing Multiple Records--------
+ID : 1, Name : Zara, Age : 11
+ID : 2, Name : Nuha, Age : 2
+ID : 3, Name : Ayan, Age : 15
+----Updating Record with ID = 2 -----
+Updated Record with ID = 2
+----Listing Record with ID = 2 -----
+ID : 2, Name : Nuha, Age : 20
+```
+
+你可以尝试自己删除在我的例子中我没有用到的操作，但是现在你有一个基于 Spring JDBC 框架的工作应用程序，你可以根据你的项目需求来扩展这个框架，添加复杂的功能。还有其他方法来访问你使用 **NamedParameterJdbcTemplate** 和 **SimpleJdbcTemplate** 类的数据库，所以如果你有兴趣学习这些类的话，那么你可以查看 Spring 框架的参考手册。
+
+## 3、Spring 中 SQL 的存储过程
+
+**SimpleJdbcCall** 类可以被用于调用一个包含 IN 和 OUT 参数的存储过程。你可以在处理任何一个 RDBMS 时使用这个方法，就像 Apache Derby， DB2， MySQL， Microsoft SQL Server， Oracle，和 Sybase。
+
+为了了解这个方法，我们使用 Student 表，它可以在 MySQL TEST 数据库中使用下面的 DDL 进行创建：
+
+```sql
+CREATE TABLE Student(
+   ID   INT NOT NULL AUTO_INCREMENT,
+   NAME VARCHAR(20) NOT NULL,
+   AGE  INT NOT NULL,
+   PRIMARY KEY (ID)
+);
+```
+
+下一步，考虑接下来的 MySQL 存储过程，该过程使用 学生 Id 并且使用 OUT 参数返回相应的学生的姓名和年龄。所以让我们在你的 TEST 数据库中使用 MySQL 命令提示符创建这个存储过程：
+
+```sql
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `TEST`.`getRecord` $$
+CREATE PROCEDURE `TEST`.`getRecord` (
+IN in_id INTEGER,
+OUT out_name VARCHAR(20),
+OUT out_age  INTEGER)
+BEGIN
+   SELECT name, age
+   INTO out_name, out_age
+   FROM Student where id = in_id;
+END $$
+DELIMITER ;
+```
+
+现在，让我们编写我们的 Spring JDBC 应用程序，它可以实现对我们的 Student 数据库表的创建和读取操作。让我们使 Eclipse IDE 处于工作状态，然后按照如下步骤创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并且在所创建项目的 **src** 文件夹下创建一个名为 *com.tutorialspoint* 的包。 |
+| 2    | 使用 *Add External JARs* 选项添加所需的 Spring 库文件，就如在 *Spring Hello World Example* 章节中解释的那样。 |
+| 3    | 在项目中添加 Spring JDBC 指定的最新的库文件 **mysql-connector-java.jar**， **org.springframework.jdbc.jar** 和 **org.springframework.transaction.jar**。如果你还没有这些所需要的库文件，你可以下载它们。 |
+| 4    | 创建 DAO 接口 *StudentDAO* 并且列出所有需要的方法。 即使他不是必需的，你可以直接编写 *StudentJDBCTemplate* 类，但是作为一个良好的实践，让我们编写它。 |
+| 5    | 在 *com.tutorialspoint* 包下创建其他所需要的 Java 类 *Student*， *StudentMapper*， *StudentJDBCTemplate* 和 *MainApp*。 |
+| 6    | 确保你已经在 TEST 数据库中创建了 **Student** 表。同样确保你的 MySQL 服务器是正常工作的，并且保证你可以使用给定的用户名和密码对数据库有读取/写入的权限。 |
+| 7    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml*。         |
+| 8    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容，并且按如下解释的那样运行应用程序。 |
+
+下面是数据访问对象接口文件 **StudentDAO.java** 的内容：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+public interface StudentDAO {
+   /** 
+    * This is the method to be used to initialize
+    * database resources ie. connection.
+    */
+   public void setDataSource(DataSource ds);
+   /** 
+    * This is the method to be used to create
+    * a record in the Student table.
+    */
+   public void create(String name, Integer age);
+   /** 
+    * This is the method to be used to list down
+    * a record from the Student table corresponding
+    * to a passed student id.
+    */
+   public Student getStudent(Integer id);
+   /** 
+    * This is the method to be used to list down
+    * all the records from the Student table.
+    */
+   public List<Student> listStudents();
+}
+```
+
+下面是 **Student.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class Student {
+   private Integer age;
+   private String name;
+   private Integer id;
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+   public void setId(Integer id) {
+      this.id = id;
+   }
+   public Integer getId() {
+      return id;
+   }
+}
+```
+
+下面是 **StudentMapper.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+public class StudentMapper implements RowMapper<Student> {
+   public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
+      Student student = new Student();
+      student.setId(rs.getInt("id"));
+      student.setName(rs.getString("name"));
+      student.setAge(rs.getInt("age"));
+      return student;
+   }
+}
+```
+
+下面是实现类文件 **StudentJDBCTemplate.java**，定义了 DAO 接口 StudentDAO：
+
+```java
+package com.tutorialspoint;
+import java.util.Map;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+public class StudentJDBCTemplate implements StudentDAO {
+   private DataSource dataSource;
+   private SimpleJdbcCall jdbcCall;
+   public void setDataSource(DataSource dataSource) {
+      this.dataSource = dataSource;
+      this.jdbcCall =  new SimpleJdbcCall(dataSource).
+                       withProcedureName("getRecord");
+   }
+   public void create(String name, Integer age) {
+      JdbcTemplate jdbcTemplateObject = new JdbcTemplate(dataSource);
+      String SQL = "insert into Student (name, age) values (?, ?)";
+      jdbcTemplateObject.update( SQL, name, age);
+      System.out.println("Created Record Name = " + name + " Age = " + age);
+      return;
+   }
+   public Student getStudent(Integer id) {
+      SqlParameterSource in = new MapSqlParameterSource().
+                              addValue("in_id", id);
+      Map<String, Object> out = jdbcCall.execute(in);
+      Student student = new Student();
+      student.setId(id);
+      student.setName((String) out.get("out_name"));
+      student.setAge((Integer) out.get("out_age"));
+      return student;
+   }
+   public List<Student> listStudents() {
+      String SQL = "select * from Student";    
+      List <Student> students = jdbcTemplateObject.query(SQL,new StudentMapper());
+      return students;
+   }
+}
+```
+
+关于上述项目的几句话：你编写的课调用执行的代码涉及创建一个包含 IN 参数的 *SqlParameterSource*。名称的匹配是很重要的，该名称可以使用在存储过程汇总声明的参数名称来提供输入值。*execute* 方法利用 IN 参数返回一个包含在存储过程中由名称指定的任何外部参数键的映射。现在让我们移动主应用程序文件 **MainApp.java**，如下所示：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.tutorialspoint.StudentJDBCTemplate;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      StudentJDBCTemplate studentJDBCTemplate = 
+      (StudentJDBCTemplate)context.getBean("studentJDBCTemplate");     
+      System.out.println("------Records Creation--------" );
+      studentJDBCTemplate.create("Zara", 11);
+      studentJDBCTemplate.create("Nuha", 2);
+      studentJDBCTemplate.create("Ayan", 15);
+      System.out.println("------Listing Multiple Records--------" );
+      List<Student> students = studentJDBCTemplate.listStudents();
+      for (Student record : students) {
+         System.out.print("ID : " + record.getId() );
+         System.out.print(", Name : " + record.getName() );
+         System.out.println(", Age : " + record.getAge());
+      }
+      System.out.println("----Listing Record with ID = 2 -----" );
+      Student student = studentJDBCTemplate.getStudent(2);
+      System.out.print("ID : " + student.getId() );
+      System.out.print(", Name : " + student.getName() );
+      System.out.println(", Age : " + student.getAge());      
+   }
+}
+```
+
+下面是配置文件 **Beans.xml**：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+   <!-- Initialization for data source -->
+   <bean id="dataSource" 
+      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://localhost:3306/TEST"/>
+      <property name="username" value="root"/>
+      <property name="password" value="password"/>
+   </bean>
+
+   <!-- Definition for studentJDBCTemplate bean -->
+   <bean id="studentJDBCTemplate" 
+      class="com.tutorialspoint.StudentJDBCTemplate">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+
+</beans>
+```
+
+一旦你已经完成的创建了源文件和 bean 配置文件，让我们运行一下应用程序。如果你的应用程序一切都正常的话，这将会输出以下消息：
+
+```json
+------Records Creation--------
+Created Record Name = Zara Age = 11
+Created Record Name = Nuha Age = 2
+Created Record Name = Ayan Age = 15
+------Listing Multiple Records--------
+ID : 1, Name : Zara, Age : 11
+ID : 2, Name : Nuha, Age : 2
+ID : 3, Name : Ayan, Age : 15
+----Listing Record with ID = 2 -----
+ID : 2, Name : Nuha, Age : 2
+```
+
+# 十、事务管理
+
+## 1、概要
+
+一个数据库事务是一个被视为单一的工作单元的操作序列。这些操作应该要么完整地执行，要么完全不执行。事务管理是一个重要组成部分，RDBMS 面向企业应用程序，以确保数据完整性和一致性。事务的概念可以描述为具有以下四个关键属性说成是 **ACID**：
+
+- **原子性：**事务应该当作一个单独单元的操作，这意味着整个序列操作要么是成功，要么是失败的。
+- **一致性：**这表示数据库的引用完整性的一致性，表中唯一的主键等。
+- **隔离性：**可能同时处理很多有相同的数据集的事务，每个事务应该与其他事务隔离，以防止数据损坏。
+- **持久性：**一个事务一旦完成全部操作后，这个事务的结果必须是永久性的，不能因系统故障而从数据库中删除。
+
+一个真正的 RDBMS 数据库系统将为每个事务保证所有的四个属性。使用 SQL 发布到数据库中的事务的简单视图如下：
+
+- 使用 begin transaction 命令开始事务。
+- 使用 SQL 查询语句执行各种删除、更新或插入操作。
+- 如果所有的操作都成功，则执行提交操作，否则回滚所有操作。
+
+Spring 框架在不同的底层事务管理 APIs 的顶部提供了一个抽象层。Spring 的事务支持旨在通过添加事务能力到 POJOs 来提供给 EJB 事务一个选择方案。Spring 支持编程式和声明式事务管理。EJBs 需要一个应用程序服务器，但 Spring 事务管理可以在不需要应用程序服务器的情况下实现。
+
+### 局部事务 vs. 全局事务
+
+局部事务是特定于一个单一的事务资源，如一个 JDBC 连接，而全局事务可以跨多个事务资源事务，如在一个分布式系统中的事务。
+
+局部事务管理在一个集中的计算环境中是有用的，该计算环境中应用程序组件和资源位于一个单位点，而事务管理只涉及到一个运行在一个单一机器中的本地数据管理器。局部事务更容易实现。
+
+全局事务管理需要在分布式计算环境中，所有的资源都分布在多个系统中。在这种情况下事务管理需要同时在局部和全局范围内进行。分布式或全局事务跨多个系统执行，它的执行需要全局事务管理系统和所有相关系统的局部数据管理人员之间的协调。
+
+### 编程式 vs. 声明式
+
+Spring 支持两种类型的事务管理:
+
+- [编程式事务管理 ：](https://www.w3cschool.cn/wkspring/urw31mme.html)这意味着你在编程的帮助下有管理事务。这给了你极大的灵活性，但却很难维护。
+- [声明式事务管理 ：](https://www.w3cschool.cn/wkspring/jcny1mmg.html)这意味着你从业务代码中分离事务管理。你仅仅使用注释或 XML 配置来管理事务。
+
+声明式事务管理比编程式事务管理更可取，尽管它不如编程式事务管理灵活，但它允许你通过代码控制事务。但作为一种横切关注点，声明式事务管理可以使用 AOP 方法进行模块化。Spring 支持使用 Spring AOP 框架的声明式事务管理。
+
+### Spring 事务抽象
+
+Spring事务管理的五大属性：**隔离级别**、**传播行为**、**是否只读**、**事务超时**、**回滚规则**
+
+Spring 事务抽象的关键是由 org.springframework.transaction.PlatformTransactionManager 接口定义，如下所示：
+
+
+
+```java
+public interface PlatformTransactionManager {
+   TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
+   void commit(TransactionStatus status) throws TransactionException;
+   void rollback(TransactionStatus status) throws TransactionException;
+}
+```
+
+| 序号 | 方法 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | **TransactionStatus getTransaction(TransactionDefinition definition)**根据指定的传播行为，该方法返回当前活动事务或创建一个新的事务。 |
+| 2    | **void commit(TransactionStatus status)**该方法提交给定的事务和关于它的状态。 |
+| 3    | **void rollback(TransactionStatus status)**该方法执行一个给定事务的回滚。 |
+
+TransactionDefinition 是在 Spring 中事务支持的核心接口，它的定义如下：
+
+
+
+```java
+public interface TransactionDefinition {
+   int getPropagationBehavior();
+   int getIsolationLevel();
+   String getName();
+   int getTimeout();
+   boolean isReadOnly();
+}
+```
+
+| 序号 | 方法 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | **int getPropagationBehavior()**该方法返回传播行为。Spring 提供了与 EJB CMT 类似的所有的事务传播选项。 |
+| 2    | **int getIsolationLevel()**该方法返回该事务独立于其他事务的工作的程度。 |
+| 3    | **String getName()**该方法返回该事务的名称。                 |
+| 4    | **int getTimeout()**该方法返回以秒为单位的时间间隔，事务必须在该时间间隔内完成。 |
+| 5    | **boolean isReadOnly()**该方法返回该事务是否是只读的。       |
+
+下面是隔离级别的可能值:
+
+| 序号 | 隔离 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | **TransactionDefinition.ISOLATION_DEFAULT**这是默认的隔离级别。 |
+| 2    | **TransactionDefinition.ISOLATION_READ_COMMITTED**表明能够阻止误读；可以发生不可重复读和虚读。 |
+| 3    | **TransactionDefinition.ISOLATION_READ_UNCOMMITTED**表明可以发生误读、不可重复读和虚读。 |
+| 4    | **TransactionDefinition.ISOLATION_REPEATABLE_READ**表明能够阻止误读和不可重复读；可以发生虚读。 |
+| 5    | **TransactionDefinition.ISOLATION_SERIALIZABLE**表明能够阻止误读、不可重复读和虚读。 |
+
+下面是传播类型的可能值:
+
+| 序号 | 传播 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | **TransactionDefinition.PROPAGATION_MANDATORY**支持当前事务；如果不存在当前事务，则抛出一个异常。 |
+| 2    | **TransactionDefinition.PROPAGATION_NESTED**如果存在当前事务，则在一个嵌套的事务中执行。 |
+| 3    | **TransactionDefinition.PROPAGATION_NEVER**不支持当前事务；如果存在当前事务，则抛出一个异常。 |
+| 4    | **TransactionDefinition.PROPAGATION_NOT_SUPPORTED**不支持当前事务；而总是执行非事务性。 |
+| 5    | **TransactionDefinition.PROPAGATION_REQUIRED**支持当前事务；如果不存在事务，则创建一个新的事务。 |
+| 6    | **TransactionDefinition.PROPAGATION_REQUIRES_NEW**创建一个新事务，如果存在一个事务，则把当前事务挂起。 |
+| 7    | **TransactionDefinition.PROPAGATION_SUPPORTS**支持当前事务；如果不存在，则执行非事务性。 |
+| 8    | **TransactionDefinition.TIMEOUT_DEFAULT**使用默认超时的底层事务系统，或者如果不支持超时则没有。 |
+
+TransactionStatus 接口为事务代码提供了一个简单的方法来控制事务的执行和查询事务状态。
+
+
+
+```java
+public interface TransactionStatus extends SavepointManager {
+   boolean isNewTransaction();
+   boolean hasSavepoint();
+   void setRollbackOnly();
+   boolean isRollbackOnly();
+   boolean isCompleted();
+}
+```
+
+| 序号 | 方法 & 描述                                                  |
+| ---- | ------------------------------------------------------------ |
+| 1    | **boolean hasSavepoint()**该方法返回该事务内部是否有一个保存点，也就是说，基于一个保存点已经创建了嵌套事务。 |
+| 2    | **boolean isCompleted()**该方法返回该事务是否完成，也就是说，它是否已经提交或回滚。 |
+| 3    | **boolean isNewTransaction()**在当前事务时新的情况下，该方法返回 true。 |
+| 4    | **boolean isRollbackOnly()**该方法返回该事务是否已标记为 rollback-only。 |
+| 5    | **void setRollbackOnly()**该方法设置该事务为 rollback-only 标记。 |
+
+## 2、编程式事务管理
+
+编程式事务管理方法允许你在对你的源代码编程的帮助下管理事务。这给了你极大地灵活性，但是它很难维护。
+
+在我们开始之前，至少要有两个数据库表，在事务的帮助下我们可以执行多种 CRUD 操作。以 **Student** 表为例，用下述 DDL 可以在 MySQL TEST 数据库中创建该表：
+
+```sql
+CREATE TABLE Student(
+   ID   INT NOT NULL AUTO_INCREMENT,
+   NAME VARCHAR(20) NOT NULL,
+   AGE  INT NOT NULL,
+   PRIMARY KEY (ID)
+);
+```
+
+第二个表是 **Marks**，用来存储基于年份的学生的标记。这里 **SID** 是 Student 表的外键。
+
+```sql
+CREATE TABLE Marks(
+   SID INT NOT NULL,
+   MARKS  INT NOT NULL,
+   YEAR   INT NOT NULL
+);
+```
+
+让我们直接使用 *PlatformTransactionManager* 来实现编程式方法从而实现事务。要开始一个新事务，你需要有一个带有适当的 transaction 属性的 *TransactionDefinition* 的实例。这个例子中，我们使用默认的 transaction 属性简单的创建了 *DefaultTransactionDefinition* 的一个实例。
+
+当 TransactionDefinition 创建后，你可以通过调用 *getTransaction()* 方法来开始你的事务，该方法会返回 *TransactionStatus* 的一个实例。 *TransactionStatus* 对象帮助追踪当前的事务状态，并且最终，如果一切运行顺利，你可以使用 *PlatformTransactionManager* 的 *commit()* 方法来提交这个事务，否则的话，你可以使用 *rollback()* 方法来回滚整个操作。
+
+现在让我们编写我们的 Spring JDBC 应用程序，它能够在 Student 和 Mark 表中实现简单的操作。让我们适当的使用 Eclipse IDE，并按照如下所示的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并在创建的项目中的 **src** 文件夹下创建包 *com.tutorialspoint* 。 |
+| 2    | 使用 *Add External JARs* 选项添加必需的 Spring 库，解释见 *Spring Hello World Example* chapter. |
+| 3    | 在项目中添加 Spring JDBC 指定的最新的库 **mysql-connector-java.jar**，**org.springframework.jdbc.jar** 和 **org.springframework.transaction.jar**。如果你还没有这些库，你可以下载它们。 |
+| 4    | 创建 DAO 接口 *StudentDAO* 并列出所有需要的方法。尽管它不是必需的并且你可以直接编写 *StudentJDBCTemplate* 类，但是作为一个好的实践，我们还是做吧。 |
+| 5    | 在 *com.tutorialspoint* 包下创建其他必需的 Java 类 *StudentMarks*，*StudentMarksMapper*，*StudentJDBCTemplate* 和 *MainApp*。如果需要的话，你可以创建其他的 POJO 类。 |
+| 6    | 确保你已经在 TEST 数据库中创建了 **Student** 和 **Marks** 表。还要确保你的 MySQL 服务器运行正常并且你使用给出的用户名和密码可以读/写访问数据库。 |
+| 7    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml* 。        |
+| 8    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容并按照如下所示的方法运行应用程序。 |
+
+下面是数据访问对象接口文件 **StudentDAO.java** 的内容：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+public interface StudentDAO {
+   /** 
+    * This is the method to be used to initialize
+    * database resources ie. connection.
+    */
+   public void setDataSource(DataSource ds);
+   /** 
+    * This is the method to be used to create
+    * a record in the Student and Marks tables.
+    */
+   public void create(String name, Integer age, Integer marks, Integer year);
+   /** 
+    * This is the method to be used to list down
+    * all the records from the Student and Marks tables.
+    */
+   public List<StudentMarks> listStudents();
+}
+```
+
+下面是 **StudentMarks.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class StudentMarks {
+   private Integer age;
+   private String name;
+   private Integer id;
+   private Integer marks;
+   private Integer year;
+   private Integer sid;
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+   public void setId(Integer id) {
+      this.id = id;
+   }
+   public Integer getId() {
+      return id;
+   }
+   public void setMarks(Integer marks) {
+      this.marks = marks;
+   }
+   public Integer getMarks() {
+      return marks;
+   }
+   public void setYear(Integer year) {
+      this.year = year;
+   }
+   public Integer getYear() {
+      return year;
+   }
+   public void setSid(Integer sid) {
+      this.sid = sid;
+   }
+   public Integer getSid() {
+      return sid;
+   }
+}
+```
+
+以下是 **StudentMarksMapper.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+public class StudentMarksMapper implements RowMapper<StudentMarks> {
+   public StudentMarks mapRow(ResultSet rs, int rowNum) throws SQLException {
+      StudentMarks studentMarks = new StudentMarks();
+      studentMarks.setId(rs.getInt("id"));
+      studentMarks.setName(rs.getString("name"));
+      studentMarks.setAge(rs.getInt("age"));
+      studentMarks.setSid(rs.getInt("sid"));
+      studentMarks.setMarks(rs.getInt("marks"));
+      studentMarks.setYear(rs.getInt("year"));
+      return studentMarks;
+   }
+}
+```
+
+下面是定义的 DAO 接口 StudentDAO 实现类文件 **StudentJDBCTemplate.java**：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+public class StudentJDBCTemplate implements StudentDAO {
+   private DataSource dataSource;
+   private JdbcTemplate jdbcTemplateObject;
+   private PlatformTransactionManager transactionManager;
+   public void setDataSource(DataSource dataSource) {
+      this.dataSource = dataSource;
+      this.jdbcTemplateObject = new JdbcTemplate(dataSource);
+   }
+   public void setTransactionManager(
+      PlatformTransactionManager transactionManager) {
+      this.transactionManager = transactionManager;
+   }
+   public void create(String name, Integer age, Integer marks, Integer year){
+      TransactionDefinition def = new DefaultTransactionDefinition();
+      TransactionStatus status = transactionManager.getTransaction(def);
+      try {
+         String SQL1 = "insert into Student (name, age) values (?, ?)";
+         jdbcTemplateObject.update( SQL1, name, age);
+         // Get the latest student id to be used in Marks table
+         String SQL2 = "select max(id) from Student";
+         int sid = jdbcTemplateObject.queryForInt( SQL2,null,Integer.class );
+         String SQL3 = "insert into Marks(sid, marks, year) " + 
+                       "values (?, ?, ?)";
+         jdbcTemplateObject.update( SQL3, sid, marks, year);
+         System.out.println("Created Name = " + name + ", Age = " + age);
+         transactionManager.commit(status);
+      } catch (DataAccessException e) {
+         System.out.println("Error in creating record, rolling back");
+         transactionManager.rollback(status);
+         throw e;
+      }
+      return;
+   }
+   public List<StudentMarks> listStudents() {
+      String SQL = "select * from Student, Marks where Student.id=Marks.sid";
+      List <StudentMarks> studentMarks = jdbcTemplateObject.query(SQL, 
+                                         new StudentMarksMapper());
+      return studentMarks;
+   }
+}
+```
+
+现在让我们改变主应用程序文件 **MainApp.java**，如下所示：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.tutorialspoint.StudentJDBCTemplate;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      StudentJDBCTemplate studentJDBCTemplate = 
+      (StudentJDBCTemplate)context.getBean("studentJDBCTemplate");     
+      System.out.println("------Records creation--------" );
+      studentJDBCTemplate.create("Zara", 11, 99, 2010);
+      studentJDBCTemplate.create("Nuha", 20, 97, 2010);
+      studentJDBCTemplate.create("Ayan", 25, 100, 2011);
+      System.out.println("------Listing all the records--------" );
+      List<StudentMarks> studentMarks = studentJDBCTemplate.listStudents();
+      for (StudentMarks record : studentMarks) {
+         System.out.print("ID : " + record.getId() );
+         System.out.print(", Name : " + record.getName() );
+         System.out.print(", Marks : " + record.getMarks());
+         System.out.print(", Year : " + record.getYear());
+         System.out.println(", Age : " + record.getAge());
+      }
+   }
+}
+```
+
+下面是配置文件 **Beans.xml** 的内容：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+   <!-- Initialization for data source -->
+   <bean id="dataSource" 
+      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://localhost:3306/TEST"/>
+      <property name="username" value="root"/>
+      <property name="password" value="password"/>
+   </bean>
+
+   <!-- Initialization for TransactionManager -->
+   <bean id="transactionManager" 
+      class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+
+   <!-- Definition for studentJDBCTemplate bean -->
+   <bean id="studentJDBCTemplate"
+      class="com.tutorialspoint.StudentJDBCTemplate">
+      <property name="dataSource"  ref="dataSource" />
+      <property name="transactionManager"  ref="transactionManager" />    
+   </bean>
+
+</beans>
+```
+
+当你完成了创建源和 bean 配置文件后，让我们运行应用程序。如果你的应用程序运行顺利的话，那么将会输出如下所示的消息：
+
+```json
+------Records creation--------
+Created Name = Zara, Age = 11
+Created Name = Nuha, Age = 20
+Created Name = Ayan, Age = 25
+------Listing all the records--------
+ID : 1, Name : Zara, Marks : 99, Year : 2010, Age : 11
+ID : 2, Name : Nuha, Marks : 97, Year : 2010, Age : 20
+ID : 3, Name : Ayan, Marks
+```
+
+## 3、声明式事务管理
+
+声明式事务管理方法允许你在配置的帮助下而不是源代码硬编程来管理事务。这意味着你可以将事务管理从事务代码中隔离出来。你可以只使用注释或基于配置的 XML 来管理事务。 bean 配置会指定事务型方法。下面是与声明式事务相关的步骤：
+
+- 我们使用标签，它创建一个事务处理的建议，同时，我们定义一个匹配所有方法的切入点，我们希望这些方法是事务型的并且会引用事务型的建议。
+- 如果在事务型配置中包含了一个方法的名称，那么创建的建议在调用方法之前就会在事务中开始进行。
+- 目标方法会在 try / catch 块中执行。
+- 如果方法正常结束，AOP 建议会成功的提交事务，否则它执行回滚操作。
+
+让我们看看上述步骤是如何实现的。在我们开始之前，至少有两个数据库表是至关重要的，在事务的帮助下，我们可以实现各种 CRUD 操作。以 **Student** 表为例，该表是使用下述 DDL 在 MySQL TEST 数据库中创建的。
+
+```sql
+CREATE TABLE Student(
+   ID   INT NOT NULL AUTO_INCREMENT,
+   NAME VARCHAR(20) NOT NULL,
+   AGE  INT NOT NULL,
+   PRIMARY KEY (ID)
+);
+```
+
+第二个表是 **Marks**，我们用来存储基于年份的学生标记。在这里，**SID** 是 Student 表的外键。
+
+```sql
+CREATE TABLE Marks(
+   SID INT NOT NULL,
+   MARKS  INT NOT NULL,
+   YEAR   INT NOT NULL
+);
+```
+
+现在让我们编写 Spring JDBC 应用程序来在 Student 和 Marks 表中实现简单的操作。让我们适当的使用 Eclipse IDE，并按照如下所示的步骤来创建一个 Spring 应用程序：
+
+| 步骤 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| 1    | 创建一个名为 *SpringExample* 的项目，并在创建的项目中的 **src** 文件夹下创建包 *com.tutorialspoint* 。 |
+| 2    | 使用 *Add External JARs* 选项添加必需的 Spring 库，解释见 *Spring Hello World Example* chapter. |
+| 3    | 在项目中添加其它必需的库 **mysql-connector-java.jar**，**org.springframework.jdbc.jar** 和 **org.springframework.transaction.jar**。如果你还没有这些库，你可以下载它们。 |
+| 4    | 创建 DAO 接口 *StudentDAO* 并列出所有需要的方法。尽管它不是必需的并且你可以直接编写 *StudentJDBCTemplate* 类，但是作为一个好的实践，我们还是做吧。 |
+| 5    | 在 *com.tutorialspoint* 包下创建其他必需的 Java 类 *StudentMarks*，*StudentMarksMapper*，*StudentJDBCTemplate* 和 *MainApp*。如果需要的话，你可以创建其他的 POJO 类。 |
+| 6    | 确保你已经在 TEST 数据库中创建了 **Student** 和 **Marks** 表。还要确保你的 MySQL 服务器运行正常并且你使用给出的用户名和密码可以读/写访问数据库。 |
+| 7    | 在 **src** 文件夹下创建 Beans 配置文件 *Beans.xml* 。        |
+| 8    | 最后一步是创建所有 Java 文件和 Bean 配置文件的内容并按照如下所示的方法运行应用程序。 |
+
+下面是数据访问对象接口文件 **StudentDAO.java** 的内容：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+public interface StudentDAO {
+   /** 
+    * This is the method to be used to initialize
+    * database resources ie. connection.
+    */
+   public void setDataSource(DataSource ds);
+   /** 
+    * This is the method to be used to create
+    * a record in the Student and Marks tables.
+    */
+   public void create(String name, Integer age, Integer marks, Integer year);
+   /** 
+    * This is the method to be used to list down
+    * all the records from the Student and Marks tables.
+    */
+   public List<StudentMarks> listStudents();
+}
+```
+
+以下是 **StudentMarks.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+public class StudentMarks {
+   private Integer age;
+   private String name;
+   private Integer id;
+   private Integer marks;
+   private Integer year;
+   private Integer sid;
+   public void setAge(Integer age) {
+      this.age = age;
+   }
+   public Integer getAge() {
+      return age;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public String getName() {
+      return name;
+   }
+   public void setId(Integer id) {
+      this.id = id;
+   }
+   public Integer getId() {
+      return id;
+   }
+   public void setMarks(Integer marks) {
+      this.marks = marks;
+   }
+   public Integer getMarks() {
+      return marks;
+   }
+   public void setYear(Integer year) {
+      this.year = year;
+   }
+   public Integer getYear() {
+      return year;
+   }
+   public void setSid(Integer sid) {
+      this.sid = sid;
+   }
+   public Integer getSid() {
+      return sid;
+   }
+}
+```
+
+下面是 **StudentMarksMapper.java** 文件的内容：
+
+```java
+package com.tutorialspoint;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
+public class StudentMarksMapper implements RowMapper<StudentMarks> {
+   public StudentMarks mapRow(ResultSet rs, int rowNum) throws SQLException {
+      StudentMarks studentMarks = new StudentMarks();
+      studentMarks.setId(rs.getInt("id"));
+      studentMarks.setName(rs.getString("name"));
+      studentMarks.setAge(rs.getInt("age"));
+      studentMarks.setSid(rs.getInt("sid"));
+      studentMarks.setMarks(rs.getInt("marks"));
+      studentMarks.setYear(rs.getInt("year"));
+      return studentMarks;
+   }
+}
+```
+
+下面是定义的 DAO 接口 StudentDAO 实现类文件 **StudentJDBCTemplate.java**：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+public class StudentJDBCTemplate implements StudentDAO{
+   private JdbcTemplate jdbcTemplateObject;
+   public void setDataSource(DataSource dataSource) {
+      this.jdbcTemplateObject = new JdbcTemplate(dataSource);
+   }
+   public void create(String name, Integer age, Integer marks, Integer year){
+      try {
+         String SQL1 = "insert into Student (name, age) values (?, ?)";
+         jdbcTemplateObject.update( SQL1, name, age);
+         // Get the latest student id to be used in Marks table
+         String SQL2 = "select max(id) from Student";
+         int sid = jdbcTemplateObject.queryForInt( SQL2 );
+         String SQL3 = "insert into Marks(sid, marks, year) " + 
+                       "values (?, ?, ?)";
+         jdbcTemplateObject.update( SQL3, sid, marks, year);
+         System.out.println("Created Name = " + name + ", Age = " + age);
+         // to simulate the exception.
+         throw new RuntimeException("simulate Error condition") ;
+      } catch (DataAccessException e) {
+         System.out.println("Error in creating record, rolling back");
+         throw e;
+      }
+   }
+   public List<StudentMarks> listStudents() {
+      String SQL = "select * from Student, Marks where Student.id=Marks.sid";
+      List <StudentMarks> studentMarks=jdbcTemplateObject.query(SQL, 
+      new StudentMarksMapper());
+      return studentMarks;
+   }
+}
+```
+
+现在让我们改变主应用程序文件 **MainApp.java**，如下所示：
+
+```java
+package com.tutorialspoint;
+import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class MainApp {
+   public static void main(String[] args) {
+      ApplicationContext context = 
+             new ClassPathXmlApplicationContext("Beans.xml");
+      StudentDAO studentJDBCTemplate = 
+      (StudentDAO)context.getBean("studentJDBCTemplate");     
+      System.out.println("------Records creation--------" );
+      studentJDBCTemplate.create("Zara", 11, 99, 2010);
+      studentJDBCTemplate.create("Nuha", 20, 97, 2010);
+      studentJDBCTemplate.create("Ayan", 25, 100, 2011);
+      System.out.println("------Listing all the records--------" );
+      List<StudentMarks> studentMarks = studentJDBCTemplate.listStudents();
+      for (StudentMarks record : studentMarks) {
+         System.out.print("ID : " + record.getId() );
+         System.out.print(", Name : " + record.getName() );
+         System.out.print(", Marks : " + record.getMarks());
+         System.out.print(", Year : " + record.getYear());
+         System.out.println(", Age : " + record.getAge());
+      }
+   }
+}
+```
+
+以下是配置文件 **Beans.xml** 的内容：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:tx="http://www.springframework.org/schema/tx"
+   xmlns:aop="http://www.springframework.org/schema/aop"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+   http://www.springframework.org/schema/tx
+   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+   <!-- Initialization for data source -->
+   <bean id="dataSource" 
+      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://localhost:3306/TEST"/>
+      <property name="username" value="root"/>
+      <property name="password" value="cohondob"/>
+   </bean>
+
+   <tx:advice id="txAdvice"  transaction-manager="transactionManager">
+      <tx:attributes>
+      <tx:method name="create"/>
+      </tx:attributes>
+   </tx:advice>
+
+   <aop:config>
+      <aop:pointcut id="createOperation" 
+      expression="execution(* com.tutorialspoint.StudentJDBCTemplate.create(..))"/>
+      <aop:advisor advice-ref="txAdvice" pointcut-ref="createOperation"/>
+   </aop:config>
+
+   <!-- Initialization for TransactionManager -->
+   <bean id="transactionManager"
+   class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
+
+   <!-- Definition for studentJDBCTemplate bean -->
+   <bean id="studentJDBCTemplate"  
+   class="com.tutorialspoint.StudentJDBCTemplate">
+      <property name="dataSource"  ref="dataSource" />  
+   </bean>
+
+</beans>
+```
+
+当你完成了创建源和 bean 配置文件后，让我们运行应用程序。如果你的应用程序运行顺利的话，那么会输出如下所示的异常。在这种情况下，事务会回滚并且在数据库表中不会创建任何记录。
+
+```json
+------Records creation--------
+Created Name = Zara, Age = 11
+Exception in thread "main" java.lang.RuntimeException: simulate Error condition
+```
+
+在删除异常后，你可以尝试上述示例，在这种情况下，会提交事务并且你可以在数据库中看见一条记录。
+
