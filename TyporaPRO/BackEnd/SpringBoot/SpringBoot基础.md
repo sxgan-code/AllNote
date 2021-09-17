@@ -1362,3 +1362,236 @@ public class WebLogAspect {
 
 ![image-20210815122922118](image/SpringBoot%E5%9F%BA%E7%A1%80/image-20210815122922118.png)
 
+## 5.6 SpringBoot整合log4j
+
+### 5.6.1 导入依赖
+
+```xml
+<dependency>  
+    <groupId>org.springframework.boot</groupId>  
+    <artifactId>spring-boot-starter-web</artifactId>  
+    <exclusions><!-- 去掉springboot默认配置 -->  
+        <exclusion>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-logging</artifactId>  
+        </exclusion>  
+    </exclusions>  
+</dependency> 
+
+<dependency> <!-- 引入log4j依赖 -->  
+    <groupId>org.springframework.boot</groupId>  
+    <artifactId>spring-boot-starter-log4j</artifactId>  
+</dependency> 
+```
+
+### 5.6.2 添加配置文件
+
+log4j.properties是log4j的重要配置文件
+
+```properties
+#定义根节点
+log4j.rootLogger=DEBUG,error,CONSOLE,info
+
+#设置控制台打印
+log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender     
+#设置为格式化打印 PatternLayout
+log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout     
+log4j.appender.CONSOLE.layout.ConversionPattern=%d{yyyy-MM-dd-HH-mm} [%t] [%c] [%p] - %m%n    
+
+#设置info级别的日志
+log4j.logger.info=info
+#输出到日志文件
+log4j.appender.info=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.info.layout=org.apache.log4j.PatternLayout     
+log4j.appender.info.layout.ConversionPattern=%d{yyyy-MM-dd-HH-mm} [%t] [%c] [%p] - %m%n  
+#日期文件名格式化
+log4j.appender.info.datePattern='.'yyyy-MM-dd
+log4j.appender.info.Threshold = info   
+#是否追加
+log4j.appender.info.append=true
+#文件存放位置
+log4j.appender.info.File=E:/dance/demo/log/info.log
+
+log4j.logger.error=error  
+log4j.appender.error=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.error.layout=org.apache.log4j.PatternLayout     
+log4j.appender.error.layout.ConversionPattern=%d{yyyy-MM-dd-HH-mm} [%t] [%c] [%p] - %m%n  
+log4j.appender.error.datePattern='.'yyyy-MM-dd
+log4j.appender.error.Threshold = error   
+log4j.appender.error.append=true
+log4j.appender.error.File=E:/dance/demo/log/error.log
+
+log4j.logger.DEBUG=DEBUG
+log4j.appender.DEBUG=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.DEBUG.layout=org.apache.log4j.PatternLayout     
+log4j.appender.DEBUG.layout.ConversionPattern=%d{yyyy-MM-dd-HH-mm} [%t] [%c] [%p] - %m%n  
+log4j.appender.DEBUG.datePattern='.'yyyy-MM-dd
+log4j.appender.DEBUG.Threshold = DEBUG   
+log4j.appender.DEBUG.append=true
+log4j.appender.DEBUG.File=E:/dance/demo/log/dubug.log
+```
+
+### 5.6.3 补充log4j2
+
+**导入依赖**
+
+```xml
+<dependency>  
+    <groupId>org.springframework.boot</groupId>  
+    <artifactId>spring-boot-starter-web</artifactId>  
+    <exclusions><!-- 去掉springboot默认配置 -->  
+        <exclusion>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-logging</artifactId>  
+        </exclusion>  
+    </exclusions>  
+</dependency> 
+
+<dependency> <!-- 引入log4j2依赖 -->  
+    <groupId>org.springframework.boot</groupId>  
+    <artifactId>spring-boot-starter-log4j2</artifactId>  
+</dependency> 
+```
+
+**配置文件log4j2.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status,这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,你会看到log4j2内部各种详细输出-->
+<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身,设置间隔秒数-->
+<configuration status="WARN" monitorInterval="1800">
+    <Properties>
+        <!-- 日志默认存放的位置,这里设置为项目根路径下,也可指定绝对路径 -->
+        <!-- ${web:rootDir}是web项目根路径,java项目没有这个变量,需要删掉,否则会报异常 -->
+        <!--<property name="basePath">D://log4j2Logs</property>-->
+        <property name="basePath">D://log4j2Logs</property>
+
+        <!-- 控制台默认输出格式,"%-5level":日志级别,"%l":输出完整的错误位置,是小写的L,因为有行号显示,所以影响日志输出的性能 -->
+        <property name="console_log_pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %l - %m%n</property>
+        <!-- 日志文件默认输出格式,不带行号输出(行号显示会影响日志输出性能);%C:大写,类名;%M:方法名;%m:错误信息;%n:换行 -->
+        <property name="log_pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %C.%M - %m%n</property>
+
+        <!-- 日志默认切割的最小单位 -->
+        <property name="every_file_size">20MB</property>
+        <!-- 日志默认输出级别 -->
+        <property name="output_log_level">DEBUG</property>
+
+        <!-- 日志默认存放路径(所有级别日志) -->
+        <property name="rolling_fileName">D://all.log</property>
+        <!-- 日志默认压缩路径,将超过指定文件大小的日志,自动存入按"年月"建立的文件夹下面并进行压缩,作为存档 -->
+        <property name="rolling_filePattern">${basePath}/%d{yyyy-MM}/all-%d{yyyy-MM-dd}-%i.log.gz</property>
+        <!-- 日志默认同类型日志,同一文件夹下可以存放的数量,不设置此属性则默认为7个 -->
+        <property name="rolling_max">50</property>
+
+        <!-- Info日志默认存放路径(Info级别日志) -->
+        <property name="info_fileName">D://info.log</property>
+        <!-- Info日志默认压缩路径,将超过指定文件大小的日志,自动存入按"年月"建立的文件夹下面并进行压缩,作为存档 -->
+        <property name="info_filePattern">D://%d{yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz</property>
+        <!-- Info日志默认同一文件夹下可以存放的数量,不设置此属性则默认为7个 -->
+        <property name="info_max">10</property>
+
+        <!-- Warn日志默认存放路径(Warn级别日志) -->
+        <property name="warn_fileName">D://warn.log</property>
+        <!-- Warn日志默认压缩路径,将超过指定文件大小的日志,自动存入按"年月"建立的文件夹下面并进行压缩,作为存档 -->
+        <property name="warn_filePattern">D://%d{yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log.gz</property>
+        <!-- Warn日志默认同一文件夹下可以存放的数量,不设置此属性则默认为7个 -->
+        <property name="warn_max">10</property>
+
+        <!-- Error日志默认存放路径(Error级别日志) -->
+        <property name="error_fileName">D://error.log</property>
+        <!-- Error日志默认压缩路径,将超过指定文件大小的日志,自动存入按"年月"建立的文件夹下面并进行压缩,作为存档 -->
+        <property name="error_filePattern">D://%d{yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz</property>
+        <!-- Error日志默认同一文件夹下可以存放的数量,不设置此属性则默认为7个 -->
+        <property name="error_max">10</property>
+
+        <!-- 控制台显示的日志最低级别 -->
+        <property name="console_print_level">DEBUG</property>
+
+    </Properties>
+
+    <!--定义appender -->
+    <appenders>
+        <!-- 用来定义输出到控制台的配置 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 设置控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch)-->
+            <ThresholdFilter level="${console_print_level}" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- 设置输出格式,不设置默认为:%m%n -->
+            <PatternLayout pattern="${console_log_pattern}"/>
+        </Console>
+
+        <!-- 打印root中指定的level级别以上的日志到文件 -->
+        <RollingFile name="RollingFile" fileName="${rolling_fileName}" filePattern="${rolling_filePattern}">
+            <PatternLayout pattern="${log_pattern}"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            <!-- 设置同类型日志,同一文件夹下可以存放的数量,如果不设置此属性则默认存放7个文件 -->
+            <DefaultRolloverStrategy max="${rolling_max}" />
+            <!-- 匹配INFO以及以上级别 -->
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- 打印INFO级别的日志到文件 -->
+        <RollingFile name="InfoFile" fileName="${info_fileName}" filePattern="${info_filePattern}">
+            <PatternLayout pattern="${log_pattern}"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            <DefaultRolloverStrategy max="${info_max}" />
+            <!-- 匹配INFO级别 -->
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- 打印WARN级别的日志到文件 -->
+        <RollingFile name="WarnFile" fileName="${warn_fileName}" filePattern="${warn_filePattern}">
+            <PatternLayout pattern="${log_pattern}"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            <DefaultRolloverStrategy max="${warn_max}" />
+            <!-- 匹配WARN级别 -->
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- 打印ERROR级别的日志到文件 -->
+        <RollingFile name="ErrorFile" fileName="${error_fileName}" filePattern="${error_filePattern}">
+            <PatternLayout pattern="${log_pattern}"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            <DefaultRolloverStrategy max="${error_max}" />
+            <!-- 匹配ERROR级别 -->
+            <Filters>
+                <ThresholdFilter level="FATAL" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+    </appenders>
+
+    <!--然后定义logger,只有定义了logger并引入的appender,appender才会生效-->
+    <loggers>
+        <!-- 设置对打印sql语句的支持 -->
+        <logger name="java.sql" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <!--建立一个默认的root的logger-->
+        <root level="${output_log_level}">
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="Console"/>
+            <appender-ref ref="InfoFile"/>
+            <appender-ref ref="WarnFile"/>
+            <appender-ref ref="ErrorFile"/>
+        </root>
+    </loggers>
+</configuration>
+
+```
+
+**application.yml中配置指向**
+
+```yml
+logging:
+	config: classpath:log4j2.xml
+```
+

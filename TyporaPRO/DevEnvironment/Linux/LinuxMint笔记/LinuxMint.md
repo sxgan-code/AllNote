@@ -103,6 +103,16 @@ https://www.linuxmint.com/edition.php?id=288
 
 ![image-20210813234922018](image/LinuxMint/image-20210813234922018.png)
 
+## xshell6启动问题
+
+启动时msvcp110.dll、msvcr110.dll、mfc110u.dll丢失解决
+
+前往微软下载相关文件安装
+
+![image-20210917141821945](image/image-20210917141821945.png)
+
+https://visualstudio.microsoft.com/zh-hans/vs/older-downloads/
+
 ## 连接接Linux mint
 
 ### Xshell连接
