@@ -847,7 +847,7 @@ index  代表数组索引
   
 
 
-​```html
+```html
 <!-- 阻止单击事件继续传播 -->
 <a v-on:click.stop="doThis"></a>
 
@@ -3116,7 +3116,7 @@ Vue.component('my-component-name', {  //第一个参数 组件的名称，此处
 
 ```
 
-##  axios
+#  六、axios
 
 - 基于promise用于浏览器和node.js的http客户端
 - 支持浏览器和node.js
@@ -3125,7 +3125,7 @@ Vue.component('my-component-name', {  //第一个参数 组件的名称，此处
 - 自动转换JSON数据
 - 能转换请求和响应数据
 
-## axios基础用法
+## 1、axios基础用法
 
 - get和 delete请求传递参数
   - 通过传统的url  以 ? 的形式传递参数
@@ -3135,82 +3135,124 @@ Vue.component('my-component-name', {  //第一个参数 组件的名称，此处
   - 通过选项传递参数
   - 通过 URLSearchParams  传递参数 
 
+## 2、get 请求
+
+### 不传参
+
 ```js
-    # 1. 发送get 请求 
-	axios.get('http://localhost:3000/adata').then(function(ret){ 
-      #  拿到 ret 是一个对象      所有的对象都存在 ret 的data 属性里面
-      // 注意data属性是固定的用法，用于获取后台的实际数据
-      // console.log(ret.data)
-      console.log(ret)
-    })
-	# 2.  get 请求传递参数
-    # 2.1  通过传统的url  以 ? 的形式传递参数
-	axios.get('http://localhost:3000/axios?id=123').then(function(ret){
-      console.log(ret.data)
-    })
-    # 2.2  restful 形式传递参数 
-    axios.get('http://localhost:3000/axios/123').then(function(ret){
-      console.log(ret.data)
-    })
-	# 2.3  通过params  形式传递参数 
-    axios.get('http://localhost:3000/axios', {
-      params: {
+axios.get('http://localhost:3000/adata').then(function(ret){ 
+    //拿到 ret 是一个对象      所有的对象都存在 ret 的data 属性里面
+    // 注意data属性是固定的用法，用于获取后台的实际数据
+    // console.log(ret.data)
+    console.log(ret)
+})
+```
+
+### url  以 ? 的形式传递参数
+
+```js
+axios.get('http://localhost:3000/axios?id=123').then(function(ret){
+    console.log(ret.data)
+})
+```
+
+### restful 形式传递参数
+
+```js
+axios.get('http://localhost:3000/axios/123').then(function(ret){
+    console.log(ret.data)
+})
+```
+
+### 通过params  形式传递参数
+
+```js
+axios.get('http://localhost:3000/axios', {
+    params: {
         id: 789
-      }
-    }).then(function(ret){
-      console.log(ret.data)
-    })
-	#3 axios delete 请求传参     传参的形式和 get 请求一样
-    axios.delete('http://localhost:3000/axios', {
-      params: {
-        id: 111
-      }
-    }).then(function(ret){
-      console.log(ret.data)
-    })
-
-	# 4  axios 的 post 请求
-    # 4.1  通过选项传递参数
-    axios.post('http://localhost:3000/axios', {
-      uname: 'lisi',
-      pwd: 123
-    }).then(function(ret){
-      console.log(ret.data)
-    })
-	# 4.2  通过 URLSearchParams  传递参数 
-    var params = new URLSearchParams();
-    params.append('uname', 'zhangsan');
-    params.append('pwd', '111');
-    axios.post('http://localhost:3000/axios', params).then(function(ret){
-      console.log(ret.data)
-    })
-
- 	#5  axios put 请求传参   和 post 请求一样 
-    axios.put('http://localhost:3000/axios/123', {
-      uname: 'lisi',
-      pwd: 123
-    }).then(function(ret){
-      console.log(ret.data)
-    })
-
+    }
+}).then(function(ret){
+    console.log(ret.data)
+})
 ```
 
-## axios 全局配置
+## 3、post 请求
+
+### 通过选项传递参数
 
 ```js
-#  配置公共的请求头 
-axios.defaults.baseURL = 'https://api.example.com';
-#  配置 超时时间
-axios.defaults.timeout = 2500;
-#  配置公共的请求头
-axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-# 配置公共的 post 的 Content-Type
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
-
+axios.post('http://localhost:3000/axios', {
+    uname: 'lisi',
+    pwd: 123
+}).then(function(ret){
+    console.log(ret.data)
+})
 ```
 
-##  axios 拦截器
+### 过 URLSearchParams  传递参数
+
+```js
+var params = new URLSearchParams();
+params.append('uname', 'zhangsan');
+params.append('pwd', '111');
+axios.post('http://localhost:3000/axios', params).then(function(ret){
+    console.log(ret.data)
+})
+```
+
+## 4、delete 请求
+
+axios delete 请求传参传参的形式和 get 请求一样
+
+```js
+axios.delete('http://localhost:3000/axios', {
+    params: {
+        id: 111
+    }
+}).then(function(ret){
+    console.log(ret.data)
+})
+```
+
+##     5、put 请求
+
+axios put 请求传参   和 post 请求一样 
+
+```js
+axios.put('http://localhost:3000/axios/123', {
+    uname: 'lisi',
+    pwd: 123
+}).then(function(ret){
+    console.log(ret.data)
+})
+```
+
+## 6、axios 全局配置
+
+###  配置公共的请求头 
+```js
+axios.defaults.baseURL = 'https://api.example.com';
+```
+
+###  配置 超时时间
+
+```js
+axios.defaults.timeout = 2500;
+```
+
+###  配置公共的请求头
+
+```js
+axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+```
+
+### 配置公共的 post 的 Content-Type
+
+```js
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+```
+
+##  7、axios 拦截器
 
 - 请求拦截器
   - 请求拦截器的作用是在请求发送前进行一些操作
@@ -3219,30 +3261,37 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
   - 响应拦截器的作用是在接收到响应后进行一些操作
     - 例如在服务器返回登录状态失效，需要重新登录的时候，跳转到登录页
 
+### 请求拦截器 
+
 ```js
-	# 1. 请求拦截器 
-	axios.interceptors.request.use(function(config) {
-      console.log(config.url)
-      # 1.1  任何请求都会经过这一步   在发送请求之前做些什么   
-      config.headers.mytoken = 'nihao';
-      # 1.2  这里一定要return   否则配置不成功  
-      return config;
-    }, function(err){
-       #1.3 对请求错误做点什么    
-      console.log(err)
-    })
-	#2. 响应拦截器 
-    axios.interceptors.response.use(function(res) {
-      #2.1  在接收响应做些什么  
-      var data = res.data;
-      return data;
-    }, function(err){
-      #2.2 对响应错误做点什么  
-      console.log(err)
-    })
+axios.interceptors.request.use(function(config) {
+    console.log(config.url)
+    // 1.1  任何请求都会经过这一步   在发送请求之前做些什么   
+    config.headers.mytoken = 'nihao';
+    // 1.2  这里一定要return   否则配置不成功  
+    return config;
+}, function(err){
+    // 1.3 对请求错误做点什么    
+    console.log(err)
+})
 ```
 
-##  async  和 await
+###  响应拦截器
+
+```js
+axios.interceptors.response.use(function(res) {
+    //2.1  在接收响应做些什么  
+    var data = res.data;
+    return data;
+}, function(err){
+    //2.2 对响应错误做点什么  
+    console.log(err)
+})
+```
+
+
+
+##  8、async  和 await
 
 - async作为一个关键字放到函数前面
   - 任何一个`async`函数都会隐式返回一个`promise`
@@ -3251,40 +3300,45 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
   - ​     await函数不能单独使用
 - **async/await 让异步代码看起来、表现起来更像同步代码**
 
+### async 基础用法
+
+async作为一个关键字放到函数前面
+
 ```js
- 	# 1.  async 基础用法
-    # 1.1 async作为一个关键字放到函数前面
-	async function queryData() {
-      # 1.2 await关键字只能在使用async定义的函数中使用      await后面可以直接跟一个 Promise实例对象
-      var ret = await new Promise(function(resolve, reject){
+async function queryData() {
+    //# 1.2 await关键字只能在使用async定义的函数中使用      await后面可以直接跟一个 Promise实例对象
+    var ret = await new Promise(function(resolve, reject){
         setTimeout(function(){
-          resolve('nihao')
+            resolve('nihao')
         },1000);
-      })
-      // console.log(ret.data)
-      return ret;
-    }
-	# 1.3 任何一个async函数都会隐式返回一个promise   我们可以使用then 进行链式编程
-    queryData().then(function(data){
-      console.log(data)
     })
-
-	#2.  async    函数处理多个异步函数
-    axios.defaults.baseURL = 'http://localhost:3000';
-
-    async function queryData() {
-      # 2.1  添加await之后 当前的await 返回结果之后才会执行后面的代码   
-      
-      var info = await axios.get('async1');
-      #2.2  让异步代码看起来、表现起来更像同步代码
-      var ret = await axios.get('async2?info=' + info.data);
-      return ret.data;
-    }
-
-    queryData().then(function(data){
-      console.log(data)
-    })
+    // console.log(ret.data)
+    return ret;
+}
+//1.3 任何一个async函数都会隐式返回一个promise   我们可以使用then 进行链式编程
+queryData().then(function(data){
+    console.log(data)
+})
 ```
+
+### async函数处理多个异步函数
+
+```js
+axios.defaults.baseURL = 'http://localhost:3000';
+async function queryData() {
+    //2.1  添加await之后 当前的await 返回结果之后才会执行后面的代码   
+
+    var info = await axios.get('async1');
+    //2.2  让异步代码看起来、表现起来更像同步代码
+    var ret = await axios.get('async2?info=' + info.data);
+    return ret.data;
+}
+queryData().then(function(data){
+    console.log(data)
+})
+```
+
+
 
 ## 图书列表案例
 
@@ -3328,7 +3382,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
         /*
              图书管理-添加图书
          */
-        # 2   配置公共的url地址  简化后面的调用方式
+        // 2   配置公共的url地址  简化后面的调用方式
         axios.defaults.baseURL = 'http://localhost:3000/';
         axios.interceptors.response.use(function(res) {
             return res.data;
@@ -3346,19 +3400,19 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
                 books: []
             },
             methods: {
-                # 3 定义一个方法 用来发送 ajax 
-                # 3.1  使用 async  来 让异步的代码  以同步的形式书写 
+                // 3 定义一个方法 用来发送 ajax 
+                //3.1  使用 async  来 让异步的代码  以同步的形式书写 
                 queryData: async function() {
                     // 调用后台接口获取图书列表数据
                     // var ret = await axios.get('books');
                     // this.books = ret.data;
-					# 3.2  发送ajax请求  把拿到的数据放在books 里面   
+					// 3.2  发送ajax请求  把拿到的数据放在books 里面   
                     this.books = await axios.get('books');
                 }
             },
 
             mounted: function() {
-				#  4 mounted  里面 DOM已经加载完毕  在这里调用函数  
+				//  4 mounted  里面 DOM已经加载完毕  在这里调用函数  
                 this.queryData();
             }
         });
@@ -3488,7 +3542,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 
 
 
-# 六、Vue高级部分
+# 七、Vue高级部分
 
 详见 [vue项目结构化.md](./vue项目结构化.md)
 
