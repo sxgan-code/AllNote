@@ -941,7 +941,7 @@ spring:
     url: jdbc:mysql://localhost:3306/demo?serverTimezone=UTC
     username: root
     password: daniel
- 
+
 ```
 
 ##### Oracle
