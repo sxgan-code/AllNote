@@ -429,7 +429,7 @@ public void getStudents(){
 
 MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。
 
-iBATIS一词来源于“internet”和“abatis”的组合，是一个基于Java的持久层框架。iBATIS提供的持久层框架包括SQL Maps和Data Access Objects（DAO）。
+iBATIS一词来源于"internet"和"abatis"的组合，是一个基于Java的持久层框架。iBATIS提供的持久层框架包括SQL Maps和Data Access Objects（DAO）。
 
 MyBatis 是支持普通 SQL查询，存储过程和高级映射的优秀持久层框架。MyBatis 消除了几乎所有的JDBC代码和参数的手工设置以及结果集的检索。MyBatis 使用简单的 XML或注解用于配置和原始映射，将接口和 Java 的POJOs（Plain Ordinary Java Objects，普通的 Java对象）映射成数据库中的记录。
 
@@ -850,35 +850,35 @@ public class Author {
 
 ==注意==:为了应对原始类型的命名重复，采取了特殊的命名风格。
 
-| **别名**       | **映射的类型** |
-| -------------- | -------------- |
-| **_byte**      | **byte**       |
-| **_long**      | **long**       |
-| **_short**     | **short**      |
-| **_int**       | **int**        |
-| **_integer**   | **int**        |
-| **_double**    | **double**     |
-| **_float**     | **float**      |
-| **_boolean**   | **boolean**    |
-| **string**     | **String**     |
-| **byte**       | **Byte**       |
-| **long**       | **Long**       |
-| **short**      | **Short**      |
-| **int**        | **Integer**    |
-| **integer**    | **Integer**    |
-| **double**     | **Double**     |
-| **float**      | **Float**      |
-| **boolean**    | **Boolean**    |
-| **date**       | **Date**       |
-| **decimal**    | **BigDecimal** |
-| **bigdecimal** | **BigDecimal** |
-| **object**     | **Object**     |
-| **map**        | **Map**        |
-| **hashmap**    | **HashMap**    |
-| **list**       | **List**       |
-| **arraylist**  | **ArrayList**  |
-| **collection** | **Collection** |
-| **iterator**   | **Iterator**   |
+| 别名       | 映射的类型 |
+| ---------- | ---------- |
+| _byte      | byte       |
+| _long      | long       |
+| _short     | short      |
+| _int       | int        |
+| _integer   | int        |
+| _double    | double     |
+| _float     | float      |
+| _boolean   | boolean    |
+| string     | String     |
+| byte       | Byte       |
+| long       | Long       |
+| short      | Short      |
+| int        | Integer    |
+| integer    | Integer    |
+| double     | Double     |
+| float      | Float      |
+| boolean    | Boolean    |
+| date       | Date       |
+| decimal    | BigDecimal |
+| bigdecimal | BigDecimal |
+| object     | Object     |
+| map        | Map        |
+| hashmap    | HashMap    |
+| list       | List       |
+| arraylist  | ArrayList  |
+| collection | Collection |
+| iterator   | Iterator   |
 
 ## 5、环境配置（environments）
 
@@ -922,7 +922,7 @@ driver – 这是 JDBC 驱动的 Java 类全限定名（并不是 JDBC 驱动�
 >
 > defaultNetworkTimeout – 等待数据库操作完成的默认网络超时时间（单位：毫秒）。
 
-作为可选项，你也可以传递属性给数据库驱动。只需在属性名加上“driver.”前缀即可，例如：
+作为可选项，你也可以传递属性给数据库驱动。只需在属性名加上"driver."前缀即可，例如：
 
 > driver.encoding=UTF8
 
@@ -930,7 +930,7 @@ driver – 这是 JDBC 驱动的 Java 类全限定名（并不是 JDBC 驱动�
 
 #### POOLED（连接池）
 
- 这种数据源的实现利用“池”的概念将 JDBC 连接对象组织起来，避免了创建新的连接实例时所必需的初始化和认证时间。 这种处理方式很流行，能使并发 Web 应用快速响应请求。
+ 这种数据源的实现利用"池"的概念将 JDBC 连接对象组织起来，避免了创建新的连接实例时所必需的初始化和认证时间。 这种处理方式很流行，能使并发 Web 应用快速响应请求。
 
 除了上述提到 UNPOOLED 下的属性外，还有更多属性用来配置 POOLED 的数据源：
 
@@ -944,7 +944,7 @@ driver – 这是 JDBC 驱动的 Java 类全限定名（并不是 JDBC 驱动�
 >
 > poolMaximumLocalBadConnectionTolerance – 这是一个关于坏连接容忍度的底层设置， 作用于每一个尝试从缓存池获取连接的线程。 如果这个线程获取到的是一个坏的连接，那么这个数据源允许这个线程尝试重新获取一个新的连接，但是这个重新尝试的次数不应该超过 poolMaximumIdleConnections 与 poolMaximumLocalBadConnectionTolerance 之和。 默认值：3（新增于 3.4.5）
 >
-> poolPingQuery – 发送到数据库的侦测查询，用来检验连接是否正常工作并准备接受请求。默认是“NO PING QUERY SET”，这会导致多数数据库驱动出错时返回恰当的错误消息。
+> poolPingQuery – 发送到数据库的侦测查询，用来检验连接是否正常工作并准备接受请求。默认是"NO PING QUERY SET"，这会导致多数数据库驱动出错时返回恰当的错误消息。
 >
 > poolPingEnabled – 是否启用侦测查询。若开启，需要设置 poolPingQuery 属性为一个可执行的 SQL 语句（最好是一个速度非常快的 SQL 语句），默认值：false。
 >
@@ -960,7 +960,7 @@ driver – 这是 JDBC 驱动的 Java 类全限定名（并不是 JDBC 驱动�
 >
 > data_source – 这是引用数据源实例位置的上下文路径。提供了 initial_context 配置时会在其返回的上下文中进行查找，没有提供时则直接在 InitialContext 中查找。
 
-和其他数据源配置类似，可以通过添加前缀`“env.”`直接把属性传递给 `InitialContext`。比如：
+和其他数据源配置类似，可以通过添加前缀`"env."`直接把属性传递给 `InitialContext`。比如：
 
 > env.encoding=UTF8
 
@@ -1023,10 +1023,10 @@ driver – 这是 JDBC 驱动的 Java 类全限定名（并不是 JDBC 驱动�
 </mappers>
 ```
 
-==**注意：**==
+== 注意： ==
 
-- **使用包名注册绑定，接口名一定要和配置文件同名**
-- **接口和配置文件必须在同一个包下**
+-  使用包名注册绑定，接口名一定要和配置文件同名 
+-  接口和配置文件必须在同一个包下 
 
 # 五、使用注解开发
 
@@ -1422,4 +1422,641 @@ User{userId=50, userName='Lucy', userBirthday=Wed Dec 03 20:09:32 CST 2008, user
 User{userId=58, userName='张三', userBirthday=Fri May 15 18:50:04 CST 2020, userSex='男', userAddress='南昌', accounts=[]}
 User{userId=59, userName='小李', userBirthday=Wed May 20 20:17:41 CST 2020, userSex='女', userAddress='CHN', accounts=[]}
 ```
+
+# 六、动态 SQL
+
+动态 SQL 是 MyBatis 的强大特性之一。如果你使用过 JDBC 或其它类似的框架，你应该能理解根据不同条件拼接 SQL 语句有多痛苦，例如拼接时要确保不能忘记添加必要的空格，还要注意去掉列表最后一个列名的逗号。利用动态 SQL，可以彻底摆脱这种痛苦。
+
+使用动态 SQL 并非一件易事，但借助可用于任何 SQL 映射语句中的强大的动态 SQL 语言，MyBatis 显著地提升了这一特性的易用性。
+
+如果你之前用过 JSTL 或任何基于类 XML 语言的文本处理器，你对动态 SQL 元素可能会感觉似曾相识。在 MyBatis 之前的版本中，需要花时间了解大量的元素。借助功能强大的基于 OGNL 的表达式，MyBatis 3 替换了之前的大部分元素，大大精简了元素种类，现在要学习的元素种类比原来的一半还要少。
+
+> if
+>
+> choose (when, otherwise)
+>
+> trim (where, set)
+>
+> foreach
+
+
+
+## 1、if
+
+使用动态 SQL 最常见情景是根据条件包含 where 子句的一部分。比如：
+
+```xml
+<select id="findActiveBlogWithTitleLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  WHERE state = ‘ACTIVE’
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+</select>
+```
+
+这条语句提供了可选的查找文本功能。如果不传入"` title`"，那么所有处于"`ACTIVE`"状态的 BLOG 都会返回；如果传入了 "title" 参数，那么就会对 "`title` "一列进行模糊查找并返回对应的 "`BLOG `"结果（细心的读者可能会发现，"`title`"的参数值需要包含查找掩码或通配符字符）。
+如果希望通过 "`title`" 和 "`author`" 两个参数进行可选搜索该怎么办呢？首先，我想先将语句名称修改成更名副其实的名称；接下来，只需要加入另一个条件即可。
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+  <if test="author != null and author.name != null">
+    AND author_name like #{author.name}
+  </if>
+</select>
+```
+
+### eg：
+
+```xml
+<resultMap id="queryMap" type="userInfo">
+    <result property="id" column="id"></result>
+    <result property="uName" column="uname"></result>
+    <result property="uAge" column="uage"></result>
+    <result property="time" column="utime"></result>
+</resultMap>
+<!--    if语句-->
+<select id="queryUserByIf" resultMap="queryMap" parameterType="map">
+    select * from user_info
+    <where>
+        <if test="id !=null" >
+            id =#{id}
+        </if>
+        <if test="uAge!=null">
+            or uage=#{uAge}
+        </if>
+    </where>
+</select>
+```
+
+## 2、choose、when、otherwise
+
+有时候，我们不想使用所有的条件，而只是想从多个条件中选择一个使用。针对这种情况，MyBatis 提供了 choose 元素，它有点像 Java 中的 switch 语句。
+
+还是上面的例子，但是策略变为：传入了 "`title`" 就按 "`title`" 查找，传入了 "`author`" 就按 "`author`" 查找的情形。若两者都没有传入，就返回标记为 `featured `的 `BLOG`（这可能是管理员认为，与其返回大量的无意义随机 `Blog`，还不如返回一些由管理员挑选的 `Blog`）。
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+  <choose>
+    <when test="title != null">
+      AND title like #{title}
+    </when>
+    <when test="author != null and author.name != null">
+      AND author_name like #{author.name}
+    </when>
+    <otherwise>
+      AND featured = 1
+    </otherwise>
+  </choose>
+</select>
+```
+
+### eg:
+
+```xml
+<!--    choose查询,注意#是防止sql注入自动在字段外加'号，group by查询时可能查不到，所以使用$-->
+    <select id="queryUserByChoose" parameterType="map" resultMap="queryMap" resultType="userInfo">
+        select * from user_info
+        <where>
+            <choose>
+                <when test="id!=null">id =#{id}</when>
+                <when test="uAge!=null">uage =#{uAge}</when>
+                <when test="uName!=null">uname =#{uName}</when>
+                <when test="time!=null">utime =#{utime}</when>
+                <otherwise></otherwise>
+            </choose>
+        </where>
+        <if test="column!=null">group by ${column}</if>
+    </select>
+```
+
+## 3、trim、where、set
+
+前面几个例子已经合宜地解决了一个臭名昭著的动态 SQL 问题。现在回到之前的 "`if`" 示例，这次我们将 "`state = 'ACTIVE'`" 设置成动态条件，看看会发生什么。
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  WHERE
+  <if test="state != null">
+    state = #{state}
+  </if>
+  <if test="title != null">
+    AND title like #{title}
+  </if>
+  <if test="author != null and author.name != null">
+    AND author_name like #{author.name}
+  </if>
+</select>
+```
+
+如果没有匹配的条件会怎么样？最终这条 SQL 会变成这样：
+
+```sql
+SELECT * FROM BLOG
+WHERE
+```
+
+这会导致查询失败。如果匹配的只是第二个条件又会怎样？这条 SQL 会是这样:
+
+```sql
+SELECT * FROM BLOG
+WHERE
+AND title like 'someTitle'
+```
+
+这个查询也会失败。这个问题不能简单地用条件元素来解决。这个问题是如此的难以解决，以至于解决过的人不会再想碰到这种问题。
+MyBatis 有一个简单且适合大多数场景的解决办法。而在其他场景中，可以对其进行自定义以符合需求。而这，只需要一处简单的改动：
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  <where>
+    <if test="state != null">
+         state = #{state}
+    </if>
+    <if test="title != null">
+        AND title like #{title}
+    </if>
+    <if test="author != null and author.name != null">
+        AND author_name like #{author.name}
+    </if>
+  </where>
+</select>
+```
+
+where 元素只会在子元素返回任何内容的情况下才插入 "WHERE" 子句。而且，若子句的开头为 "AND" 或 "OR"，where 元素也会将它们去除。
+
+如果 where 元素与你期望的不太一样，你也可以通过自定义 trim 元素来定制 where 元素的功能。比如，和 where 元素等价的自定义 trim 元素为：
+
+```xml
+<trim prefix="WHERE" prefixOverrides="AND |OR ">
+  ...
+</trim>
+```
+
+prefixOverrides 属性会忽略通过管道符分隔的文本序列（注意此例中的空格是必要的）。上述例子会移除所有 prefixOverrides 属性中指定的内容，并且插入 prefix 属性中指定的内容。
+
+用于动态更新语句的类似解决方案叫做 set。set 元素可以用于动态包含需要更新的列，忽略其它不更新的列。比如：
+
+```xml
+<update id="updateAuthorIfNecessary">
+  update Author
+    <set>
+      <if test="username != null">username=#{username},</if>
+      <if test="password != null">password=#{password},</if>
+      <if test="email != null">email=#{email},</if>
+      <if test="bio != null">bio=#{bio}</if>
+    </set>
+  where id=#{id}
+</update>
+```
+
+这个例子中，set 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号（这些逗号是在使用条件语句给列赋值时引入的）。
+来看看与 set 元素等价的自定义 trim 元素吧：
+
+```xml
+<trim prefix="SET" suffixOverrides=",">
+  ...
+</trim>
+```
+
+注意，我们覆盖了后缀值设置，并且自定义了前缀值。
+
+### eg:（我们写一段更新语句）
+
+```xml
+<!--    更新语句-->
+<update id="updateUser" parameterType="userInfo">
+    update user_info
+    <set>
+        <if test="uName!=null">
+            uname=#{uName},
+        </if>
+        <if test="uAge!=null">
+            uage=#{uAge},
+        </if>
+        <if test="time!=null">
+            utime=#{time}
+        </if>
+    </set>
+    <where>
+        id=#{id}
+    </where>
+</update>
+```
+
+## 4、SQL片段
+
+将重复的sql语句提取出来，提高代码的复用
+
+### eg：将上例代码用SQL片段编写
+
+```xml
+<!--    更新语句-->
+    <update id="updateUser" parameterType="userInfo">
+        update user_info
+        <include refid="set-if"></include>
+        <where>
+            id=#{id}
+        </where>
+    </update>
+<!--    写sql片段-->
+    <sql id="set-if" >
+        <set>
+            <if test="uName!=null">
+                uname=#{uName},
+            </if>
+            <if test="uAge!=null">
+                uage=#{uAge},
+            </if>
+            <if test="time!=null">
+                utime=#{time}
+            </if>
+        </set>
+    </sql>
+```
+
+## 5、foreach
+
+动态 SQL 的另一个常见使用场景是对集合进行遍历（尤其是在构建 IN 条件语句的时候）。比如：
+
+```xml
+<select id="selectPostIn" resultType="domain.blog.Post">
+  SELECT *
+  FROM POST P
+  WHERE ID in
+  <foreach item="item" index="index" collection="list"
+      open="(" separator="," close=")">
+        #{item}
+  </foreach>
+</select>
+```
+
+foreach 元素的功能非常强大，它允许你指定一个集合，声明可以在元素体内使用的集合项（item）和索引（index）变量。它也允许你指定开头与结尾的字符串以及集合项迭代之间的分隔符separator。这个元素也不会错误地添加多余的分隔符！
+
+==提示==：你可以将任何可迭代对象（如 List、Set 等）、Map 对象或者数组对象作为集合参数传递给 foreach。当使用可迭代对象或者数组时，index 是当前迭代的序号，item 的值是本次迭代获取到的元素。当使用 Map 对象（或者 Map.Entry 对象的集合）时，index 是键，item 是值。
+
+至此，我们已经完成了与 `XML `配置及映射文件相关的讨论。
+
+### eg：查询id为1到4的用户
+
+```xml
+<!--    遍历查询-->
+    <select id="foreachUser" resultType="userInfo" resultMap="queryMap" parameterType="list">
+        select * from user_info
+        <where>
+            id in
+            <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+```
+
+
+
+```java
+@Test
+public void foreachUser() {
+    SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+    UserInfoMapper mapper = sqlSession.getMapper(UserInfoMapper.class);
+    List<Integer> list = new ArrayList<Integer>();
+    for( int i = 1 ;i <5 ; i++ ){
+        list.add(i);
+    }
+    List<UserInfo> list1 = mapper.foreachUser(list);
+    for (UserInfo userInfo : list1) {
+        System.out.println(userInfo);
+    }
+    sqlSession.close();
+}
+```
+
+## 6、script
+
+要在带注解的映射器接口类中使用动态 SQL，可以使用 script 元素。比如:
+
+```java
+  @Update({"<script>",
+      "update Author",
+      "  <set>",
+      "    <if test='username != null'>username=#{username},</if>",
+      "    <if test='password != null'>password=#{password},</if>",
+      "    <if test='email != null'>email=#{email},</if>",
+      "    <if test='bio != null'>bio=#{bio}</if>",
+      "  </set>",
+      "where id=#{id}",
+      "</script>"})
+    void updateAuthorValues(Author author);
+```
+
+## 7、bind
+
+bind 元素允许你在 OGNL 表达式以外创建一个变量，并将其绑定到当前的上下文。比如：
+
+```xml
+<select id="selectBlogsLike" resultType="Blog">
+  <bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
+  SELECT * FROM BLOG
+  WHERE title LIKE #{pattern}
+</select>
+```
+
+## 8、多数据库支持
+
+如果配置了 `databaseIdProvider`，你就可以在动态代码中使用名为 "`_databaseId`" 的变量来为不同的数据库构建特定的语句。比如下面的例子：
+
+```xml
+<insert id="insert">
+  <selectKey keyProperty="id" resultType="int" order="BEFORE">
+    <if test="_databaseId == 'oracle'">
+      select seq_users.nextval from dual
+    </if>
+    <if test="_databaseId == 'db2'">
+      select nextval for seq_users from sysibm.sysdummy1"
+    </if>
+  </selectKey>
+  insert into users values (#{id}, #{name})
+</insert>
+```
+
+## 9、动态 SQL 中的插入脚本语言
+
+MyBatis 从 3.2 版本开始支持插入脚本语言，这允许你插入一种语言驱动，并基于这种语言来编写动态 SQL 查询语句。
+可以通过实现以下接口来插入一种语言：
+
+```java
+public interface LanguageDriver {
+  ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql);
+  SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType);
+  SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType);
+}
+```
+
+实现自定义语言驱动后，你就可以在 mybatis-config.xml 文件中将它设置为默认语言：
+
+```xml
+<typeAliases>
+  <typeAlias type="org.sample.MyLanguageDriver" alias="myLanguage"/>
+</typeAliases>
+<settings>
+  <setting name="defaultScriptingLanguage" value="myLanguage"/>
+</settings>
+```
+
+或者，你也可以使用 lang 属性为特定的语句指定语言：
+
+```xml
+<select id="selectBlog" lang="myLanguage">
+  SELECT * FROM BLOG
+</select>
+```
+
+或者，在你的 mapper 接口上添加 @Lang 注解：
+
+```java
+public interface Mapper {
+  @Lang(MyLanguageDriver.class)
+  @Select("SELECT * FROM BLOG")
+  List<Blog> selectBlog();
+}
+```
+
+提示 可以使用` Apache Velocity `作为动态语言，更多细节请参考` MyBatis-Velocity `项目。
+
+你前面看到的所有 xml 标签都由默认 MyBatis 语言提供，而它由语言驱动 `org.apache.ibatis.scripting.xmltags.XmlLanguageDriver`（别名为 xml）所提供。
+
+# 七、一级和二级缓存
+
+
+
+## 1、一级缓存
+
+　　Mybatis对缓存提供支持，但是在没有配置的默认情况下，它只开启一级缓存，一级缓存只是相对于同一个SqlSession而言。所以在参数和SQL完全一样的情况下，我们使用同一个SqlSession对象调用一个Mapper方法，往往只执行一次SQL，因为使用SelSession第一次查询后，MyBatis会将其放在缓存中，以后再查询的时候，如果没有声明需要刷新，并且缓存没有超时的情况下，SqlSession都会取出当前缓存的数据，而不会再次发送SQL到数据库。
+
+![image-20210923142927207](image/image-20210923142927207.png)
+
+　　为什么要使用一级缓存，不用多说也知道个大概。但是还有几个问题我们要注意一下。
+
+### 一级缓存的生命周期有多长？
+
+　　a、MyBatis在开启一个数据库会话时，会 创建一个新的SqlSession对象，SqlSession对象中会有一个新的Executor对象。Executor对象中持有一个新的PerpetualCache对象；当会话结束时，SqlSession对象及其内部的Executor对象还有PerpetualCache对象也一并释放掉。
+
+　　b、如果SqlSession调用了close()方法，会释放掉一级缓存PerpetualCache对象，一级缓存将不可用。
+
+　　c、如果SqlSession调用了clearCache()，会清空PerpetualCache对象中的数据，但是该对象仍可使用。
+
+　　d、SqlSession中执行了任何一个update操作(update()、delete()、insert()) ，都会清空PerpetualCache对象的数据，但是该对象可以继续使用
+
+ eg：
+
+```java
+@Test
+public void userInfoQuery() {
+    SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+    UserInfoMapper mapper = sqlSession.getMapper(UserInfoMapper.class);
+    UserInfo userInfo1 = mapper.getQueryAllUser(6);
+    System.out.println(userInfo1);
+    System.out.println("====================================");
+    UserInfo userInfo2 = mapper.getQueryAllUser(6);
+    System.out.println(userInfo2);
+    sqlSession.close();
+}
+```
+
+![image-20210923142524313](image/image-20210923142524313.png)
+
+==增删改会刷新缓存==
+
+```java
+@Test
+public void userInfoQuery() {
+    SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+    UserInfoMapper mapper = sqlSession.getMapper(UserInfoMapper.class);
+    UserInfo userInfo1 = mapper.getQueryAllUser(6);
+    System.out.println(userInfo1);
+    System.out.println("====================================");
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("id",2);
+    map.put("uAge",14);
+    int i = mapper.updateUser(map);
+    System.out.println(i);
+    System.out.println("====================================");
+    UserInfo userInfo2 = mapper.getQueryAllUser(6);
+    System.out.println(userInfo2);
+    sqlSession.close();
+}
+```
+
+![image-20210923142719622](image/image-20210923142719622.png)
+
+###   怎么判断某两次查询是完全相同的查询？
+
+　mybatis认为，对于两次查询，如果以下条件都完全一样，那么就认为它们是完全相同的两次查询。 
+
+　　 2.1   传入的statementId 
+
+　　 2.2   查询时要求的结果集中的结果范围 
+
+　　 2.3   这次查询所产生的最终要传递给JDBC java.sql.Preparedstatement的Sql语句字符串（boundSql.getSql() ） 
+
+　　 2.4   传递给java.sql.Statement要设置的参数值 
+
+## 2、 二级缓存
+
+　　 MyBatis的二级缓存是  Application级别的缓存，它可以提高对数据库查询的效率，以提高应用的性能。 
+
+　　 MyBatis的缓存机制整体设计以及二级缓存的工作模式 
+
+![image-20210923143002032](image/image-20210923143002032.png)
+
+`SqlSessionFactory`层面上的二级缓存默认是不开启的，二级缓存的开席需要进行配置，实现二级缓存的时候，`MyBatis`要求返回的`POJO`必须是可序列化的。 也就是要求实现`Serializable`接口，配置方法很简单，只需要在映射`XML`文件配置就可以开启缓存了`<cache/>`，如果我们配置了二级缓存就意味着：
+
+> 映射语句文件中的所有select语句将会被缓存。
+>
+> 映射语句文件中的所有insert、update和delete语句会刷新缓存。
+>
+> 缓存会使用默认的Least Recently Used（LRU，最近最少使用的）算法来收回。
+>
+> 根据时间表，比如No Flush Interval,（CNFI没有刷新间隔），缓存不会以任何时间顺序来刷新。
+>
+> 缓存会存储列表集合或对象(无论查询方法返回什么)的1024个引用
+>
+> 缓存会被视为是read/write(可读/可写)的缓存，意味着对象检索不是共享的，而且可以安全的被调用者修改，不干扰其他调用者或线程所做的潜在修改。
+
+实践：
+
+### 在 mybatis-config.xml中开启二级缓存
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!--这个配置使全局的映射器(二级缓存)启用或禁用缓存-->
+        <setting name="cacheEnabled" value="true" />
+        .....
+    </settings>
+    ....
+</configuration>
+```
+
+### 创建一个POJO Bean并序列化
+
+　由于二级缓存的数据不一定都是存储到内存中，它的存储介质多种多样，所以需要给缓存的对象执行序列化。(如果存储在内存中的话，实测不序列化也可以的。)
+
+```java
+package com.yihaomen.mybatis.model;
+
+import com.yihaomen.mybatis.enums.Gender;
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ *  @ProjectName: springmvc-mybatis 
+ */
+public class Student implements Serializable{
+
+    private static final long serialVersionUID = 735655488285535299L;
+    private String id;
+    private String name;
+    private int age;
+    private Gender gender;
+    private List<Teacher> teachers;
+
+    setters&getters()....;
+    toString();        
+}
+ 
+```
+
+### 在映射文件中开启二级缓存
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rj.mybatis.dao.UserInfoMapper">
+    <!--开启本mapper的namespace下的二级缓存-->
+    <!--
+        eviction:代表的是缓存回收策略，目前MyBatis提供以下策略。
+        (1) LRU,最近最少使用的，一处最长时间不用的对象
+        (2) FIFO,先进先出，按对象进入缓存的顺序来移除他们
+        (3) SOFT,软引用，移除基于垃圾回收器状态和软引用规则的对象
+        (4) WEAK,弱引用，更积极的移除基于垃圾收集器状态和弱引用规则的对象。这里采用的是LRU，
+                移除最长时间不用的对形象
+
+        flushInterval:刷新间隔时间，单位为毫秒，这里配置的是100秒刷新，如果你不配置它，那么当
+        SQL被执行的时候才会去刷新缓存。
+
+        size:引用数目，一个正整数，代表缓存最多可以存储多少个对象，不宜设置过大。设置过大会导致内存溢出。
+        这里配置的是1024个对象
+
+        readOnly:只读，意味着缓存数据只能读取而不能修改，这样设置的好处是我们可以快速读取缓存，缺点是我们没有
+        办法修改缓存，他的默认值是false，不允许我们修改
+    -->
+    <cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"/>
+    <!--可以通过设置useCache来规定这个sql是否开启缓存，ture是开启，false是关闭-->
+    <!--    flushCache="true"是刷新二级缓存-->
+    <!--<select id="getQueryAllUser" resultMap="queryMap" parameterType="_int" useCache="true" flushCache="true">-->
+    <select id="getQueryAllUser" resultMap="queryMap" parameterType="_int" useCache="true">
+        select * from user_info where id=#{id}
+    </select>
+    <resultMap id="queryMap" type="userInfo">
+        <result property="id" column="id"></result>
+        <result property="uName" column="uname"></result>
+        <result property="uAge" column="uage"></result>
+        <result property="time" column="utime"></result>
+    </resultMap>
+
+</mapper>
+```
+
+测试：
+
+```java
+@Test
+public void queryUserByIf() {
+    SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+    UserInfoMapper mapper = sqlSession.getMapper(UserInfoMapper.class);
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("id",6);
+    System.out.println("第一次执行");
+    UserInfo user = mapper.getQueryAllUser(6);
+    System.out.println(user);
+    System.out.println("第二次执行");
+    UserInfo user2 = mapper.getQueryAllUser(6);
+    System.out.println(user2);
+    sqlSession.commit();
+    sqlSession.close();
+    System.out.println("二级缓存观测点");
+    SqlSession sqlSession2 = SqlSessionUtils.getSqlSession();
+    UserInfoMapper mapper2 = sqlSession2.getMapper(UserInfoMapper.class);
+    UserInfo user3 = mapper2.getQueryAllUser(6);
+    System.out.println(user3);
+    System.out.println("第二次执行");
+    UserInfo user4 = mapper2.getQueryAllUser(6);
+    System.out.println(user4);
+    sqlSession2.close();
+}
+```
+
+结果：
+
+![image-20210923143533877](image/image-20210923143533877.png)
+
+sql只执行了一次，二级缓存生效了。
 
