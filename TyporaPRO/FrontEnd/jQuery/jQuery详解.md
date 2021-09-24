@@ -3671,7 +3671,7 @@ $("<strong>插入文本</strong>").insertAfter( "span" );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -3679,7 +3679,7 @@ $("<strong>插入文本</strong>").insertAfter( "span" );
 jQueryObject.wrap( wrapper )
 ```
 
-### 参数
+参数
 
 | 参数    | 描述                                                       |
 | :------ | :--------------------------------------------------------- |
@@ -3695,13 +3695,13 @@ jQuery 1.4 新增支持：参数`wrapper`可以为函数。`wrap()`将根据匹�
 
 *注意*：如果`wrapper`是多层嵌套的元素(例如<p><i></i></p>)，`wrap()`将从外往内检查每层嵌套的第一个节点。如果该节点没有子节点或者第一个子节点不是Element节点(比如文本节点、注释节点等)，就停止向内查找，直接在当前节点内部的末尾位置追加([append()](https://codeplayer.vip/p/j7sp2))当前匹配元素。
 
-### 返回值
+返回值
 
 `wrap()`函数的返回值为jQuery类型，返回当前jQuery对象本身(以便于进行链式风格的编程)。
 
 *注意*：即使`wrapper`元素是当前页面中的元素，该元素也不会从原位置上消失。因为`wrap()`使用的是该元素的副本(克隆)来充当包裹。
 
-### 示例&说明
+示例&说明
 
 `wrap()`函数用于在每个匹配元素之前的位置插入内容：
 
@@ -3788,7 +3788,7 @@ $("#n6").wrap( '<div><p> <em><b></b></em></p></div>' );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.2 新增该函数。
 
@@ -3798,7 +3798,7 @@ jQuery 1.2 新增该函数。
 jQueryObject.replaceAll( target )
 ```
 
-### 参数
+参数
 
 | 参数   | 描述                                                         |
 | :----- | :----------------------------------------------------------- |
@@ -3806,7 +3806,7 @@ jQueryObject.replaceAll( target )
 
 如果参数`target`为字符串，则将其视作jQuery选择器。
 
-### 返回值
+返回值
 
 `replaceAll()`函数的返回值为jQuery类型，返回表示替换内容的jQuery对象。
 
@@ -3814,7 +3814,7 @@ jQueryObject.replaceAll( target )
 
 *注意*：如果当前jQuery对象匹配的某个元素是页面上的元素，则该元素将从原来位置上消失，这相当于一个移动操作，而不是一个复制操作。
 
-### 示例&说明
+示例&说明
 
 `replaceAll()`函数用于使用当前匹配元素替换掉所有的目标元素：
 
@@ -3898,7 +3898,7 @@ $("#n4").replaceAll( $("#n6") );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.2 新增该函数。
 
@@ -3908,7 +3908,7 @@ jQuery 1.2 新增该函数。
 jQueryObject.replaceWith( replacement )
 ```
 
-### 参数
+参数
 
 | 参数        | 描述                                               |
 | :---------- | :------------------------------------------------- |
@@ -3920,7 +3920,7 @@ jQuery 1.4 新增支持：参数`replacement`可以为函数。`replaceWith()`�
 
 `replaceWith()`还会为函数传入两个参数：第一个参数就是当前元素在匹配元素中的索引，第二个参数就是该元素当前的内部html内容(innerHTML)。函数的返回值就是用于替换的内容(可以是html字符串、DOM元素、jQuery对象)。
 
-### 返回值
+返回值
 
 `replaceWith()`函数的返回值为jQuery类型，返回当前jQuery对象本身(虽然其匹配的元素已从文档中被移除)。
 
@@ -3928,7 +3928,7 @@ jQuery 1.4 新增支持：参数`replacement`可以为函数。`replaceWith()`�
 
 *注意*：如果`replacement`元素是当前页面中的元素，则该元素将从原位置上消失。这相当于一个移动操作，而不是一个复制操作。
 
-### 示例&说明
+示例&说明
 
 `replaceWith()`函数用于在每个匹配元素的所有内容外部包裹指定的元素：
 
@@ -4018,7 +4018,7 @@ $("p").replaceWith( function(i, innerHTML){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -4026,11 +4026,11 @@ $("p").replaceWith( function(i, innerHTML){
 jQueryObject.empty( )
 ```
 
-### 返回值
+返回值
 
 `empty()`函数的返回值为jQuery类型，返回当前jQuery对象本身(以便于进行链式风格的编程)。
 
-### 示例&说明
+示例&说明
 
 `empty()`函数用于清空每个匹配元素内的所有内容：
 
@@ -4106,7 +4106,7 @@ $("p").empty( );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -4114,7 +4114,7 @@ $("p").empty( );
 jQueryObject.remove( [ selector ] )
 ```
 
-### 参数
+参数
 
 | 参数     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -4122,11 +4122,11 @@ jQueryObject.remove( [ selector ] )
 
 如果没有指定`selector`参数，则移除当前匹配元素中的所有元素。
 
-### 返回值
+返回值
 
 `remove()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 `remove()`函数用于从文档中移除匹配的元素：
 
@@ -4253,7 +4253,7 @@ $n3.trigger("click"); // 无任何事件响应
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -4261,7 +4261,7 @@ $n3.trigger("click"); // 无任何事件响应
 jQueryObject.detach( [ selector ] )
 ```
 
-### 参数
+参数
 
 | 参数     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -4269,11 +4269,11 @@ jQueryObject.detach( [ selector ] )
 
 如果没有指定`selector`参数，则移除当前匹配元素中的所有元素。
 
-### 返回值
+返回值
 
 `detach()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 `detach()`函数用于从文档中移除匹配的元素：
 
@@ -4394,7 +4394,7 @@ $n3.trigger("click"); // 弹出提示框信息：按钮2
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -4402,7 +4402,7 @@ $n3.trigger("click"); // 弹出提示框信息：按钮2
 jQueryObject.clone( withDataAndEvents [, deepWithDataAndEvents ] )
 ```
 
-### 参数
+参数
 
 | 参数                  | 描述                                                         |
 | :-------------------- | :----------------------------------------------------------- |
@@ -4418,13 +4418,13 @@ jQuery 1.5 新增支持：clone()支持第二个参数`deepWithDataAndEvents`。
 >
 > 2、 1.5.0版本时(只有1.5.0)，参数 `withDataAndEvents`的默认值被错误地设定为 `true`，从 1.5.1开始，其默认值才被改回 `false`。
 
-### 返回值
+返回值
 
 `clone()`函数的返回值为jQuery类型，返回当前jQuery对象的一个克隆副本。
 
 *注意*：出于性能原因考虑，`clone()`函数不会复制某些表单元素的动态，例如用户在<textarea>输入的内容、用户在<select>中选择的选项。不过<input>元素的动态将会被复制，例如用户在text中输入的内容、用户对checkbox的选中状态。
 
-### 示例&说明
+示例&说明
 
 `clone()`函数用于克隆当前jQuery对象。请参考下面这段HTML代码为例：
 
@@ -4494,7 +4494,7 @@ $clonedN2WithCopy.trigger("click"); // 按钮1
 
 该函数属于`jQuery`对象(实例)。如果需要删除指定的css属性，请使用该函数将其值设为空字符串("")。
 
-### 语法
+语法
 
 `css()`函数有以下两种用法：
 
@@ -4526,7 +4526,7 @@ jQueryObject.css( object )
 1、如果省略了`value`参数，则表示获取属性值；如果指定了该参数，则表示设置属性值。
 2、`css()`函数的所有"设置"操作针对的是当前jQuery对象所匹配的每一个元素；所有"读取"操作只针对第一个匹配的元素。
 
-### 参数
+参数
 
 请根据前面语法部分所定义的参数名称查找对应的参数。
 
@@ -4540,7 +4540,7 @@ jQuery 1.4 新增支持：参数`value`可以是函数，`css()`将根据匹配�
 
 jQuery 1.9 新增支持：如果是"获取"操作(仅限"获取"操作)，参数`propertyName`还可以是多个css属性名称组成的数组，`css()`将以对象形式返回多个css属性(对象的属性名称对应css属性名称，属性值对应css属性值)。
 
-### 返回值
+返回值
 
 `css()`函数的返回值是任意类型，返回值的类型取决于当前`css()`函数执行的是"设置"操作还是"读取"操作。
 
@@ -4548,7 +4548,7 @@ jQuery 1.9 新增支持：如果是"获取"操作(仅限"获取"操作)，参数
 
 如果当前jQuery对象匹配多个元素，返回属性值时，`css()`函数只以其中第一个匹配的元素为准。如果该元素没有指定的属性，则返回`undefined`。
 
-### 注意事项
+注意事项
 
 1、如果参数`value`为空字符串("")，则表示删除该css属性。
 
@@ -4558,7 +4558,7 @@ jQuery 1.9 新增支持：如果是"获取"操作(仅限"获取"操作)，参数
 
 4、对于一些速写的css属性，例如margin、padding、background、border。尽管某些浏览器提供了此功能，但它的结果是无法保证的，有些浏览器也并不支持。以margin为例，你可能需要通过`css("marginTop")`、`css("marginRight")`等方式来分别获取。从jQuery 1.9开始，你可以传入一个数组来获取多个css属性(以对象形式返回)。
 
-### 示例&说明
+示例&说明
 
 以下面这段HTML代码为例：
 
@@ -4613,7 +4613,7 @@ $("p").css("fontWeight", function(index, value){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.2 新增该函数。
 
@@ -4626,7 +4626,7 @@ jQueryObject.offset( [ coordinates ] )
 *注意*：
 1、如果省略了`coordinates`参数，则表示获取偏移位置；如果指定了该参数，则表示设置偏移位置。2、`offset()`函数的"设置"操作针对的是当前jQuery对象所匹配的每一个元素；"读取"操作只针对第一个匹配的元素。
 
-### 参数
+参数
 
 | 参数        | 描述                                                     |
 | :---------- | :------------------------------------------------------- |
@@ -4642,7 +4642,7 @@ jQuery 1.4 新增支持：`offset()`支持通过传入`coordinates`参数来设�
 
 `offset()`还会为函数传入两个参数：第一个参数就是当前元素在匹配元素中的索引，第二个参数就是该元素当前的坐标对象。函数的返回值就是需要设置的坐标对象。
 
-### 返回值
+返回值
 
 `offset()`函数的返回值为Object类型，返回值的类型取决于`offset()`函数当前执行的是"设置"操作还是"读取"操作。
 
@@ -4652,7 +4652,7 @@ jQuery 1.4 新增支持：`offset()`支持通过传入`coordinates`参数来设�
 
 `offset()`中的坐标参考系是以当前文档的左上角为原点(0,0)，向右为正，向下为正。
 
-### 示例&说明
+示例&说明
 
 以下面这段HTML代码为例：
 
@@ -4719,7 +4719,7 @@ $meta_p.offset( function(index, coord){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.2 新增该函数。
 
@@ -4729,7 +4729,7 @@ jQuery 1.2 新增该函数。
 jQueryObject.position( )
 ```
 
-### 返回值
+返回值
 
 `position()`函数的返回值为Object类型，返回一个相对于离它最近的"被定位的"祖辈元素的偏移坐标对象，该对象具有left和top属性。
 
@@ -4737,7 +4737,7 @@ jQueryObject.position( )
 
 `position()`中的坐标参考系是以被定位的祖辈元素的左上角为原点(0,0)，向右为正，向下为正。
 
-### 示例&说明
+示例&说明
 
 以下面这段HTML代码为例：
 
@@ -4809,7 +4809,7 @@ document.writeln( "n2的offset()的偏移坐标：(" + coord.left + ", " + coord
 
 该函数属于`jQuery`对象(实例)，并且对可见的和隐藏的元素均有效。
 
-### 语法
+语法
 
 jQuery 1.2.6 新增该函数。
 
@@ -4823,13 +4823,13 @@ jQueryObject.scrollLeft( [ value ] )
 1、如果省略了`value`参数，则表示返回偏移值；如果指定了该参数，则表示设置偏移值。
 2、`scrollLeft()`函数的"设置"操作针对的是当前jQuery对象所匹配的每一个元素；"读取"操作只针对第一个匹配的元素。
 
-### 参数
+参数
 
 | 参数  | 描述                              |
 | :---- | :-------------------------------- |
 | value | 可选/Number类型用于设置的偏移值。 |
 
-### 返回值
+返回值
 
 `scrollLeft()`函数的返回值为Number/jQuery类型，返回值的类型取决于`scrollLeft()`函数当前执行的是"设置"操作还是"读取"操作。
 
@@ -4837,7 +4837,7 @@ jQueryObject.scrollLeft( [ value ] )
 
 如果当前jQuery对象匹配多个元素，返回坐标时，`scrollLeft()`函数只以其中第一个匹配的元素为准。如果没有匹配的元素，则返回`null`。
 
-### 示例&说明
+示例&说明
 
 以下面这段HTML代码为例(限定宽度，强制该元素内容不换行)：
 
@@ -4878,7 +4878,7 @@ $content.scrollLeft( 99 );
 
 该函数属于`jQuery`对象(实例)，并且对不可见的元素依然有效。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -4890,7 +4890,7 @@ jQueryObject.height( [ value ] )
 1、如果省略了`value`参数，则表示获取高度；如果指定了该参数，则表示设置高度。
 2、`height()`函数的"设置"操作针对的是当前jQuery对象所匹配的每一个元素；"读取"操作只针对第一个匹配的元素。
 
-### 参数
+参数
 
 | 参数  | 描述                              |
 | :---- | :-------------------------------- |
@@ -4900,7 +4900,7 @@ jQuery 1.4.1 新增支持：参数`value`可以为函数，则`height()`将根�
 
 `height()`还会为函数传入两个参数：第一个参数就是当前元素在匹配元素中的索引，第二个参数就是该元素当前的高度值。函数的返回值就是需要设置的高度值。
 
-### 返回值
+返回值
 
 `height()`函数的返回值为jQuery/Number类型，返回值的类型取决于`height()`函数当前执行的是"设置"操作还是"读取"操作。
 
@@ -4910,7 +4910,7 @@ jQuery 1.4.1 新增支持：参数`value`可以为函数，则`height()`将根�
 
 如果当前jQuery对象匹配多个元素，返回高度时，`height()`函数只以其中第一个匹配的元素为准。如果没有匹配的元素，则返回`null`。
 
-### 示例&说明
+示例&说明
 
 `height()`函数和[css("height")](https://codeplayer.vip/p/j7spk)作用相似，只不过`height()`的高度值不带单位(单位为像素)。
 
@@ -4976,7 +4976,7 @@ $(document).height();
 
 该函数属于`jQuery`对象(实例)，并且对不可见的元素依然有效。
 
-### 语法
+语法
 
 jQuery 1.2.6 新增该函数。
 
@@ -4990,7 +4990,7 @@ jQueryObject.innerHeight( [ value ] )
 1、如果省略了`value`参数，则表示获取内高度；如果指定了该参数，则表示设置内高度。
 2、`innerHeight()`函数的"设置"操作针对的是当前jQuery对象所匹配的每一个元素；"读取"操作只针对第一个匹配的元素。
 
-### 参数
+参数
 
 | 参数  | 描述                                |
 | :---- | :---------------------------------- |
@@ -5006,7 +5006,7 @@ jQuery 1.8.0 新增支持：`innerHeight()`函数支持参数`value`，用于设
 
 `innerHeight()`还会为函数传入两个参数：第一个参数就是当前元素在匹配元素中的索引，第二个参数就是该元素当前的内高度。函数的返回值就是需要设置的内高度。
 
-### 返回值
+返回值
 
 `innerHeight()`函数的返回值为jQuery/Number类型，返回值的类型取决于`innerHeight()`函数当前执行的是"设置"操作还是"读取"操作。
 
@@ -5016,7 +5016,7 @@ jQuery 1.8.0 新增支持：`innerHeight()`函数支持参数`value`，用于设
 
 `innerHeight()`不适用于`window`和`document`，请使用[height()](https://codeplayer.vip/p/j7spp)替代。
 
-### 示例&说明
+示例&说明
 
 以下面这段HTML代码为例：
 
@@ -5064,7 +5064,7 @@ $n1.innerHeight( 20 );
 
 该函数属于`jQuery`对象(实例)，并且对不可见的元素依然有效。
 
-### 语法
+语法
 
 jQuery 1.2.6 新增该函数。
 
@@ -5076,13 +5076,13 @@ jQueryObject.outerHeight( [ includeMargin ] )
 
 *注意*：如果当前jQuery对象匹配多个元素，则只返回第一个匹配的元素的外高度。
 
-### 参数
+参数
 
 | 参数          | 描述                                                         |
 | :------------ | :----------------------------------------------------------- |
 | includeMargin | 可选/Boolean类型指示是否包含外边距部分的高度，默认为`false`。 |
 
-### 返回值
+返回值
 
 `outerHeight()`函数的返回值为Number类型，返回第一个匹配元素的外高度。
 
@@ -5090,7 +5090,7 @@ jQueryObject.outerHeight( [ includeMargin ] )
 
 `outerHeight()`不适用于`window`和`document`，请使用[height()](https://codeplayer.vip/p/j7spp)替代。
 
-### 示例&说明
+示例&说明
 
 以下面这段HTML代码为例：
 
@@ -5190,7 +5190,7 @@ document.writeln( $ele.outerHeight(true) ); // 132
 
 > *版本说明*：如果"版本"列的版本号带有删除线(例如： ~~1.8~~)，表示从该版本开始，此方法 **已过时**。如果版本号带有删除线，并且为红色(例如： ~~1.9~~)，表示从该版本开始，此方法已 **被移除**。
 
-### jQuery对象的核心事件方法
+jQuery对象的核心事件方法
 
 核心事件函数，主要用于为元素的任意事件(包括自定义事件)**添加**、**取消**、**触发**绑定的一个或多个事件处理函数。
 
@@ -5208,7 +5208,7 @@ document.writeln( $ele.outerHeight(true) ); // 132
 | [trigger()](https://codeplayer.vip/p/j7sqv)        | 1.0                 | 手动触发元素上的任意事件。                                   |
 | [triggerHandler()](https://codeplayer.vip/p/j7sr0) | 1.2                 | 手动触发元素上的任意事件，但不会触发元素的默认事件行为，也不支持事件冒泡。 |
 
-### jQuery对象的常规事件方法
+jQuery对象的常规事件方法
 
 常规事件函数，主要用于为元素的指定事件**添加**、**触发**绑定的一个或多个事件处理函数。
 
@@ -5260,7 +5260,7 @@ document.writeln( $ele.outerHeight(true) ); // 132
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 `bind()`函数主要有以下两种形式的用法：
 
@@ -5288,7 +5288,7 @@ jQueryObject.bind( events [, data ] [, isDefaultBubble ] )
 jQueryObject.bind( eventsMap )
 ```
 
-### 参数
+参数
 
 | 参数            | 描述                                                         |
 | :-------------- | :----------------------------------------------------------- |
@@ -5306,11 +5306,11 @@ jQueryObject.bind( eventsMap )
 
 参数`isDefaultBubble`用于指示是否允许元素的默认行为和事件冒泡。如果该值为`false`，它将阻止元素的默认行为(例如：触发click事件的链接的默认跳转行为，触发submit事件的表单的默认提交行为)和事件的冒泡传递。
 
-### 返回值
+返回值
 
 `bind()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 以点击事件("click")为例，以下是jQuery中事件函数的常规用法(某些函数也存在其它形式的用法，此处暂不列出)：
 
@@ -5467,7 +5467,7 @@ $("#n5").bind( eventsMap );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 `trigger()`函数主要有以下两种形式的用法：
 
@@ -5491,7 +5491,7 @@ jQueryObject.trigger( eventObject [, extraArguments ] )
 
 为指定事件处理函数传入的Event对象(`eventObject`)，用于触发执行对应的事件处理函数，并可为事件处理函数传入额外的参数(`extraArguments`)。
 
-### 参数
+参数
 
 | 参数           | 描述                                                         |
 | :------------- | :----------------------------------------------------------- |
@@ -5503,11 +5503,11 @@ jQueryObject.trigger( eventObject [, extraArguments ] )
 
 参数`extraArguments`用于为事件处理函数传入更多额外的参数。如果`extraArguments`是数组形式，则每个元素都将充当函数的参数。
 
-### 返回值
+返回值
 
 `trigger()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -5642,7 +5642,7 @@ $btn1.trigger("click.foo.test"); // 触发B
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -5652,7 +5652,7 @@ jQueryObject.resize( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定resize事件的处理函数；没有指定任何参数，则表示触发resize事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -5665,11 +5665,11 @@ jQuery 1.4.3 新增支持：`resize()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的resize事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `resize()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 现在，我们为`window`对象的resize事件绑定处理函数(可以绑定多个，触发时按照绑定顺序依次执行)：
 
@@ -5716,7 +5716,7 @@ $(window).resize( minSize, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -5726,7 +5726,7 @@ jQueryObject.scroll( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定scroll事件的处理函数；没有指定任何参数，则表示触发scroll事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -5739,11 +5739,11 @@ jQuery 1.4.3 新增支持：`scroll()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的scroll事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `scroll()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -5794,7 +5794,7 @@ $(window).scroll( maxScrollTop, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -5804,7 +5804,7 @@ jQueryObject.focus( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定focus事件的处理函数；如果没有指定任何参数，则表示触发focus事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -5817,13 +5817,13 @@ jQuery 1.4.3 新增支持：`focus()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的submit事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `focus()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
 并不是所有元素都可以获得焦点，可以获得鼠标光标焦点的元素主要是表单输入元素。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -5882,7 +5882,7 @@ $(":text").focus( inputMap, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -5892,7 +5892,7 @@ jQueryObject.blur( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定blur事件的处理函数；如果没有指定任何参数，则表示触发blur事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -5905,13 +5905,13 @@ jQuery 1.4.3 新增支持：`blur()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的submit事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `blur()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
 并不是所有元素都可以失去焦点，可以获得鼠标光标焦点的元素主要是表单输入元素(只有获得焦点后才可能失去焦点)。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -5978,7 +5978,7 @@ $(":text").blur( inputMap, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -5988,7 +5988,7 @@ jQueryObject.change( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定change事件的处理函数；没有指定任何参数，则表示触发change事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6001,11 +6001,11 @@ jQuery 1.4.3 新增支持：`change()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的submit事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `change()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -6066,7 +6066,7 @@ $("#gender").change( map, logHandler );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6076,7 +6076,7 @@ jQueryObject.select( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定select事件的处理函数；没有指定任何参数，则表示触发select事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6089,11 +6089,11 @@ jQuery 1.4.3 新增支持：`select()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的submit事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `select()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -6151,7 +6151,7 @@ $(":text").select( user, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6161,7 +6161,7 @@ jQueryObject.submit( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定submit事件的处理函数；没有指定任何参数，则表示触发submit事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6174,11 +6174,11 @@ jQuery 1.4.3 新增支持：`submit()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的submit事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `submit()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -6253,7 +6253,7 @@ $("form").submit( map, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6263,7 +6263,7 @@ jQueryObject.keydown( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定keydown事件的处理函数；如果没有指定任何参数，则表示触发keydown事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6274,11 +6274,11 @@ jQuery 1.4.3 新增支持：`keydown()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`keydown()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `keydown()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -6331,7 +6331,7 @@ $("#keys").keydown( validKeys, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6341,7 +6341,7 @@ jQueryObject.keypress( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定keypress事件的处理函数；如果没有指定任何参数，则表示触发keypress事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6352,11 +6352,11 @@ jQuery 1.4.3 新增支持：`keypress()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`keypress()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `keypress()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -6410,7 +6410,7 @@ $("#chars").keypress( validChars, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6420,7 +6420,7 @@ jQueryObject.keyup( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定keyup事件的处理函数；如果没有指定任何参数，则表示触发keyup事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6431,11 +6431,11 @@ jQuery 1.4.3 新增支持：`keyup()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`keyup()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `keyup()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -6492,7 +6492,7 @@ $("#keys").keyup( template, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6502,7 +6502,7 @@ jQueryObject.click( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定click事件的处理函数；没有指定任何参数，则表示触发click事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6515,11 +6515,11 @@ jQuery 1.4.3 新增支持：`click()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。
 
-### 返回值
+返回值
 
 `click()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -6587,7 +6587,7 @@ $("a").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6597,7 +6597,7 @@ jQueryObject.dblclick( [ [ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定dblclick事件的处理函数；没有指定任何参数，则表示触发dblclick事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6610,11 +6610,11 @@ jQuery 1.4.3 新增支持：`dblclick()`支持`data`参数。
 
 如果函数`handler`的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。<form>表单的submit事件的处理函数返回`false`，可以阻止表单默认的表单提交行为。
 
-### 返回值
+返回值
 
 `dblclick()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -6670,7 +6670,7 @@ $(":button").dblclick( user, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数，但从~~1.8~~开始被标记为已过时，并从~~1.9~~开始被移除。
 
@@ -6680,7 +6680,7 @@ jQuery 1.0 新增该函数，但从~~1.8~~开始被标记为已过时，并从~~
 jQueryObject.toggle( handler1, handler2 [, handlerN... ] )
 ```
 
-### 参数
+参数
 
 | 参数     | 描述                                                   |
 | :------- | :----------------------------------------------------- |
@@ -6692,11 +6692,11 @@ jQueryObject.toggle( handler1, handler2 [, handlerN... ] )
 
 如果事件处理函数的返回值为`false`，则表示阻止元素的默认事件行为，并停止事件在DOM树中冒泡。例如，<a>链接的click事件的处理函数返回`false`，可以阻止链接的默认URL跳转行为。
 
-### 返回值
+返回值
 
 `toggle()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -6754,7 +6754,7 @@ $("#btn").toggle( clickHandler1, clickHandler2, clickHandler3, clickHandler4 );
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 `hover()`函数主要有以下两种用法：
 
@@ -6778,7 +6778,7 @@ jQueryObject.hover( handlerInAndOut )
 
 用法一的变体。当鼠标移入、移出元素时的事件处理函数相同时，只需直接传入一个处理函数作为参数即可。
 
-### 参数
+参数
 
 请根据前面语法部分所定义的参数名称查找对应的参数。
 
@@ -6790,11 +6790,11 @@ jQueryObject.hover( handlerInAndOut )
 
 `hover()`函数的所有参数都是函数，函数内的`this`指向当前DOM元素。`hover()`还会为其传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `hover()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 `hover()`函数与[on()](https://codeplayer.vip/p/j7sq1)函数具有以下等价代码：
 
@@ -6847,7 +6847,7 @@ $("a").hover( function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6857,7 +6857,7 @@ jQueryObject.mouseenter( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定mouseenter事件的处理函数；如果没有指定任何参数，则表示触发mouseenter事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6868,11 +6868,11 @@ jQuery 1.4.3 新增支持：`mouseenter()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`mouseenter()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `mouseenter()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -6937,7 +6937,7 @@ $("div").mouseenter( cssStyle, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -6947,7 +6947,7 @@ jQueryObject.mouseleave( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定mouseleave事件的处理函数；如果没有指定任何参数，则表示触发mouseleave事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -6958,11 +6958,11 @@ jQuery 1.4.3 新增支持：`mouseleave()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`mouseleave()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `mouseleave()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -7029,7 +7029,7 @@ $("div").mouseleave( cssStyle, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -7039,7 +7039,7 @@ jQueryObject.mouseover( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定mouseover事件的处理函数；如果没有指定任何参数，则表示触发mouseover事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -7050,11 +7050,11 @@ jQuery 1.4.3 新增支持：`mouseover()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`mouseover()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `mouseover()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -7119,7 +7119,7 @@ $("div").mouseover( cssStyle, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -7129,7 +7129,7 @@ jQueryObject.mouseout( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定mouseout事件的处理函数；如果没有指定任何参数，则表示触发mouseout事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -7140,11 +7140,11 @@ jQuery 1.4.3 新增支持：`mouseout()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`mouseout()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `mouseout()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -7209,7 +7209,7 @@ $("div").mouseout( cssStyle, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -7219,7 +7219,7 @@ jQueryObject.mousedown( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定mousedown事件的处理函数；如果没有指定任何参数，则表示触发mousedown事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -7230,11 +7230,11 @@ jQuery 1.4.3 新增支持：`mousedown()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`mousedown()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `mousedown()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -7298,7 +7298,7 @@ $(window).mousedown(buttonMap, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 *JavaScript:*
 
@@ -7308,7 +7308,7 @@ jQueryObject.mouseup( [[ data ,]  handler ] )
 
 如果指定了至少一个参数，则表示绑定mouseup事件的处理函数；如果没有指定任何参数，则表示触发mouseup事件。
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -7319,11 +7319,11 @@ jQuery 1.4.3 新增支持：`mouseup()`支持`data`参数。
 
 参数`handler`中的`this`指向当前DOM元素。`mouseup()`还会为`handler`传入一个参数：表示当前事件的[Event对象](https://codeplayer.vip/p/j7sql)。
 
-### 返回值
+返回值
 
 `mouseup()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考以下HTML示例代码：
 
@@ -7410,7 +7410,7 @@ $(window).mouseup(buttonMap, function(event){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数。`show()`函数主要有以下两种形式的用法：
 
@@ -7432,7 +7432,7 @@ jQueryObject.show( options )
 
 用法二是用法一的变体。以对象形式指定所需的选项参数(可指定比用法一更多的选项参数)。
 
-### 参数
+参数
 
 | 参数     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -7454,11 +7454,11 @@ jQueryObject.show( options )
 
 此外，jQuery 1.4 和 1.8 还为参数`options`新增了许多新的选项支持，但这些参数并不常用，此处不再赘述，详见[jQuery官方文档](http://api.jquery.com/show/#show-options)。
 
-### 返回值
+返回值
 
 `show()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -7520,7 +7520,7 @@ $("#btnHide").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数。`hide()`函数主要有以下两种形式的用法：
 
@@ -7542,7 +7542,7 @@ jQueryObject.hide( options )
 
 用法二是用法一的变体。以对象形式指定所需的选项参数(可指定比用法一更多的选项参数)。
 
-### 参数
+参数
 
 | 参数     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -7564,11 +7564,11 @@ jQueryObject.hide( options )
 
 此外，jQuery 1.4 和 1.8 还为参数`options`新增了许多新的选项支持，但这些参数并不常用，此处不再赘述，详见[jQuery官方文档](http://api.jquery.com/hide/#hide-options)。
 
-### 返回值
+返回值
 
 `hide()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -7631,7 +7631,7 @@ $("#btnHide").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数。`toggle()`函数主要有以下两种形式的用法：
 
@@ -7663,7 +7663,7 @@ jQueryObject.toggle( showOrHide )
 
 通过布尔值`showOrHide`来指定是显示还是隐藏元素。
 
-### 参数
+参数
 
 | 参数       | 描述                                                         |
 | :--------- | :----------------------------------------------------------- |
@@ -7686,11 +7686,11 @@ jQueryObject.toggle( showOrHide )
 
 此外，jQuery 1.4 和 1.8 还为参数`options`新增了许多新的选项支持，但这些参数并不常用，此处不再赘述，详见[jQuery官方文档](http://api.jquery.com/toggle/#toggle-options)。
 
-### 返回值
+返回值
 
 `toggle()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -7755,7 +7755,7 @@ $("#btnSwitch").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数。`slideDown()`函数主要有以下两种形式的用法：
 
@@ -7777,7 +7777,7 @@ jQueryObject.slideDown( options )
 
 用法二是用法一的变体。以对象形式指定所需的选项参数(可指定比用法一更多的选项参数)。
 
-### 参数
+参数
 
 | 参数     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -7797,11 +7797,11 @@ jQueryObject.slideDown( options )
 
 此外，jQuery 1.4 和 1.8 还为参数`options`新增了许多新的选项支持，但这些参数并不常用，此处不再赘述，详见[jQuery官方文档](http://api.jquery.com/slideDown/#slideDown-options)。
 
-### 返回值
+返回值
 
 `slideDown()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -7866,7 +7866,7 @@ $("#btnHide").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数。`fadeIn()`函数主要有以下两种形式的用法：
 
@@ -7888,7 +7888,7 @@ jQueryObject.fadeIn( options )
 
 用法二是用法一的变体。以对象形式指定所需的选项参数(可指定比用法一更多的选项参数)。
 
-### 参数
+参数
 
 | 参数     | 描述                                                         |
 | :------- | :----------------------------------------------------------- |
@@ -7908,11 +7908,11 @@ jQueryObject.fadeIn( options )
 
 此外，jQuery 1.4 和 1.8 还为参数`options`新增了许多新的选项支持，但这些参数并不常用，此处不再赘述，详见[jQuery官方文档](http://api.jquery.com/fadeIn/#fadeIn-options)。
 
-### 返回值
+返回值
 
 `fadeIn()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -7974,7 +7974,7 @@ $("#btnHide").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该函数。`animate()`函数主要有以下两种形式的用法：
 
@@ -7996,7 +7996,7 @@ jQueryObject.animate( cssProperties, options )
 
 用法二是用法一的变体。以对象形式指定所需的选项参数(可指定比用法一更多的选项参数)。
 
-### 参数
+参数
 
 | 参数          | 描述                                                         |
 | :------------ | :----------------------------------------------------------- |
@@ -8017,11 +8017,11 @@ jQueryObject.animate( cssProperties, options )
 
 此外，jQuery 1.4 和 1.8 还为参数`options`新增了许多新的选项支持，但这些参数并不常用，此处不再赘述，详见[jQuery官方文档](http://api.jquery.com/animate/#animate-options)。
 
-### 返回值
+返回值
 
 `animate()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 除了以下提到的值外，所有动画css属性都应该可以变化为一个单一的数值。使用基本的jQuery功能，大多数非数值的css属性都无法用来执行动画。例如：width、height、left、top都可用于动画，但color、background-color无法用于动画(除非使用[jQuery.Color()](https://github.com/jquery/jquery-color)插件)。除非你为属性值指定了单位(例如：px、em、%)，否则默认的数值单位为像素(px)。
 
@@ -8090,7 +8090,7 @@ $("#exec").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.4 新增该函数。
 
@@ -8100,18 +8100,18 @@ jQuery 1.4 新增该函数。
 jQueryObject.delay( duration [, queueName ] )
 ```
 
-### 参数
+参数
 
 | 参数      | 描述                                                         |
 | :-------- | :----------------------------------------------------------- |
 | duration  | 可选/String/Number类型指定延迟多少时间(毫秒数)，默认值为400。该参数也可以为字符串"fast"(=200)或"slow"(=600)。 |
 | queueName | 可选/String类型指定的队列名称，默认为"fx"，表示jQuery标准的效果队列。 |
 
-### 返回值
+返回值
 
 `delay()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -8185,7 +8185,7 @@ $("#exec").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.2 新增该函数。
 
@@ -8195,7 +8195,7 @@ jQuery 1.2 新增该函数。
 jQueryObject.stop( [ queueName ] [, clearQueue [, jumpToEnd ] ] )
 ```
 
-### 参数
+参数
 
 | 参数       | 描述                                                        |
 | :--------- | :---------------------------------------------------------- |
@@ -8207,11 +8207,11 @@ jQuery 1.7 新增支持：参数`queueName`。如果没有指定，则默认为"
 
 如果参数`jumpToEnd`为`true`，则不再缓慢执行当前动画，而是直接完成。此时，元素将会保持动画执行完毕后的状态。
 
-### 返回值
+返回值
 
 `stop()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 除了以下提到的值外，所有动画css属性都应该可以变化为一个单一的数值。使用基本的jQuery功能，大多数非数值的css属性都无法用来执行动画。例如：width、height、left、top都可用于动画，但color、background-color无法用于动画(除非使用[jQuery.Color()](https://github.com/jquery/jquery-color)插件)。除非你为属性值指定了单位(例如：px、em、%)，否则默认的数值单位为像素(px)。
 
@@ -8276,7 +8276,7 @@ $("#stop").click( function(){
 
 该函数属于`jQuery`对象(实例)。
 
-### 语法
+语法
 
 jQuery 1.9 新增该函数。
 
@@ -8286,17 +8286,17 @@ jQuery 1.9 新增该函数。
 jQueryObject.finish( [ queueName ] )
 ```
 
-### 参数
+参数
 
 | 参数      | 描述                                                         |
 | :-------- | :----------------------------------------------------------- |
 | queueName | 可选/String类型指定的队列名称，默认为"fx"，表示jQuery标准的效果队列。 |
 
-### 返回值
+返回值
 
 `finish()`函数的返回值为jQuery类型，返回当前jQuery对象本身。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段初始HTML代码：
 
@@ -8347,7 +8347,7 @@ $("#finish").click( function(){
 
 该属性属于**全局**的`jQuery`对象(也可理解为静态属性)。
 
-### 语法
+语法
 
 jQuery 1.3 新增该 静态属性。
 
@@ -8357,13 +8357,13 @@ jQuery 1.3 新增该 静态属性。
 jQuery.fx.off
 ```
 
-### 返回值
+返回值
 
 `jQuery.fx.off`属性的返回值是Boolean类型，返回表示是否全局性地禁用了动画效果的布尔值。如果已禁用就返回`true`，否则返回`false`。
 
 默认情况下，该属性的返回值为`false`。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段HTML示例代码：
 
@@ -8414,7 +8414,7 @@ $("#switch").click( function(){
 
 该属性属于**全局**的`jQuery`对象(也可理解为静态属性)。
 
-### 语法
+语法
 
 jQuery 1.4.3 新增该 静态属性。
 
@@ -8424,13 +8424,13 @@ jQuery 1.4.3 新增该 静态属性。
 jQuery.fx.interval
 ```
 
-### 返回值
+返回值
 
 `jQuery.fx.interval`属性的返回值是Number类型，返回动画的帧速(毫秒值)。
 
 该属性的默认值为 13。
 
-### 示例&说明
+示例&说明
 
 请参考下面这段HTML示例代码：
 
@@ -8513,7 +8513,7 @@ $("#exec").click( function(){
 
 该函数属于全局`jQuery`对象(也可理解为静态函数)。
 
-### 语法
+语法
 
 jQuery 1.0 新增该静态函数。`jQuery.ajax()`函数有以下两种用法：
 
@@ -8784,11 +8784,11 @@ $.ajax({
 1、如果你的**所有AJAX请求都需要**设置`settings`中某些参数，你可以使用[jQuery.ajaxSetup()](https://codeplayer.vip/p/j7ssf)函数进行全局设置，而无需在每次执行`jQuery.ajax()`时分别设置。
 2、在jQuery 1.4(含)之前，选项参数`complete`、`succes`、`error`等Ajax事件的回调函数的第3个参数不是经过jQuery封装的jqXHR对象，而是原生的XMLHttpRequest对象。
 
-### 返回值
+返回值
 
 `jQuery.ajax()`函数的返回值为jqXHR类型，返回当前该请求的jqXHR对象(jQuery 1.4及以前版本返回的是原生的XMLHttpRequest对象)。
 
-### 示例&说明
+示例&说明
 
 如果没有给`jQuery.ajax()`指定任何参数，则默认请求当前页面，并且不对返回数据进行处理。
 
@@ -8882,7 +8882,7 @@ $.ajax( {
 
 该函数属于全局`jQuery`对象。
 
-### 语法
+语法
 
 jQuery 1.0 新增该静态函数。
 
@@ -8892,7 +8892,7 @@ jQuery 1.0 新增该静态函数。
 jQuery.get( url [, data ] [, success ] [, type ] )
 ```
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -8905,13 +8905,13 @@ jQuery.get( url [, data ] [, success ] [, type ] )
 
 参数`success`指定的回调函数只有在请求成功时才会执行，如果请求失败(例如找不到页面、服务器错误等)则不作任何处理。
 
-### 返回值
+返回值
 
 `jQuery.get()`函数的返回值为jqXHR类型，返回发送该请求的[jqXHR对象](https://codeplayer.vip/p/j7st2)(在jQuery 1.4及之前版本中，返回的是原生的XMLHttpRequest对象)。
 
 `jqXHR`对象是经过jQuery封装的类XMLHttpRequest对象。
 
-### 示例&说明
+示例&说明
 
 `jQuery.get()`是`jQuery.ajax()`函数的如下简写形式：
 
@@ -8988,7 +8988,7 @@ $.get( "http://localhost/index.php?id=5", { bookId: 2 }, function(data, textStat
 
 该函数属于全局`jQuery`对象。
 
-### 语法
+语法
 
 jQuery 1.0 新增该静态函数。
 
@@ -8998,7 +8998,7 @@ jQuery 1.0 新增该静态函数。
 jQuery.post( url [, data ] [, success ] [, type ] )
 ```
 
-### 参数
+参数
 
 | 参数    | 描述                                                         |
 | :------ | :----------------------------------------------------------- |
@@ -9011,13 +9011,13 @@ jQuery.post( url [, data ] [, success ] [, type ] )
 
 参数`success`指定的回调函数只有在请求**成功**时才会执行，如果请求失败(例如找不到页面、服务器错误等)则不作任何处理。
 
-### 返回值
+返回值
 
 `jQuery.post()`函数的返回值为jqXHR类型，返回发送该请求的[jqXHR对象](https://codeplayer.vip/p/j7st2)(jQuery 1.4及之前版本，返回的是原生的XMLHttpRequest对象)。
 
 `jqXHR`对象是经过jQuery封装的类XMLHttpRequest对象。
 
-### 示例&说明
+示例&说明
 
 `jQuery.post()`是`jQuery.ajax()`函数的如下简写形式：
 
