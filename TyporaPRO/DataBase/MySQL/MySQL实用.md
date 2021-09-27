@@ -68,6 +68,18 @@ alter table newAdmin modify column password varchar(50);
 alter table newAdmin change  column password pwod varchar(50)
 ```
 
+添加列
+
+```sql
+alter table newAdmin add column newColumn varchar(10); -- 添加表列 
+```
+
+删除列
+
+```sql
+alter table newAdmin drop column newColumn; -- 删除表列
+```
+
 
 
 # 二、增删改查操作
