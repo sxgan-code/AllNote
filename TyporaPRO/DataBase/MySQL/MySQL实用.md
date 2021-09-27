@@ -80,8 +80,6 @@ alter table newAdmin add column newColumn varchar(10); -- 添加表列
 alter table newAdmin drop column newColumn; -- 删除表列
 ```
 
-
-
 # 二、增删改查操作
 
 # 三、日期处理
