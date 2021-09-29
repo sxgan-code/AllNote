@@ -907,3 +907,4 @@ Checking connectivity... done.
 192.168.45.4 为 Git 所在服务器 ip ，你需要将其修改为你自己的 Git 服务 ip。
 
 这样我们的 Git 服务器安装就完成。
+
