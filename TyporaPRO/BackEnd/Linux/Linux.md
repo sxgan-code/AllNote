@@ -74,6 +74,8 @@ Linux 遵循 GNU 通用公共许可证（GPL），任何个人和机构都可以
 
 [vmware安装contos7](https://www.runoob.com/w3cnote/vmware-install-centos7.html)
 
+[Linux下的Java环境配置](https://gitee.com/healer0604/AllNote/blob/new2021/TyporaPRO/DevEnvironment/Linux/LinuxMint%E7%AC%94%E8%AE%B0/LinuxMint.md)
+
 ## Linux 系统启动过程
 
 linux启动时我们会看到许多启动信息。
