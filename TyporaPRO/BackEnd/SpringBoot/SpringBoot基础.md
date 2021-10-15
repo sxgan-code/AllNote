@@ -1595,3 +1595,183 @@ logging:
 	config: classpath:log4j2.xml
 ```
 
+# 解决跨域问题
+
+### 注解方式
+
+在接口方法上添加注解
+
+```java
+@CrossOrigin // 允许所有ip跨域
+@CrossOrigin(origins = "192.168.0.1") //只允许指定ip跨域
+```
+
+### SSM框架
+
+#### 方式一：
+
+在pom.xml中导入相关包
+
+```xml
+<!-- cors-filter包：配置跨域 -->
+<dependency>
+    <groupId>com.thetransactioncompany</groupId>
+    <artifactId>cors-filter</artifactId>
+    <version>2.5</version>
+</dependency>
+```
+
+在web.xml中配置过滤器
+
+```xml
+<!-- 配置跨域过滤器 -->
+<filter>
+    <filter-name>CORS</filter-name>
+    <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+    <init-param>
+        <param-name>cors.allowOrigin</param-name>
+        <param-value>*</param-value>
+    </init-param>
+    <init-param>
+        <param-name>cors.supportedMethods</param-name>
+        <!-- <param-value>*</param-value> --> <!-- 表示所有请求都有效 -->
+        <param-value>GET, POST, HEAD, PUT, DELETE</param-value>
+    </init-param>
+    <init-param>
+        <param-name>cors.supportedHeaders</param-name>
+        <param-value>Accept, Origin, X-Requested-With, Content-Type, Last-Modified</param-value>
+    </init-param>
+    <init-param>
+        <param-name>cors.exposedHeaders</param-name>
+        <param-value>Set-Cookie</param-value>
+    </init-param>
+    <init-param>
+        <param-name>cors.supportsCredentials</param-name>
+        <param-value>true</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>CORS</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+#### 方式二：
+
+在springMVC.xml中配置跨域
+
+```xml
+<!-- 接口跨域配置 -->
+<mvc:cors>
+	<!-- allowed-methods="*" --> <!-- 表示所有请求都有效 -->
+	<mvc:mapping path="/**" allowed-origins="*"
+		allowed-methods="POST, GET, OPTIONS, DELETE, PUT"
+		allowed-headers="Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
+		allow-credentials="true" />
+</mvc:cors>
+```
+
+#### 方式三：
+
+通过配置类来实现跨域，首先新建一个过滤器配置类
+
+```java
+package com.pmsapi.filter;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class CrossingFilter implements Filter {
+
+    private boolean isCross = false;
+
+    @Override
+    public void destroy() {
+        isCross = false;
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+        if (isCross) {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            System.out.println("拦截请求: " + httpServletRequest.getServletPath());
+            httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+            // httpServletResponse.setHeader("Access-Control-Allow-Methods", "*"); // 表示所有请求都有效
+            httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+            httpServletResponse.setHeader("Access-Control-Max-Age", "0");
+            httpServletResponse.setHeader("Access-Control-Allow-Headers",
+                                          "Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With,userId,token");
+            httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
+            httpServletResponse.setHeader("XDomainRequestAllowed", "1");
+        }
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        String isCrossStr = filterConfig.getInitParameter("IsCross");
+        isCross = isCrossStr.equals("true") ? true : false;
+        System.out.println("跨域开启状态：" + isCrossStr);
+    }
+}
+```
+
+在web.xml中配置过滤器类
+
+```xml
+<!-- 配置跨域过滤器 -->
+<filter>
+	<filter-name>CrossingFilter</filter-name>
+	<filter-class>com.pmsapi.filter.CrossingFilter</filter-class>
+	<init-param>
+		<param-name>IsCross</param-name>
+		<param-value>true</param-value>
+	</init-param>
+</filter>
+<filter-mapping>
+	<filter-name>CrossingFilter</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+### SpringBoot框架
+
+通过重写WebMvcConfigurer（全局跨域）
+
+```java
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+
+@SpringBootConfiguration
+public class CorsConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        //添加映射路径
+        registry.addMapping("/**")
+            //是否发送Cookie
+            .allowCredentials(true)
+            //设置放行哪些原始域   SpringBoot2.4.4下低版本使用.allowedOrigins("*")    
+            .allowedOriginPatterns("*")
+            //放行哪些请求方式
+            .allowedMethods(new String[]{"GET", "POST", "PUT", "DELETE"})
+            //.allowedMethods("*") //或者放行全部
+            //放行哪些原始请求头部信息
+            .allowedHeaders("*")
+            //暴露哪些原始请求头部信息
+            .exposedHeaders("*");
+    }
+}
+```
+
