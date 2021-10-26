@@ -565,3 +565,1264 @@ public class MyRabbitMQTest {
 
 ### 定义消费者
 
+```java
+package com.daniel.frist;
+
+import com.rabbitmq.client.*;
+import java.io.IOException;
+
+public class Consumer {
+    public static void main(String[] args) {
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setVirtualHost("/");
+        
+        Connection connection = null;
+        Channel channel = null;
+        
+        try {
+            connection = connectionFactory.newConnection("消费者");
+            channel = connection.createChannel();
+            
+            channel.basicConsume("queue1", true, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    System.out.println("接收到的消息是：" + new String(delivery.getBody(), "UTF-8"));
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                    System.out.println("接收失败了！！！！！！！！！！！");
+                }
+            });
+            System.out.println("正在接收消息。。。。");
+            System.in.read();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+```
+
+测试结果：
+
+当队列中无数据时，启动消费者
+
+![image-20211026110031823](image/image-20211026110031823.png)
+
+启动生产者，向队列发送数据
+
+![image-20211026110130873](image/image-20211026110130873.png)
+
+此时看消费者，发现会受到消息
+
+![image-20211026110203361](image/image-20211026110203361.png)
+
+此时查看网站，ready为0，消息被发送后就被消费了，所以没有消息是就绪状态。
+
+![image-20211026110236141](image/image-20211026110236141.png)
+
+# 五、RabbitMQ模式
+
+## 1、AMQP
+
+### 什么是AMQP
+
+AMQP全称：Advanced Message Queuing Protocol(高级消息队列协议)。是应用层协议的一个开发标准，为面向消息的中间件设计。
+
+### AMQP生产者流转过程
+
+![image-20211026142251534](image/image-20211026142251534.png)
+
+### AMQP消费者流转过程
+
+![image-20211026142338989](image/image-20211026142338989.png)
+
+## 2、RabbitMQ的核心组成部分
+
+![image-20211026142421270](image/image-20211026142421270.png)
+
+### 名词解释
+
+> **Server**：又称Broker ,接受客户端的连接，实现AMQP实体服务。 安装rabbitmq-server
+>
+> **Connection**：连接，应用程序与Broker的网络连接 TCP/IP/ 三次握手和四次挥手
+>
+> **Channel**：网络信道，几乎所有的操作都在Channel中进行，Channel是进行消息读写的通道，客户端可以建立对各Channel，每个Channel代表一个会话任务。
+>
+> **Message** :消息：服务与应用程序之间传送的数据，由Properties和body组成，Properties可是对消息进行修饰，比如消息的优先级，延迟等高级特性，Body则就是消息体的内容。
+>
+> **Virtual Host** 虚拟地址，用于进行逻辑隔离，最上层的消息路由，一个虚拟主机理由可以有若干个Exhange和Queueu，同一个虚拟主机里面不能有相同名字的Exchange
+>
+> **Exchange**：交换机，接受消息，根据路由键发送消息到绑定的队列。(==不具备消息存储的能力==)
+>
+> **Bindings**：Exchange和Queue之间的虚拟连接，binding中可以保护多个routing key.
+>
+> **Routing key**：是一个路由规则，虚拟机可以用它来确定如何路由一个特定消息。
+>
+> **Queue**：队列：也成为Message Queue,消息队列，保存消息并将它们转发给消费者。
+
+### RabbitMQ整体架构
+
+![image-20211026142618360](image/image-20211026142618360.png)
+
+### RabbitMQ的运行流程
+
+![image-20211026142653495](image/image-20211026142653495.png)
+
+## 3、fanout模式
+
+### fanout模式图解
+
+![image-20211026142829954](image/image-20211026142829954.png)
+
+### fanout模式具体实现
+
+生产者
+
+```java
+package com.daniel.fanout;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ *   类说明：Fanout模式 --生产者
+* @author      GanShaoXi
+* @date        2021/10/26 14:30
+*/
+public class Producer {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接信息
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setVirtualHost("/");
+    
+        Connection connection = null;
+        Channel channel = null;
+        
+        try {
+            // 获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 通过连接获取通道
+            channel = connection.createChannel();
+            // 准备发送的消息
+            
+            String message = "fanout模式-学习";
+            
+            // 定义交换机
+            String exchangeName =  "fanout_exchange";
+            String exchangeType = "fanout";
+            /*
+             @params1: 交换机的名称
+             @params2: 交换机的类型
+             @params3: 是否持久化 true为持久化，false为非持久化重启就会丢失
+             */
+            channel.exchangeDeclare(exchangeName,exchangeType,true);
+            
+            // 定义队列
+            String queueName1 = "fanout_queue1";
+            String queueName2 = "fanout_queue2";
+            String queueName3 = "fanout_queue3";
+            /*
+             @params1: 队列名称
+             @params2: 队列是否持久化
+             @params3: 是否具有排他性
+             @params4: 是否自动删除
+             @params5: 是否携带匹配参数
+             */
+            channel.queueDeclare(queueName1,true,false,false,null);
+            channel.queueDeclare(queueName2,true,false,false,null);
+            channel.queueDeclare(queueName3,true,false,false,null);
+            
+            // 绑定交换机和队列
+            /*
+             @params1: 队列名称
+             @params2: 交换机名称
+             @params3: routingkey
+             */
+            channel.queueBind(queueName1,exchangeName,"");
+            channel.queueBind(queueName2,exchangeName,"");
+            channel.queueBind(queueName3,exchangeName,"");
+            // 发送消息给中间件rabbitmq-server
+            /*
+             @params1: 交换机exchange
+             @params2: 队列名称/routingkey
+             @params3: 属性配置
+             @params4: 发送消息的内容
+             */
+            channel.basicPublish(exchangeName, "", null, message.getBytes());
+    
+            System.out.println("消息发送成功!");
+            
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+
+    }
+}
+
+```
+
+消费者
+
+```java
+package com.daniel.fanout;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer {
+    
+    private static Runnable runnable = () -> {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        // 获取队列的名称
+        final String queueName = Thread.currentThread().getName();
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者");
+            // 从连接中获取通道channel
+            channel = connection.createChannel();
+
+            // 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicConsume(queueName, true, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    System.out.println(queueName + "：收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println(queueName + "：开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+    
+    
+    public static void main(String[] args) {
+        new Thread(runnable,"fanout_queue1").start();
+        new Thread(runnable,"fanout_queue2").start();
+        new Thread(runnable,"fanout_queue3").start();
+    }
+}
+
+```
+
+测试结果：
+
+![image-20211026165420642](image/image-20211026165420642.png)
+
+## 4、Direct模式
+
+### Direct模式图解
+
+![image-20211026152254882](image/image-20211026152254882.png)
+
+### Direct模式具体实现
+
+生产者：
+
+```java
+package com.daniel.direct;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ *   类说明：Direct模式（发布订阅模式）--生产者
+* @author      GanShaoXi
+* @date        2021/10/26 14:30
+*/
+public class Producer {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接信息
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setVirtualHost("/");
+    
+        Connection connection = null;
+        Channel channel = null;
+        
+        try {
+            // 获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 通过连接获取通道
+            channel = connection.createChannel();
+            // 准备发送的消息
+            
+            String message = "direct模式-学习";
+            
+            // 定义交换机
+            String exchangeName =  "direct_exchange";
+            String exchangeType = "direct";
+            /*
+             @params1: 交换机的名称
+             @params2: 交换机的类型
+             @params3: 是否持久化 true为持久化，false为非持久化重启就会丢失
+             */
+            channel.exchangeDeclare(exchangeName,exchangeType,true);
+            
+            // 定义队列
+            String queueName1 = "direct_queue1";
+            String queueName2 = "direct_queue2";
+            String queueName3 = "direct_queue3";
+            /*
+             @params1: 队列名称
+             @params2: 队列是否持久化
+             @params3: 是否具有排他性
+             @params4: 是否自动删除
+             @params5: 是否携带匹配参数
+             */
+            channel.queueDeclare(queueName1,true,false,false,null);
+            channel.queueDeclare(queueName2,true,false,false,null);
+            channel.queueDeclare(queueName3,true,false,false,null);
+            
+            // 绑定交换机和队列
+            /*
+             @params1: 队列名称
+             @params2: 交换机名称
+             @params3: routingkey
+             */
+            channel.queueBind(queueName1,exchangeName,"key1");
+            channel.queueBind(queueName2,exchangeName,"key2");
+            channel.queueBind(queueName3,exchangeName,"key1");
+            // 发送消息给中间件rabbitmq-server
+            /*
+             @params1: 交换机exchange
+             @params2: 队列名称/routingkey
+             @params3: 属性配置
+             @params4: 发送消息的内容
+             */
+            channel.basicPublish(exchangeName, "key1", null, message.getBytes());
+    
+            System.out.println("消息发送成功!");
+            
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+
+    }
+}
+
+```
+
+消费者
+
+```java
+package com.daniel.direct;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer {
+    
+    private static Runnable runnable = () -> {
+        // 1: 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 2: 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        //获取队列的名称
+        final String queueName = Thread.currentThread().getName();
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 3: 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者");
+            // 4: 从连接中获取通道channel
+            channel = connection.createChannel();
+            // 5: 申明队列queue存储消息
+            /*
+             *  如果队列不存在，则会创建
+             *  Rabbitmq不允许创建两个相同的队列名称，否则会报错。
+             *
+             *  @params1： queue 队列的名称
+             *  @params2： durable 队列是否持久化
+             *  @params3： exclusive 是否排他，即是否私有的，如果为true,会对当前队列加锁，其他的通道不能访问，并且连接自动关闭
+             *  @params4： autoDelete 是否自动删除，当最后一个消费者断开连接之后是否自动删除消息。
+             *  @params5： arguments 可以设置队列附加参数，设置队列的有效期，消息的最大长度，队列的消息生命周期等等。
+             * */
+            // 这里如果queue已经被创建过一次了，可以不需要定义
+            //channel.queueDeclare("queue1", false, false, false, null);
+            // 6： 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicConsume(queueName, true, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    System.out.println(queueName + "：收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println(queueName + "：开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+    
+    
+    public static void main(String[] args) {
+        new Thread(runnable,"direct_queue1").start();
+        new Thread(runnable,"direct_queue2").start();
+        new Thread(runnable,"direct_queue3").start();
+    }
+}
+
+```
+
+测试结果：
+
+正如配置只有key1的队列收到了消息
+
+![image-20211026170050286](image/image-20211026170050286.png)
+
+## 5、Topic模式
+
+### Topic模式图解
+
+![image-20211026154429489](image/image-20211026154429489.png)
+
+### Topic模式具体实现
+
+前提概要：
+
+规则配置中的符号含义（注意字段之间使用` . `隔开）
+
+> `*` :  表示有且仅有一个字段
+>
+> `#` :  表示可以有0个，一个，或多个字段
+
+例：
+
+`*.orange.*`    可匹配有：`com.orange.cn`   不可匹配有 ：`top.com.orange.cn` 、`orange.cn` 、`orange`
+
+`#.orange.*`    可匹配有：`com.orange.cn` 、`top.com.orange.cn`、、`orange.cn`    不可匹配有 ：`orange`
+
+生产者
+
+```java
+package com.daniel.topic;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ *   类说明：Topic模式（发布订阅模式）--生产者
+* @author      GanShaoXi
+* @date        2021/10/26 14:30
+*/
+public class Producer {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接信息
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setVirtualHost("/");
+    
+        Connection connection = null;
+        Channel channel = null;
+        
+        try {
+            // 获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 通过连接获取通道
+            channel = connection.createChannel();
+            // 准备发送的消息
+            
+            String message = "topic模式-学习";
+            
+            // 定义交换机
+            String exchangeName =  "topic_exchange";
+            String exchangeType = "topic";
+            /*
+             @params1: 交换机的名称
+             @params2: 交换机的类型
+             @params3: 是否持久化 true为持久化，false为非持久化重启就会丢失
+             */
+            channel.exchangeDeclare(exchangeName,exchangeType,true);
+            
+            // 定义队列
+            String queueName1 = "topic_queue1";
+            String queueName2 = "topic_queue2";
+            String queueName3 = "topic_queue3";
+            String queueName4 = "topic_queue4";
+            /*
+             @params1: 队列名称
+             @params2: 队列是否持久化
+             @params3: 是否具有排他性
+             @params4: 是否自动删除
+             @params5: 是否携带匹配参数
+             */
+            channel.queueDeclare(queueName1,true,false,false,null);
+            channel.queueDeclare(queueName2,true,false,false,null);
+            channel.queueDeclare(queueName3,true,false,false,null);
+            channel.queueDeclare(queueName4,true,false,false,null);
+            
+            // 绑定交换机和队列
+            /*
+             @params1: 队列名称
+             @params2: 交换机名称
+             @params3: routingkey
+             */
+            channel.queueBind(queueName1,exchangeName,"key.*");
+            channel.queueBind(queueName2,exchangeName,"#.key.#");
+            channel.queueBind(queueName3,exchangeName,"#.key.user.#");
+            channel.queueBind(queueName4,exchangeName,"#.com.#");
+            // 发送消息给中间件rabbitmq-server
+            /*
+             @params1: 交换机exchange
+             @params2: 队列名称/routingkey
+             @params3: 属性配置
+             @params4: 发送消息的内容
+             */
+            channel.basicPublish(exchangeName, "admin.key.user.com", null, message.getBytes());
+    
+            System.out.println("消息发送成功!");
+            
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+
+    }
+}
+
+```
+
+消费者
+
+```java
+package com.daniel.topic;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer {
+    
+    private static Runnable runnable = () -> {
+        // 1: 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 2: 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        //获取队列的名称
+        final String queueName = Thread.currentThread().getName();
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 3: 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者");
+            // 4: 从连接中获取通道channel
+            channel = connection.createChannel();
+            // 5: 申明队列queue存储消息
+            /*
+             *  如果队列不存在，则会创建
+             *  Rabbitmq不允许创建两个相同的队列名称，否则会报错。
+             *
+             *  @params1： queue 队列的名称
+             *  @params2： durable 队列是否持久化
+             *  @params3： exclusive 是否排他，即是否私有的，如果为true,会对当前队列加锁，其他的通道不能访问，并且连接自动关闭
+             *  @params4： autoDelete 是否自动删除，当最后一个消费者断开连接之后是否自动删除消息。
+             *  @params5： arguments 可以设置队列附加参数，设置队列的有效期，消息的最大长度，队列的消息生命周期等等。
+             * */
+            // 这里如果queue已经被创建过一次了，可以不需要定义
+            //channel.queueDeclare("queue1", false, false, false, null);
+            // 6： 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicConsume(queueName, true, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    System.out.println(queueName + "：收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println(queueName + "：开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+    
+    
+    public static void main(String[] args) {
+        new Thread(runnable,"topic_queue1").start();
+        new Thread(runnable,"topic_queue2").start();
+        new Thread(runnable,"topic_queue3").start();
+        new Thread(runnable,"topic_queue4").start();
+    }
+}
+
+```
+
+测试结果：
+
+![image-20211026171650211](image/image-20211026171650211.png)
+
+## 6、work模式-轮询模式
+
+==注意==：如果未使用手动应答机制，则默认使用轮询算法分发数据
+
+### work模式中的轮询模式图解
+
+![image-20211026172053462](image/image-20211026172053462.png)
+
+从消息队列中依次循环分发，列如：第一条分发给C1，第二条分发给C2，第三条分发给C1，第四条分发给C2，第五条·····
+
+### work模式中的轮询模式具体实现
+
+生产者
+
+```java
+package com.daniel.work.lunxun;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ *   类说明：Work模式下的轮询分发（平均分配）--生产者
+* @author      GanShaoXi
+* @date        2021/10/26 14:30
+*/
+public class Producer {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接信息
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setVirtualHost("/");
+    
+        Connection connection = null;
+        Channel channel = null;
+        
+        try {
+            // 获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 通过连接获取通道
+            channel = connection.createChannel();
+            
+            
+            // 定义队列
+            String queueName = "lunxun_work_queue";
+            
+            /*
+             @params1: 队列名称
+             @params2: 队列是否持久化
+             @params3: 是否具有排他性
+             @params4: 是否自动删除
+             @params5: 是否携带匹配参数
+             */
+            channel.queueDeclare(queueName,true,false,false,null);
+            
+           
+            // 发送消息给中间件rabbitmq-server
+            /*
+             @params1: 交换机exchange
+             @params2: 队列名称/routingkey
+             @params3: 属性配置
+             @params4: 发送消息的内容
+             */
+            for( int i = 0 ;i <20 ; i++ ){
+                String message = "轮询工作模式——"+i;
+                channel.basicPublish("", queueName, null, message.getBytes());
+            }
+            System.out.println("消息发送成功!");
+            
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+```
+
+消费者1：
+
+```java
+package com.daniel.work.lunxun;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer1 {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者-Consumer1");
+            // 从连接中获取通道channel
+            channel = connection.createChannel();
+
+            // 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicQos(1);
+            finalChannel.basicConsume("lunxun_work_queue", true, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    try{
+                        System.out.println("Consumer1-收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                        Thread.sleep(2000);
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println("Consumer1-开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+```
+
+消费者2：
+
+```java
+package com.daniel.work.lunxun;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer2 {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者-Consumer2");
+            // 从连接中获取通道channel
+            channel = connection.createChannel();
+
+            // 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicQos(1);
+            finalChannel.basicConsume("lunxun_work_queue", true, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    try{
+                        System.out.println("Consumer2-收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                        Thread.sleep(2000);
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println("Consumer2-开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+```
+
+测试结果：
+
+![image-20211026173109746](image/image-20211026173109746.png)
+
+## 7、work模式-公平模式
+
+### work模式下公平模式图解
+
+![image-20211026173655512](image/image-20211026173655512.png)
+
+### work模式下公平模式具体实现
+
+前期概要：
+
+```java
+finalChannel.basicQos(1);
+```
+
+该语句用于设置每次分发的数据量，例如：数据量为1w条，此时如果设置为10条，则每次给消费者分发10条
+
+```java
+finalChannel.basicConsume("fair_work_queue", false, new DeliverCallback() {// 略····}
+```
+
+若使用公平分发需要将`basicConsume`方法的参数二设置为：`false `（手动应答）
+
+```java
+//更改为手动应答需要手动设置
+finalChannel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
+```
+
+生产者
+
+```java
+package com.daniel.work.fair;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ *   类说明：Work模式下的公平分发（能者多劳）--生产者
+* @author      GanShaoXi
+* @date        2021/10/26 14:30
+*/
+public class Producer {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接信息
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setVirtualHost("/");
+    
+        Connection connection = null;
+        Channel channel = null;
+        
+        try {
+            // 获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 通过连接获取通道
+            channel = connection.createChannel();
+            
+            
+            // 定义队列
+            String queueName = "fair_work_queue";
+            
+            /*
+             @params1: 队列名称
+             @params2: 队列是否持久化
+             @params3: 是否具有排他性
+             @params4: 是否自动删除
+             @params5: 是否携带匹配参数
+             */
+            channel.queueDeclare(queueName,true,false,false,null);
+            
+           
+            // 发送消息给中间件rabbitmq-server
+            /*
+             @params1: 交换机exchange
+             @params2: 队列名称/routingkey
+             @params3: 属性配置
+             @params4: 发送消息的内容
+             */
+            for( int i = 0 ;i <20 ; i++ ){
+                String message = "能者多劳（公平）工作模式——"+i;
+                channel.basicPublish("", queueName, null, message.getBytes());
+            }
+            System.out.println("消息发送成功!");
+            
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+```
+
+消费者1：
+
+```java
+package com.daniel.work.fair;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer1 {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者-Consumer1");
+            // 从连接中获取通道channel
+            channel = connection.createChannel();
+
+            // 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicQos(1);// 类似cpu轮片时间，值越大，一次分发越多
+            /*
+              @params2:公平分发需将参数二改为false，通过手动应答接收
+             */
+            finalChannel.basicConsume("fair_work_queue", false, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    try{
+                        System.out.println("Consumer1-收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                        //更改为手动应答
+                        finalChannel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
+                        Thread.sleep(2000);
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println("Consumer1-开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+```
+
+消费者2：
+
+```java
+package com.daniel.work.fair;
+
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+
+public class Consumer2 {
+    public static void main(String[] args) {
+        // 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者-Consumer2");
+            // 从连接中获取通道channel
+            channel = connection.createChannel();
+
+            // 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicQos(1);// 类似cpu轮片时间，值越大，一次分发越多
+            /*
+              @params2:公平分发需将参数二改为：false，通过手动应答接收
+             */
+            finalChannel.basicConsume("fair_work_queue", false, new DeliverCallback() {
+                @Override
+                public void handle(String s, Delivery delivery) throws IOException {
+                    try{
+                        System.out.println("Consumer2-收到消息是：" + new String(delivery.getBody(), "UTF-8"));
+                        //更改为手动应答
+                        finalChannel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
+                        Thread.sleep(1000);
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+            }, new CancelCallback() {
+                @Override
+                public void handle(String s) throws IOException {
+                }
+            });
+            System.out.println("Consumer2-开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+```
+
+测试结果：
+
+![image-20211026174342817](image/image-20211026174342817.png)
+
