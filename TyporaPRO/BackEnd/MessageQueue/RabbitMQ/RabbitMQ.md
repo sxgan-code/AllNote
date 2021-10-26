@@ -1582,6 +1582,16 @@ finalChannel.basicConsume("fair_work_queue", false, new DeliverCallback() {// �
 finalChannel.basicAck(delivery.getEnvelope().getDeliveryTag(),false);
 ```
 
+#### 什么是消息应答模式
+
+为了确保消息不会丢失，RabbitMQ支持消息应答。消费者发送一个消息应答，告诉RabbitMQ这个消息已经接收并且处理完毕了。RabbitMQ就可以删除它了。
+
+如果一个消费者挂掉却没有发送应答，RabbitMQ会理解为这个消息没有处理完全，然后交给另一个消费者去重新处理。这样，你就可以确认即使消费者偶尔挂掉也不会丢失任何消息了。
+
+没有任何消息超时限制；只有当消费者挂掉时，RabbitMQ才会重新投递。即使处理一条消息会花费很长的时间。
+
+消息应答是默认打开的。我们通过显示的设置`autoAsk=false`关闭这种机制。一旦我们完成任务，消费者会自动发送应答。通知RabbitMQ消息已被处理，可以从内存删除。如果消费者因宕机或链接失败等原因没有发送ACK（不同于ActiveMQ，在RabbitMQ里，消息没有过期的概念），则RabbitMQ会将消息重新发送给其他监听在队列的下一个消费者。
+
 生产者
 
 ```java
