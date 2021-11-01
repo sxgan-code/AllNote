@@ -1836,3 +1836,661 @@ public class Consumer2 {
 
 ![image-20211026174342817](image/image-20211026174342817.png)
 
+# 六、SpringBoot整合
+
+## 1、fanout模式
+
+创建springboot项目，导入相关依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+### 模式结构图
+
+![image-20211101153422810](image/image-20211101153422810.png)
+
+### 配置application.yml
+
+```yml
+# 服务端口
+server:
+  port: 8080
+# 配置rabbitmq服务
+spring:
+  rabbitmq:
+    username: admin
+    password: admin
+    virtual-host: /
+    host: localhost
+    port: 5672
+```
+
+### 创建交换机和队列
+
+创建交换机和队列，并且将其两者绑定
+
+```java
+package com.danile.mqboot.config;
+
+import org.springframework.amqp.core.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MyMqConfig {
+    // 创建交换机
+    @Bean
+    public FanoutExchange fanoutExchange(){
+        return  new FanoutExchange("test_fanout_exchange",true,false);
+    }
+    
+    /** 创建队列
+     durable:是否持久化,默认是false,持久化队列：会被存储在磁盘上，当消息代理重启时仍然存在，暂存队列：当前连接有效
+     exclusive:默认也是false，只能被当前创建的连接使用，而且当连接关闭后队列即被删除。此参考优先级高于durable
+     autoDelete:是否自动删除，当没有生产者或者消费者使用此队列，该队列会自动删除。
+    一般设置一下队列的持久化就好,其余两个就是默认false
+     */
+    @Bean
+    public Queue emailQueue(){
+        return new Queue("email_queue",true);
+    }
+    @Bean
+    public Queue smsQueue(){
+        return new Queue("sms_queue",true);
+    }
+    @Bean
+    public Queue wechatQueue(){
+        return new Queue("wechat_queue",true);
+    }
+    
+    // 绑定交换机和队列
+    @Bean
+    public Binding emailBind(){
+        return BindingBuilder.bind(emailQueue()).to(fanoutExchange());
+    }
+    @Bean
+    public Binding smsBind(){
+        return BindingBuilder.bind(smsQueue()).to(fanoutExchange());
+    }
+    @Bean
+    public Binding wechatBind(){
+        return BindingBuilder.bind(wechatQueue()).to(fanoutExchange());
+    }
+    
+}
+
+```
+
+### 定义订单的生产者
+
+```java
+package com.danile.mqboot.service;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+public class ProductService {
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    /**
+     * 生成订单信息
+     * @param userID 用户ID
+     * @param num 产品数量
+     */
+    public void product(String userID,Integer num){
+        // 通过UUID生成随机订单号
+        String productId = UUID.randomUUID().toString();
+        String routeKey = "";
+        // 使用map集合打包数据，并发送，注意接收时使用Map类型接收
+        Map<String,Object> map = new HashMap<>();
+        map.put("userid",userID);
+        map.put("productid",productId);
+        map.put("count",num);
+        System.out.println("生产产品中。。。。"+productId);
+        // 参数1：交换机名称  参数2：路由Key 参数3：object类型数据，此处发送map集合
+        rabbitTemplate.convertAndSend("test_fanout_exchange",routeKey,map);
+    }
+}
+
+```
+
+此时已完成数据从生产到发送到队列，此时应该需要消费者进行消费，所以新建项目，用于接收数据
+
+### 新建消费者接收数据
+
+```java
+package com.danile.mqboot.consumer;
+
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+@RabbitListener(queues = {"email_queue"}) // 接收数据的队列名
+public class EmailConsumer {
+    @RabbitHandler  // 通过此注解，会将队列中的消息注入到参数msg中
+    public void getMessage(Map msg){  // 注意接收数据的数据类型，应与发送数据的类型相同，防止反序列化失败
+        System.out.println("Email收到消息=====》"+msg);
+    }
+}
+
+```
+
+## 2、direct模式
+
+相较于fanout模式，direct模式多了RouterKey 
+
+###  创建交换机和队列
+
+```java
+package com.danile.mqboot.config;
+
+import org.springframework.amqp.core.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MyMqConfig {
+    // 创建交换机
+    @Bean
+    public DirectExchange directExchange(){
+        return  new DirectExchange("test_direct_exchange",true,false);
+    }
+    
+    /** 创建队列
+     durable:是否持久化,默认是false,持久化队列：会被存储在磁盘上，当消息代理重启时仍然存在，暂存队列：当前连接有效
+     exclusive:默认也是false，只能被当前创建的连接使用，而且当连接关闭后队列即被删除。此参考优先级高于durable
+     autoDelete:是否自动删除，当没有生产者或者消费者使用此队列，该队列会自动删除。
+    一般设置一下队列的持久化就好,其余两个就是默认false
+     */
+    @Bean
+    public Queue emailQueue(){
+        return new Queue("email_queue",true);
+    }
+    @Bean
+    public Queue smsQueue(){
+        return new Queue("sms_queue",true);
+    }
+    @Bean
+    public Queue wechatQueue(){
+        return new Queue("wechat_queue",true);
+    }
+    
+    // 绑定交换机和队列
+    @Bean
+    public Binding emailBind(){
+        return BindingBuilder.bind(emailQueue()).to(directExchange()).with("email");
+    }
+    @Bean
+    public Binding smsBind(){
+        return BindingBuilder.bind(smsQueue()).to(directExchange()).with("ssm");
+    }
+    @Bean
+    public Binding wechatBind(){
+        return BindingBuilder.bind(wechatQueue()).to(directExchange()).with("wechat");
+    }
+    
+}
+
+```
+
+### 生产者
+
+```java
+package com.danile.mqboot.service;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+public class ProductService {
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    /**
+     * 生成订单信息
+     * @param userID 用户ID
+     * @param num 产品数量
+     */
+    public void product(String userID,Integer num){
+        // 通过UUID生成随机订单号
+        String productId = UUID.randomUUID().toString();
+        String routeKey = "ssm";
+        // 使用map集合打包数据，并发送，注意接收时使用Map类型接收
+        Map<String,Object> map = new HashMap<>();
+        map.put("userid",userID);
+        map.put("productid",productId);
+        map.put("count",num);
+        System.out.println("生产产品中。。。。"+productId);
+        // 参数1：交换机名称  参数2：路由Key 参数3：object类型数据，此处发送map集合
+        rabbitTemplate.convertAndSend("test_direct_exchange",routeKey,map);
+    }
+}
+
+```
+
+## 3、topic模式（使用注解配置）
+
+使用注解创建交换机和队列，并且使用消费者接收
+
+### email接收
+
+```java
+package com.danile.mqboot.consumer.topic;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.*;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+// bindings其实就是用来确定队列和交换机绑定关系
+@RabbitListener(bindings =
+@QueueBinding(
+        // email_topic_queue 是队列名字，这个名字你可以自定随便定义。
+        value = @Queue(value = "email_topic_queue", declare = "true", autoDelete = "false"),
+        // test_topic_exchange 交换机的名字 必须和生产者保持一致,这里是确定的rabbitmq模式是：topic模式
+        exchange = @Exchange(value = "test_topic_exchange", type = ExchangeTypes.FANOUT),
+        // RouterKey
+        key = "*.email.#"
+)
+)
+public class EmailTopicConsumer {
+    @RabbitHandler  // 通过此注解，会将队列中的消息注入到参数msg中
+    public void getMessage(Map msg) {  // 注意接收数据的数据类型，应与发送数据的类型相同，防止反序列化失败
+        System.out.println("Email收到消息=====》" + msg);
+    }
+}
+```
+
+### sms接收
+
+```java
+package com.danile.mqboot.consumer.topic;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.*;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+// bindings其实就是用来确定队列和交换机绑定关系
+@RabbitListener(bindings =
+@QueueBinding(
+        // email_topic_queue 是队列名字，这个名字你可以自定随便定义。
+        value = @Queue(value = "ssm_topic_queue", declare = "true", autoDelete = "false"),
+        // test_topic_exchange 交换机的名字 必须和生产者保持一致,这里是确定的rabbitmq模式是：topic模式
+        exchange = @Exchange(value = "test_topic_exchange", type = ExchangeTypes.FANOUT),
+        // RouterKey
+        key = "#.ssm.#"
+)
+)
+@Component
+public class SMSTopicConsumer {
+    @RabbitHandler
+    public void getMessage(Map msg) {
+        System.out.println("SSMTopic收到消息=====》" + msg);
+    }
+}
+
+```
+
+### wechat接收
+
+```java
+package com.danile.mqboot.consumer.topic;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.*;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+// bindings其实就是用来确定队列和交换机绑定关系
+@RabbitListener(bindings =
+@QueueBinding(
+        // email_topic_queue 是队列名字，这个名字你可以自定随便定义。
+        value = @Queue(value = "wechat_topic_queue", declare = "true", autoDelete = "false"),
+        // test_topic_exchange 交换机的名字 必须和生产者保持一致,这里是确定的rabbitmq模式是：topic模式
+        exchange = @Exchange(value = "test_topic_exchange", type = ExchangeTypes.FANOUT),
+        // RouterKey
+        key = "*.wechat"
+)
+)
+public class WechatTopicConsumer {
+    @RabbitHandler
+    public void getMessage(Map msg) {
+        System.out.println("WechatTopic收到消息=====》" + msg);
+    }
+}
+```
+
+创建生产者发送数据
+
+```java
+package com.danile.mqboot.service;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+public class ProductService {
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    public void productTopic(String userID,Integer num,String routeKey){
+        // 通过UUID生成随机订单号
+        String productId = UUID.randomUUID().toString();
+        // 使用map集合打包数据，并发送，注意接收时使用Map类型接收
+        Map<String,Object> map = new HashMap<>();
+        map.put("userid",userID);
+        map.put("productid",productId);
+        map.put("count",num);
+        System.out.println("生产产品中。。。。"+productId);
+        // 参数1：交换机名称  参数2：路由Key 参数3：object类型数据，此处发送map集合
+        rabbitTemplate.convertAndSend("test_topic_exchange",routeKey,map);
+    }
+}
+
+```
+
+# 七、RabbitMQ高级
+
+## 1、过期时间TTL
+
+### 概述
+
+过期时间TTL表示可以对消息设置预期的时间，在这个时间内都可以被消费者接收获取；过了之后消息将自动被删除。RabbitMQ可以对**消息和队列**设置TTL。目前有两种方法可以设置。
+
+- 第一种方法是通过队列属性设置，队列中所有消息都有相同的过期时间。
+- 第二种方法是对消息进行单独设置，每条消息TTL可以不同。
+
+如果上述两种方法同时使用，则消息的过期时间以两者之间TTL较小的那个数值为准。消息在队列的生存时间一旦超过设置的TTL值，就称为dead message被投递到死信队列， 消费者将无法再收到该消息。
+
+### 设置队列TTL
+
+```java
+package com.xuexiangban.rabbitmq.ttl;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Producer {
+    public static void main(String[] args) {
+        // 1: 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 2: 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 3: 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 4: 从连接中获取通道channel
+            channel = connection.createChannel();
+            // 5: 申明队列queue存储消息
+            /*
+             *  如果队列不存在，则会创建
+             *  Rabbitmq不允许创建两个相同的队列名称，否则会报错。
+             *
+             *  @params1： queue 队列的名称
+             *  @params2： durable 队列是否持久化
+             *  @params3： exclusive 是否排他，即是否私有的，如果为true,会对当前队列加锁，其他的通道不能访问，并且连接自动关闭
+             *  @params4： autoDelete 是否自动删除，当最后一个消费者断开连接之后是否自动删除消息。
+             *  @params5： arguments 可以设置队列附加参数，设置队列的有效期，消息的最大长度，队列的消息生命周期等等。
+             * */
+            Map<String,Object> args2 = new HashMap<>();
+            args2.put("x-message-ttl",5000);
+            channel.queueDeclare("ttl.queue", true, false, false, args2);
+            // 6： 准备发送消息的内容
+            String message = "Hello World！！！";
+            Map<String, Object> headers = new HashMap<String, Object>();
+            headers.put("x", "1");
+            headers.put("y", "1");
+            AMQP.BasicProperties basicProperties = new AMQP.BasicProperties().builder()
+                    .deliveryMode(2) // 传送方式
+                    .priority(1)
+                    .contentEncoding("UTF-8") // 编码方式
+                    .expiration("3000") // 过期时间
+                    .headers(headers).build(); //自定义属性
+            // 7: 发送消息给中间件rabbitmq-server
+            // @params1: 交换机exchange
+            // @params2: 队列名称/routing
+            // @params3: 属性配置
+            // @params4: 发送消息的内容
+            for (int i = 0; i <100 ; i++) {
+                channel.basicPublish("", "ttl.queue", basicProperties, message.getBytes());
+                System.out.println("消息发送成功!");
+                Thread.sleep(1000);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+```
+
+### 测试类
+
+```java
+package com.xuexiangban.rabbitmq.ttl;
+import com.rabbitmq.client.*;
+import java.io.IOException;
+
+public class Consumer {
+    public static void main(String[] args) {
+        // 1: 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 2: 设置连接属性
+        connectionFactory.setHost("47.104.141.27");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 3: 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("消费者");
+            // 4: 从连接中获取通道channel
+            channel = connection.createChannel();
+            // 5: 申明队列queue存储消息
+            /*
+             *  如果队列不存在，则会创建
+             *  Rabbitmq不允许创建两个相同的队列名称，否则会报错。
+             *
+             *  @params1： queue 队列的名称
+             *  @params2： durable 队列是否持久化
+             *  @params3： exclusive 是否排他，即是否私有的，如果为true,会对当前队列加锁，其他的通道不能访问，并且连接自动关闭
+             *  @params4： autoDelete 是否自动删除，当最后一个消费者断开连接之后是否自动删除消息。
+             *  @params5： arguments 可以设置队列附加参数，设置队列的有效期，消息的最大长度，队列的消息生命周期等等。
+             * */
+            // 这里如果queue已经被创建过一次了，可以不需要定义
+            //channel.queueDeclare("queue1", false, false, false, null);
+            // 6： 定义接受消息的回调
+            Channel finalChannel = channel;
+            finalChannel.basicConsume("ttl.queue", true, new DefaultConsumer(channel){
+                @Override
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                    System.out.println(properties);
+                    System.out.println("获取的消息是：" + new String(body,"UTF-8"));
+                }
+            });
+            System.out.println("开始接受消息");
+            System.in.read();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+```
+
+> 参数 x-message-ttl 的值 必须是非负 32 位整数 (0 <= n <= 2^32-1) ，以毫秒为单位表示 TTL 的值。这样，值 6000 表示存在于 队列 中的当前 消息 将最多只存活 6 秒钟。
+
+![img](image/kuangstudy2caa7dc8-77f6-4a20-b15d-3e8eed18e3c3.png)
+
+### 设置消息TTL
+
+消息的过期时间；只需要在发送消息（可以发送到任何队列，不管该队列是否属于某个交换机）的时候设置过期时间即可。在测试类中编写如下方法发送消息并设置过期时间到队列：
+
+```java
+package com.xuexiangban.rabbitmq.ttl;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import java.util.HashMap;
+import java.util.Map;
+
+public class MessageTTLProducer {
+    public static void main(String[] args) {
+        // 1: 创建连接工厂
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        // 2: 设置连接属性
+        connectionFactory.setHost("localhost");
+        connectionFactory.setPort(5672);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setUsername("admin");
+        connectionFactory.setPassword("admin");
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            // 3: 从连接工厂中获取连接
+            connection = connectionFactory.newConnection("生产者");
+            // 4: 从连接中获取通道channel
+            channel = connection.createChannel();
+            // 5: 申明队列queue存储消息
+            /*
+             *  如果队列不存在，则会创建
+             *  Rabbitmq不允许创建两个相同的队列名称，否则会报错。
+             *
+             *  @params1： queue 队列的名称
+             *  @params2： durable 队列是否持久化
+             *  @params3： exclusive 是否排他，即是否私有的，如果为true,会对当前队列加锁，其他的通道不能访问，并且连接自动关闭
+             *  @params4： autoDelete 是否自动删除，当最后一个消费者断开连接之后是否自动删除消息。
+             *  @params5： arguments 可以设置队列附加参数，设置队列的有效期，消息的最大长度，队列的消息生命周期等等。
+             * */
+            channel.queueDeclare("ttl.queue2", true, false, false, null);
+            // 6： 准备发送消息的内容
+            String message = "Hello World！！！";
+            Map<String, Object> headers = new HashMap<String, Object>();
+            headers.put("x", "1");
+            headers.put("y", "1");
+            AMQP.BasicProperties basicProperties = new AMQP.BasicProperties().builder()
+                    .deliveryMode(2) // 传送方式
+                    .priority(1)
+                    .contentEncoding("UTF-8") // 编码方式
+                    .expiration("5000") // 过期时间
+                    .headers(headers).build(); //自定义属性
+            // 7: 发送消息给中间件rabbitmq-server
+            // @params1: 交换机exchange
+            // @params2: 队列名称/routing
+            // @params3: 属性配置
+            // @params4: 发送消息的内容
+            for (int i = 0; i <10 ; i++) {
+                channel.basicPublish("", "ttl.queue2", basicProperties, message.getBytes());
+                System.out.println("消息发送成功!");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("发送消息出现异常...");
+        } finally {
+            // 7: 释放连接关闭通道
+            if (channel != null && channel.isOpen()) {
+                try {
+                    channel.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (connection != null && connection.isOpen()) {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+}
+```
+
+![img](image/kuangstudy279d41e6-2a5d-4032-84d9-e8822c269fb8.png)
+
+> expiration 字段以微秒为单位表示 TTL 值。且与 x-message-ttl 具有相同的约束条件。因为 expiration 字段必须为字符串类型，broker 将只会接受以字符串形式表达的数字。
+>
+> 当同时指定了 queue 和 message 的 TTL 值，则两者中较小的那个才会起作用。
+
