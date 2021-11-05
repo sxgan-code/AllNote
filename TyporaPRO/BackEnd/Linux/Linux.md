@@ -1260,6 +1260,18 @@ Linux系统是一个==多用户多任务的分时操作系统== ，任何一个�
 
 ### 一、Linux系统用户账号的管理
 
+cat /etc/passwd 可以查看所有用户的列表
+
+w 可以查看当前活跃的用户列表
+
+cat /etc/group 查看用户组
+
+groups 查看当前登录用户的组内成员
+
+groups test 查看test用户所在的组,以及组内成员
+
+whoami 查看当前登录用户名
+
 ==用户账号的管理工作主要涉及到用户账号的添加、修改和删除。== 
 
 添加用户账号就是在系统中创建一个新账号，然后为新账号分配用户号、用户组、主目录和登录Shell等资源。刚添加的账号是被锁定的，无法使用。
@@ -1813,6 +1825,55 @@ user006:123456
 ```
 
 这样就完成了大量用户的创建了，之后您可以到/home下检查这些用户宿主目录的权限设置是否都正确，并登录验证用户密码是否正确。
+
+### 五、添加用户实例
+
+添加用户
+
+```sh
+sudo useradd -d "/home/daniel" -m -s "/bin/bash" daniel
+# -d “/home/daniel” ：就是指定/home/tt为主目录
+# -m 就是如果/home/daniel 不存在就强制创建
+# -s 就是指定shell版本
+```
+
+设置密码
+
+```sh
+# 修改用户密码
+sudo passwd daniel
+```
+
+切换用户
+
+```sh
+su daniel
+```
+
+删除用户
+
+```sh
+# 连同用户的主目录和邮箱一起删除：
+sudo deluser --remove-home tt
+只删除用户：
+sudo userdel tt
+连同用户主目录一起删除：
+sudo derlser -r tt
+如果创建时主目录已经存在，即主目录不属于当前要删除的用户，则无法删除主目录。
+```
+
+相关文件
+
+```sh
+cat /etc/passwd -使用者帐号资讯，可以查看用户信息
+cat /etc/shadow -使用者帐号资讯加密
+cat /etc/group -群组资讯
+cat /etc/default/useradd -定义资讯
+cat /etc/login.defs -系统广义设定
+cat /etc/skel -内含定义档的目录
+```
+
+![image-20211105144316708](image/image-20211105144316708.png)
 
 # 四、磁盘管理
 
