@@ -948,7 +948,7 @@ git push
 ### 常用的规则
 
 ```text
-/mtk/ 过滤整个文件夹
+mtk/ 过滤整个文件夹
 *.zip 过滤所有.zip文件
 /mtk/do.c 过滤某个具体文件
 ```
@@ -1003,6 +1003,60 @@ fd1/*
 
 说明：忽略全部内容，但是不忽略 .gitignore 文件、根目录下的 /fw/bin/ 和 /fw/sf/ 目录；
 
+### .gitignore文件更新
 
+首先清空暂存区文件
 
+```sh
+git rm -r --cached .
+```
+
+重新提交暂存区忽略文件
+
+```sh
+git add .gitignore
+git commit -m 'update .gitignore'
+```
+
+重新提交所有文件
+
+```sh
+git add .
+```
+
+常用忽略语句
+
+```sh
+song/
+node_modules/
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+```
 
