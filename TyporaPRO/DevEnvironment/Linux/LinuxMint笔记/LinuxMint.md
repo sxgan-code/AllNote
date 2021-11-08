@@ -294,22 +294,319 @@ root@daniel:/home/daniel#        # <---成功进入root
 
 # 五、安装Mysql
 
-## 1.下载软件包
+## 1 、安装前准备
 
-```shell
-sudo apt-get install mysql-server
+### 1.1、检查是否已经安装过mysql，执行命令
+
+```sh
+rpm -qa | grep mysql
 ```
 
-安装完毕测试
+如果已存在，则执行删除命令 后边为Mysql目录
 
-```shell
- mysql -u root -p
- 输入密码：daniel #用户密码
+```sh
+rpm -e --nodeps mysql-xxxx
 ```
 
-安装成功
+### 1.2、查询所有Mysql对应的文件夹
 
-![image-20210814115537358](image/LinuxMint/image-20210814115537358.png)
+```sh
+whereis mysqlm
+find / -name mysql
+```
+
+删除相关目录或文件
+
+```sh
+rm -rf /usr/bin/mysql /usr/include/mysql /data/mysql /data/mysql/mysql 
+```
+
+验证是否删除完毕
+
+```sh
+whereis mysqlm
+find / -name mysql
+```
+
+### 1.3、检查mysql用户组和用户是否存在
+
+```sh
+cat /etc/group | grep mysql
+cat /etc/passwd |grep mysql
+# 如果没有，则创建
+groupadd mysql
+useradd -r -g mysql mysql 
+```
+
+### 1.4、从官网下载是用于Linux的Mysql安装包
+
+上传服务器
+
+![image-20211108153146417](image/image-20211108153146417.png)
+
+## 2、安装Mysql
+
+解压该文件
+
+```sh
+tar -zxvf mysql-8.0.11-linux-glibc2.12-x86_64.tar.gz 
+```
+
+移动文件到`/usr/local/`并重命名为`mysql`，如果有`mysql`文件夹需将其改为其他名称，防止后续影响。
+
+```sh
+mv /home/daniel/software/mysql-8.0.11-linux-glibc2.12-x86_64 /usr/local/
+```
+
+重命名
+
+```sh
+mv mysql-8.0.11-linux-glibc2.12-x86_64 mysql
+```
+
+在**/usr/local/mysql**目录下创建data目录
+
+```sh
+mkdir /usr/local/mysql/data
+```
+
+更改mysql目录下所有的目录及文件夹所属的用户组和用户，以及权限
+
+```sh
+chown -R mysql:mysql /usr/local/mysql
+chmod -R 755 /usr/local/mysql
+```
+
+ 如果报以上错误，说明mysql用户不存在，执行以下命令，操作完再执行更改权限命令
+
+```sh
+groupadd mysql
+useradd -r -g mysql mysql
+```
+
+编译安装并初始化mysql,**务必记住初始化输出日志末尾的密码（数据库管理员临时密码）**
+
+```sh
+cd /usr/local/mysql/bin
+./mysqld --initialize --user=mysql --datadir=/usr/local/mysql/data --basedir=/usr/local/mysql
+#初始化遇到问题
+#./mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file: No such file or directory
+#执行以下命令：
+apt-get install libaio1 libaio-dev
+#然后初始化，注意日志末尾密码
+```
+
+![image-20211108155637953](image/image-20211108155637953.png)
+
+## 3、编辑配置文件
+
+my.cnf添加配置如下
+
+```sh
+vim /etc/my.cnf
+
+[mysqld]
+datadir=/usr/local/mysql/data
+port = 3306
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+symbolic-links=0
+max_connections=400
+innodb_file_per_table=1
+lower_case_table_names=1
+character_set_server=utf8
+```
+
+`lower_case_table_names`：是否区分大小写，1表示存储时表名为小写，操作时不区分大小写；0表示区分大小写；不能动态设置，修改后，必须重启才能生效：
+
+`character_set_server`：设置数据库默认字符集，如果不设置默认为latin1
+
+`innodb_file_per_table`：是否将每个表的数据单独存储，1表示单独存储；0表示关闭独立表空间，可以通过查看数据目录，查看文件结构的区别；
+
+### 4、解决中文乱码问题：
+
+echo 修改my.cnf文件  
+
+```shell
+sudo vi /etc/my.cnf 
+```
+
+在[mysqld]下加入代码：
+
+```sh
+character_set_server=utf8
+```
+
+在[ mysql ]下加入代码：
+
+```sh
+default-character-set=utf8
+```
+
+## 4、启动mysql服务器
+
+```sh
+/usr/local/mysql/support-files/mysql.server start
+#添加软连接，并重启mysql服务
+ln -s /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql 
+ln -s /usr/local/mysql/bin/mysql /usr/bin/mysql
+service mysql restart
+#重启失败:Failed to restart mysql.service: Unit mysql.service not found.
+#需要安装以下
+apt install mariadb-server
+```
+
+## 5、登录mysql
+
+修改密码(密码为步骤4生成的临时密码)
+
+```sh
+mysql -u root -p
+```
+
+登录成功：
+
+![image-20211108162005995](image/image-20211108162005995.png)
+
+```sh
+set password for root@localhost = password('daniel');#修改密码
+```
+
+![image-20211108162114328](image/image-20211108162114328.png)
+
+## 6、开放远程连接
+
+```sql
+mysql>use mysql;
+msyql>update user set user.Host='%' where user.User='root';
+mysql>flush privileges;
+```
+
+![image-20211108162258763](image/image-20211108162258763.png)
+
+ 执行完上边命令后，通过数据库客户端就可以连上云数据库
+
+## 7、设置开机自动启动
+
+将服务文件拷贝到init.d下，并重命名为mysql
+
+```sh
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
+```
+
+赋予可执行权限
+
+```sh
+chmod +x /etc/init.d/mysqld
+```
+
+添加服务
+
+```sh
+chkconfig --add mysqld
+```
+
+显示服务列表
+
+```sh
+chkconfig --list
+```
+
+使用chkconfig报错，可能使用的是ubantu系统
+
+![image-20211108170702511](image/image-20211108170702511.png)
+
+解决:
+
+在软件源列表sources.list（该文本的位置在/etc/apt/sources.list）文件中的末尾添加如下内容：
+
+```sh
+vim /etc/apt/sources.list
+```
+
+
+
+```sh
+deb http://archive.ubuntu.com/ubuntu/ trusty main universe restricted multivers
+```
+
+更新apt-get，在终端输入
+
+```sh
+sudo apt-get update
+```
+
+完成更新后，重新安装sysv-rc-conf，在终端输入
+
+```sh
+sudo apt-get install sysv-rc-conf
+```
+
+即可成功安装。
+
+使用sysv-rc-conf查看当前服务状态
+
+```sh
+sudo sysv-rc-conf
+```
+
+![image-20211108171600017](image/image-20211108171600017.png)
+
+操作界面十分简洁，可以用鼠标点击，也可以用键盘方向键定位，用空格键选择，用Ctrl+N翻下一页，用Ctrl+P翻上一页，用Q退出。当方括号中打X的即表示运行在对应runlevel时开机启动的服务。
+
+设置自启动
+
+```sh
+sudo sysv-rc-conf --level 2345 mysql on
+```
+
+查看设置结果
+
+```sh
+sudo sysv-rc-conf --list mysql
+```
+
+重启系统，检查mysql状态
+
+```sh
+sudo reboot
+```
+
+
+
+## 8、常用命令
+
+### 创建数据库
+
+```sql
+mysql>create database music;
+```
+
+### 查看数据库
+
+```sql
+mysql>show databases;
+```
+
+### 切换数据库
+
+```sql
+mysql>use music; 
+```
+
+### 导入sql文件
+
+```sql
+# 输入命令：（运行SQL文件）
+mysql>source /opt/uc_menu.sql;
+```
+
+### 查看所有表
+
+```sql
+mysql>show tables;
+```
+
+
 
 # 六、安装百度输入法
 

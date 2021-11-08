@@ -452,6 +452,8 @@ mvn -v
 
 https://dev.mysql.com/downloads/installer/
 
+Linux ：https://dev.mysql.com/downloads/os-linux.html
+
 ![image-20210812122920417](image/windows10/image-20210812122920417.png)
 
 ## 2、安装
