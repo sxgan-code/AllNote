@@ -720,3 +720,58 @@ daniel@daniel:~/software$ tar -zxvf apache-tomcat-9.0.8.tar.gz
 daniel@daniel:~/software$ sh startup.sh
 ```
 
+# 十、安装node.js
+
+下载压缩包。
+
+这里下载的是node-v16.13.0-linux-x64.tar.xz
+
+```sh
+xz -d node-v16.13.0-linux-x64.tar.xz ---将tar.xz解压成tar文件
+tar -xvf node-v16.13.0-linux-x64.tar ---将tar文件解压成文件夹
+mv node-v16.13.0-linux-x64 node ----改文件夹的名字，改成node
+mv node-v16.13.0-linux-x64 /usr/local/node
+```
+
+检查是否可以安装成功
+
+![img](image/994478-20170820144714240-649676446.png)
+
+ 
+
+配置软连接，使全局都可以使用node命令
+
+```sh
+ln -s /usr/local/node/bin/node /usr/bin/node  --将node源文件映射到usr/bin下的node文件
+ln -s /usr/local/node/bin/npm /usr/bin/npm
+```
+
+配置node文件安装路径
+
+进入/usr/local/node/路径下:
+
+```sh
+mkdir node_global
+mkdir node_cache
+npm config set prefix "node_global"
+npm config set cache "node_cache"
+```
+
+ 当你觉得npm慢的时候，可以安装cnpm
+
+```sh
+npm install cnpm -g --registry=https://registry.npm.taobao.org
+```
+
+顺便可以检查一下-g这个全局安装有没有按照之前设置的，安装到node_global文件下。
+
+如下全局使用cnpm，也要记得配置一个软连接。
+
+```sh
+ln -s /usr/local/node/node_global/lib/node_modules/cnpm /usr/bin/cnpm
+```
+
+![img](image/994478-20170820145503818-690220842.png)
+
+ 
+
