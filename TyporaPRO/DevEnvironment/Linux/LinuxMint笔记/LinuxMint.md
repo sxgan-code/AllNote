@@ -773,5 +773,46 @@ ln -s /usr/local/node/node_global/lib/node_modules/cnpm /usr/bin/cnpm
 
 ![img](image/994478-20170820145503818-690220842.png)
 
- 
+#  十一、安装RabbitMQ
+
+## 1、查看系统
+
+```sh
+root@hecs-x-medium-2-linux-20211105114752:~# lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 18.04.5 LTS
+Release:	18.04
+Codename:	bionic
+```
+
+## 2、安装
+
+配置环境变量：
+
+```sh
+vim /etc/profile
+```
+
+加入一下配置：
+
+```sh
+#set erlang environment
+ERL_PATH=/usr/local/erlang/bin
+PATH=$ERL_PATH:$PATH
+```
+
+使配置生效：
+
+```sh
+source /etc/profile
+```
+
+
+检验是否安装成功：
+
+```sh
+erl
+```
+
 
