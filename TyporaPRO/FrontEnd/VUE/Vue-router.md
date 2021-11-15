@@ -645,6 +645,31 @@ const router = new VueRouter({
 
 如果 `props` 被设置为 `true`，`route.params` 将会被设置为组件属性。
 
+路由配置
+
+```json
+{
+    name:'SingerManage',
+    path:'/SingerManage/:singerId',
+    props: true,
+    component: resolve => require(['../pages/SingerManage.vue'], resolve),
+}
+```
+
+发送
+
+```js
+this.$router.push('/SingerManage/'+val.id);
+```
+
+接收
+
+```js
+this.$route.params.singerId
+```
+
+![image-20211115154040647](image/image-20211115154040647.png)
+
 ### 对象模式
 
 如果 `props` 是一个对象，它会被按原样设置为组件属性。当 `props` 是静态的时候有用。
