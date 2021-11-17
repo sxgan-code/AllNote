@@ -72,6 +72,30 @@ alter table newAdmin change  column password pwod varchar(50)
 
 ```sql
 alter table newAdmin add column newColumn varchar(10); -- 添加表列 
+-- 给表添加列
+ALTER TABLE supplier_seller
+ADD COLUMN company_id INT NULL COMMENT '供应主体id';
+-- 默认情况下，添加的列会添加到最后一列。
+
+-- 如果要求添加到指定位置，语句如下：
+
+ALTER TABLE supplier_seller
+ADD COLUMN company_id INT NULL COMMENT '供应主体id' AFTER mdm_info_json;
+-- 如果想要添加到第一列，语句如下：
+
+ALTER TABLE supplier_seller
+ADD COLUMN company_id INT NULL COMMENT '供应主体id' FIRST ;
+-- 如果要求不可为空，语句如下：
+
+ALTER TABLE supplier_seller
+ADD COLUMN company_id INT NOT NULL COMMENT '供应主体id';
+-- 给表添加注释
+ALTER TABLE supplier_seller COMMENT '联营商';
+-- 以上语句是给supplier_seller表添加注释：联营商
+
+-- 给列添加注释
+ALTER TABLE supplier_seller MODIFY company_name VARCHAR(50) COMMENT '供应主体名称';
+-- 以上语句是给supplier_seller表的company_name列添加注释：供应主体名称
 ```
 
 删除列
