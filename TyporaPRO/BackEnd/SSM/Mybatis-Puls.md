@@ -20,8 +20,11 @@ spring:
     url: jdbc:mysql://rm-2ze5r466gf23tkopqqo.mysql.rds.aliyuncs.com:3306/daniel?serverTimezone=UTC
     username: daniel
     password: Daniel2118
-mybatis:
-  mapper-locations: classpath:mapper/*Mapper.xml
-  type-aliases-package: com.daniel.springboot.entity
+mybatis-plus:
+  type-aliases-package: com.daniel.file.entity
+  mapper-locations: classpath:mapperxml/*Mapper.xml
+  configuration:
+    # 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射,注意实体类标明表名通过注解 @TableName()
+    map-underscore-to-camel-case: false
 ```
 
