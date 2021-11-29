@@ -1746,6 +1746,12 @@ ref 用来辅助开发者在不依赖于 jQuery 的情况下，获取 DOM 元素
 
 ## 1、axios 的基本使用
 
+### 引入axios
+
+```sh
+npm install axios -S
+```
+
 ### 发起 GET 请求：
 
 ```js
