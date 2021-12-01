@@ -24,7 +24,7 @@
 
   https://start.spring.io/actuator/info对应官网地址
 
-  ```jso
+  ```json
   {
     "git": {
       "branch": "ba82e022a38b596b5a6c0173a4652d91a8e8ea34",
@@ -271,7 +271,7 @@ Spring Cloud为开发人员提供工具，以快速构建分布式系统中的�
 - dependencyManagement里只是声明依赖，==并不会导入依赖== ，所以在子项目中要显示的声明所需要的依赖。
 - <font color=red>如果不在子项目中声明依赖，是不会从父项目继承该依赖的，只有在子项目中写了具体依赖并且未指定其版本才会在父项目继承，其中version和scope都会继承父pom文件</font>
 
-- 子项目中==使用了版本号==，就会使用子项目的jar包
+- 子项目中==使用了版本号== ，就会使用子项目的jar包
 
 ### （3）构建微服务模块
 
