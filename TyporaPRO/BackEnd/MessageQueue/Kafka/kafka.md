@@ -1,4 +1,4 @@
-# 1、kafka安装
+# 一、kafka安装
 
 ## 下载
 
@@ -33,6 +33,8 @@ log.dirs= D:\\kafka\\logs
 ## 日志路径更改
 zookeeper.connect=localhost:2181  
 ## 表示本地运行
+listeners=PLAINTEXT://localhost:9092
+# 配置ip
 ```
 
 找到`zookeeper.properties`并编辑
@@ -83,6 +85,83 @@ git clone https://github.com/linxin26/kafka-monitor.git
 
 ![image-20211206143622873](image/image-20211206143622873.png)
 
+# 二、kafka的基本使用
+
+## 1、创建主题
+
+### 启动服务
+
+```sh
+#启动zookeeper
+bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+#启动kafka
+bin\windows\kafka-server-start.bat config\server.properties
+```
+
+### 创建
+
+topic可以实现消息的分类，不同消费者订阅不同的topic
+
+执行以下命令可以创建名为`daniel`的topic ,这个topic只有一个`partition`,并且备份因子也设置为1：
+
+```sh
+bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic daniel
+```
+
+![image-20211206161054698](image/image-20211206161054698.png)
+
+### 查看创建的topic
+
+```sh
+bin\windows\kafka-topics.bat --list --zookeeper localhost:2181
+```
+
+![image-20211206161906915](image/image-20211206161906915.png)
+
+### 启动producer
+
+```sh
+bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic daniel
+```
+
+### 启动Consumer消费消息
+
+```sh
+# --from-beginning 添加该命令则从开始获取消息
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic daniel --from-beginning
+# --from-beginning 不添加该命令则从当前开始获取消息
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic daniel
+```
+
+![image-20211206165716860](image/image-20211206165716860.png)
+
+windows中会将消息保存到本地，如图所示：
+
+![image-20211206175428626](image/image-20211206175428626.png)
+
+在daniel-0中会保存数据
+
+![image-20211206175555657](image/image-20211206175555657.png)
+
+### 多个消费者消费同一个生产者数据
+
+```sh
+# （启动cmd）生产者
+bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic daniel
+
+# （启动两个cmd输入以下命令）消费者
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic daniel
+```
+
+![image-20211206180227894](image/image-20211206180227894.png)
+
+两个都能收到
+
+我们可以通过配置组的方式来定义消费者，（在同一组将收不到消息，非同一个组或未分组的消费者则可以收到数据）
+
+```
+--consumer-property group.id=danielGroup
+```
 
 
 
@@ -90,6 +169,22 @@ git clone https://github.com/linxin26/kafka-monitor.git
 
 
 
+
+
+# kafka springboot快速搭建
+
+
+
+## 项目初始化
+
+### 新建spring boot项目并导入依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+```
 
 
 
