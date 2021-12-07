@@ -49,12 +49,17 @@ Kafka会按照默认，在9092端口上运行，并连接zookeeper的默认端�
 
 ```sh
 zookeeper-server-start.bat D:\kafka\config\zookeeper.properties
+
+# linux系统下启动zookeeper
+bin/kafka-server-stop.sh config/server.properties
 ```
 
 然后启动kafka服务，对应加载相应配置文件
 
 ```sh
 kafka-server-start.bat D:\kafka\config\server.properties
+# linux系统下启动kafka
+bin/kafka-server-start.sh config/server.properties
 ```
 
 ### 启动时常见错误
@@ -87,8 +92,6 @@ git clone https://github.com/linxin26/kafka-monitor.git
 
 # 二、kafka的基本使用
 
-## 1、创建主题
-
 ### 启动服务
 
 ```sh
@@ -106,6 +109,8 @@ topic可以实现消息的分类，不同消费者订阅不同的topic
 
 ```sh
 bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic daniel
+# linux下
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic daniel
 ```
 
 ![image-20211206161054698](image/image-20211206161054698.png)
@@ -114,6 +119,8 @@ bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-f
 
 ```sh
 bin\windows\kafka-topics.bat --list --zookeeper localhost:2181
+# linux下查看
+bin/kafka-topics.sh --list --zookeeper localhost:2181
 ```
 
 ![image-20211206161906915](image/image-20211206161906915.png)
@@ -122,6 +129,8 @@ bin\windows\kafka-topics.bat --list --zookeeper localhost:2181
 
 ```sh
 bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic daniel
+# linux下
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic daniel
 ```
 
 ### 启动Consumer消费消息
@@ -129,8 +138,14 @@ bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic dani
 ```sh
 # --from-beginning 添加该命令则从开始获取消息
 bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic daniel --from-beginning
-# --from-beginning 不添加该命令则从当前开始获取消息
+# --from-beginning 不添加该命令则从当前offset（偏移量）+1位置开始获取消息
 bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic daniel
+
+#linux下
+# --from-beginning 添加该命令则从开始获取消息
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic daniel --from-beginning
+# --from-beginning 不添加该命令则从当前offset（偏移量）+1位置开始获取消息
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic daniel
 ```
 
 ![image-20211206165716860](image/image-20211206165716860.png)
@@ -157,19 +172,58 @@ bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic
 
 两个都能收到
 
-我们可以通过配置组的方式来定义消费者，（在同一组将收不到消息，非同一个组或未分组的消费者则可以收到数据）
+### 设置组
 
+#### 单播消息
+
+我们可以通过配置组的方式来定义消费者，（在同一组将收不到消息，非同一个组或未分组的消费者则可以收到数据）先设置组的的消费者会受到，后面再设置同一个组则后面的都收不到消息。同一个消费组只有一个消费者可以收到消息。
+
+```sh
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --consumer-property group.id=danielGroup --topic daniel
 ```
---consumer-property group.id=danielGroup
+
+![image-20211207105259108](image/image-20211207105259108.png)
+
+#### 多播消息
+
+不同消费组订阅同一个topic，那么不同的消费组中只有一个消费者能收到消息，也就是多个消费组都能收到消息但每个组织有一个消费者能收到。
+
+```sh
+# 生产者
+bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic daniel
+
+# danielGropu1组（可以收到）
+# 消费者
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --consumer-property group.id=danielGroup1 --topic daniel
+
+# danielGropu2组（可以收到）
+# 消费者
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --consumer-property group.id=danielGroup2 --topic daniel
+
+# danielGropu组 (只有一个消费者可以收到)
+# 消费者1
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --consumer-property group.id=danielGroup --topic daniel
+# 消费者2
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --consumer-property group.id=danielGroup --topic daniel
 ```
 
+![image-20211207112913282](image/image-20211207112913282.png)
 
+### 查看当前集群中组信息
 
+```sh
+bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --list
+```
 
+![image-20211207113837026](image/image-20211207113837026.png)
 
+### 查看组的详细信息
 
+```sh
+bin\windows\kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group danielGroup
+```
 
-
+![image-20211207114212947](image/image-20211207114212947.png)
 
 # kafka springboot快速搭建
 
@@ -185,6 +239,44 @@ bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic
     <artifactId>spring-kafka</artifactId>
 </dependency>
 ```
+
+
+
+# Kafka Linux外网映射配置
+
+本地运行时不做更改，注意
+
+但是部署在云端服务器时注意将配置更换
+
+```properties
+# 此处使用公网ip
+advertised.listeners=PLAINTEXT://114.116.88.252:9092
+
+zookeeper.connect=localhost:2181
+
+```
+
+![image-20211207180114917](image/image-20211207180114917.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
