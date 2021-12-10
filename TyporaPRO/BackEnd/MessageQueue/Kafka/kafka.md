@@ -155,6 +155,26 @@ git clone https://github.com/linxin26/kafka-monitor.git
 
 ![image-20211206143622873](image/image-20211206143622873.png)
 
+## 搭建自己的zookeeper
+
+### 下载
+
+[Zookeeper下载](https://zookeeper.apache.org/releases.html)
+
+### 配置zookeeper的java环境
+
+进入bin目录中，打开zkEnv.sh文件，添加java运行环境jdk的路径
+
+![image-20211210142303430](image/image-20211210142303430.png)
+
+```
+
+```
+
+
+
+
+
 # 二、kafka的基本使用
 
 ### 启动服务
@@ -198,7 +218,7 @@ bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic dani
 bin/kafka-console-producer.sh --broker-list localhost:9092 --topic daniel
 ```
 
-### 启动Consumer消费消息
+### 启动Consumer
 
 ```sh
 # --from-beginning 添加该命令则从开始获取消息
@@ -343,7 +363,23 @@ kafka会默认创建_consumer_offsets主题，并分配50个分区，用于存�
 
 ![image-20211208161551714](image/image-20211208161551714.png)
 
-### kafka集群及副本
+# 四、kafka集群及副本
+
+## 1、集群搭建
+
+准备两台服务器分别启动各自的kafka
+
+
+
+## 2、副本
+
+![image-20211210114010038](image/image-20211210114010038.png)
+
+leader：当前主副本为2，代表当发送消息时分区1的broker-2会接收消息，当查询消息时也是broker-2，只是broker-1和broker-0会被同步broker-2的数据。
+
+replicas：当前集群的节点数
+
+isr：表示当前同步数据的节点是否正常，例如：broker-0如果效率及其慢，此时ISR只会显示：2,1
 
 
 
