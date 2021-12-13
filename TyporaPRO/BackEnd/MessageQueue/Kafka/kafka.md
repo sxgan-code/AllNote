@@ -200,6 +200,14 @@ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 -
 
 ![image-20211206161054698](image/image-20211206161054698.png)
 
+### 删除主题
+
+```
+bin/kafka-topics.sh  --delete --zookeeper localhost:2181  --topic daniel
+```
+
+
+
 ### 查看创建的topic列表
 
 ```sh
@@ -367,23 +375,202 @@ kafka会默认创建_consumer_offsets主题，并分配50个分区，用于存�
 
 ## 1、集群搭建
 
-准备两台服务器分别启动各自的kafka
+### 模拟集群搭建
 
+首先需要启动zookeeper服务器，详情参照[zookeeper笔记](../Zookeeper/zookeeper.md)
 
+```sh
+bin/zkServer.sh start conf/zoo.cfg
+```
+
+修改同一台服务器配置文件server.properties,复制三份
+
+```sh
+cp config/server.properties config/server1.properties
+cp config/server.properties config/server2.properties
+cp config/server.properties config/server3.properties
+```
+
+通过vim修改server1.properties
+
+```properties
+broker.id=1
+listeners=PLAINTEXT://192.168.0.61:9092
+advertised.listeners=PLAINTEXT://114.116.88.252:9092
+log.dirs=/home/daniel/software/kafka_2.13-2.8.1/logs_1
+zookeeper.connect=114.116.88.252:2181
+```
+
+通过vim修改server2.properties
+
+```properties
+broker.id=2
+listeners=PLAINTEXT://192.168.0.61:9093
+advertised.listeners=PLAINTEXT://114.116.88.252:9093
+log.dirs=/home/daniel/software/kafka_2.13-2.8.1/logs_2
+zookeeper.connect=114.116.88.252:2181
+```
+
+通过vim修改server3.properties
+
+```properties
+broker.id=3
+listeners=PLAINTEXT://192.168.0.61:9094
+advertised.listeners=PLAINTEXT://114.116.88.252:9094
+log.dirs=/home/daniel/software/kafka_2.13-2.8.1/logs_3
+zookeeper.connect=114.116.88.252:2181
+```
+
+另一台服务器（windows）通过vim修改server.properties
+
+```properties
+broker.id=4
+listeners=PLAINTEXT://172.25.14.20:9092
+advertised.listeners=PLAINTEXT://47.93.181.157:9092
+log.dirs=C:\\BaiduNetdiskDownload\\kafka\\logs
+zookeeper.connect=114.116.88.252:2181
+```
+
+分别启动
+
+```sh
+# linux服务器
+bin/kafka-server-start.sh config/server1.properties
+bin/kafka-server-start.sh config/server2.properties
+bin/kafka-server-start.sh config/server3.properties
+# windows服务器
+bin\windows\kafka-server-start.bat config\server.properties
+```
+
+### 查看当前集群节点
+
+通过zookeeper客户端可以查看当前连接该zookeeper的broker有哪些
+
+```sh
+# 打开zk客户端
+bin/zkCli.sh
+```
+
+查看当前连接节点
+
+```sh
+ls /brokers/ids
+```
+
+![image-20211213143300118](image/image-20211213143300118.png)
+
+至此1，2，3，4四个节点配置成功。
 
 ## 2、副本
 
-![image-20211210114010038](image/image-20211210114010038.png)
+我们先创建一个主题，该主题包含2个分区和3个副本
 
-leader：当前主副本为2，代表当发送消息时分区1的broker-2会接收消息，当查询消息时也是broker-2，只是broker-1和broker-0会被同步broker-2的数据。
+```sh
+bin/kafka-topics.sh --create --zookeeper 114.116.88.252:2181 --replication-factor 3 --partitions 2 --topic my-replicated-topic
+```
 
-replicas：当前集群的节点数
+查看该主题详情
 
-isr：表示当前同步数据的节点是否正常，例如：broker-0如果效率及其慢，此时ISR只会显示：2,1
+```sh
+bin/kafka-topics.sh --describe --zookeeper 114.116.88.252:2181 --topic my-replicated-topic
+```
 
+![image-20211213160859520](image/image-20211213160859520.png)
 
+leader：当前主副本为1，代表当发送消息时分区1的broker1会接收消息，当查询消息时也是broker1，只是broker2和broker3会被同步broker1的数据。
 
+replicas：当前集群的节点
 
+isr：表示当前同步数据的节点是否正常，例如：broker2如果效率及其慢，此时ISR只会显示：1,3
+
+flower：接收leader同步的数据
+
+副本其实就是作为预备的broker，防止主节点宕机
+
+### 日志文件
+
+我们可以查看日志文件
+
+![image-20211213162925874](image/image-20211213162925874.png)
+
+这三个文件分别对应三个broker，但我们初次搭建时，如果新建主题的副本数为3时，那么我们会在这三个文件夹下都看的到该主题，如果分区是2的话每个文件夹都会包含关于该主题的两个分区文件夹
+
+值的注意的是，在没有创建生产者和消费者时，默认的存放偏移量的50个文件夹（`__consumer_offsets-xx`）不会被创建
+
+我们尝试创建单个主题，并指定该主题为1分区，1副本，并创建其生产者和消费者，看看会有什么效果
+
+```sh
+bin/kafka-topics.sh --create --zookeeper 114.116.88.252:2181 --replication-factor 1 --partitions 1 --topic daniel
+```
+
+生产者
+
+```sh
+bin/kafka-console-producer.sh --broker-list 114.116.88.252:9092 --topic daniel
+```
+
+消费者
+
+```sh
+ bin/kafka-console-consumer.sh --bootstrap-server 114.116.88.252:9092 --topic daniel --from-beginning
+```
+
+发送消息正常
+
+![image-20211213165855683](image/image-20211213165855683.png)
+
+此时查看三个log文件夹会发现
+
+logs_1文件夹
+
+![image-20211213170230027](image/image-20211213170230027.png)
+
+logs_2文件夹
+
+![image-20211213170256324](image/image-20211213170256324.png)
+
+logs_3文件夹
+
+![image-20211213170323220](image/image-20211213170323220.png)
+
+默认的`__consumer_offsets-xx` 文件会被轮询分到三个log文件夹中，而刚刚指定的主题daniel创建在broker1中daniel-0.
+
+所以说在kafka集群中，所有的节点都共用`__consumer_offsets` 
+
+### 集群消息的发送
+
+```sh
+bin/kafka-console-producer.sh --broker-list 114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094 --topic my-replicated-topic
+```
+
+### 集群消息的接收
+
+```sh
+bin/kafka-console-consumer.sh --bootstrap-server 114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094 --topic my-replicated-topic --from-beginning
+
+```
+
+指定消费组消费
+
+```sh
+bin/kafka-console-consumer.sh --bootstrap-server 114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094 --topic my-replicated-topic --from-beginning --consumer-property group.id=cusGroup1
+```
+
+消息接收正常
+
+![image-20211213171709123](image/image-20211213171709123.png)
+
+### 消费原理
+
+假设集群中有四个主题，他们分别有自己的分区，消费组A和消费组B的消费情况如下
+
+![image-20211213173230886](image/image-20211213173230886.png)
+
+始终想着消费者的数量必须小于等于分区数量，也就是一个消费者可以多消费消息，但一个分区不能被多个消费者消费（目的是保证消费者消费的顺序）
+
+# 五、kafka Java客户端使用
+
+导入依赖
 
 # kafka springboot快速搭建
 
@@ -417,6 +604,13 @@ zookeeper.connect=localhost:2181
 ```
 
 ![image-20211207180114917](image/image-20211207180114917.png)
+
+## 集群搭建
+
+```json
+server.0=114.116.88.252:2888:3888
+server.1=47.93.181.157:2888:3888
+```
 
 
 
