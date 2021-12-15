@@ -570,7 +570,331 @@ bin/kafka-console-consumer.sh --bootstrap-server 114.116.88.252:9092,114.116.88.
 
 # 五、kafka Java客户端使用
 
-导入依赖
+## 生产者
+
+### 导入依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.71</version>
+</dependency>
+```
+
+### 生产者简单实现类
+
+以下是简单的消息发送过程
+
+```java
+public class MyKafkaProducer {
+    private static final String TOPIC_NAME = "my-replicated-topic";
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        // 1.配置属性
+        Properties pros = new Properties();
+        // 设置消息发往那个kafka服务
+        pros.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,"114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094");
+        //
+        pros.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        
+        pros.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        
+        // 2.创建生产者客户端，并传入参数
+        Producer<String, String> producer = new KafkaProducer<String, String>(pros);
+        
+        // 3.创建要发送的消息
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, "mykey", "Hello World");
+    
+        // 4.通过producer发送消息
+        RecordMetadata recordMetadata = producer.send(producerRecord).get();
+        System.out.println("同步消息发送结果：");
+        System.out.println("topic:"+recordMetadata.topic());
+        System.out.println("partition:"+recordMetadata.partition());
+        System.out.println("offset:"+recordMetadata.offset());
+    }
+}
+```
+
+关于生产者创建消息的细节
+
+ProducerRecord可接收三个初始化参数，也可以接收四个参数
+
+当传入三个参数时，参数2 `mykey` 则会通过其hash值算出往哪个分区发送。
+
+```java
+// 具体发送给那个分区：（key的hash值）% partitionNum
+ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, "mykey", "Hello World");
+```
+
+当传入四个参数时，参数2传入Integer类型指定发送至那个分区。
+
+```java
+// 参数2设置为0，表示发送到partition-0
+ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, 0,"mykey", "Hello World");
+```
+
+### 生产者的消息发送的同步
+
+
+
+![image-20211215113706405](image/image-20211215113706405.png)
+
+```java
+// 4.通过producer发送消息
+RecordMetadata recordMetadata = producer.send(producerRecord).get();
+System.out.println("同步消息发送结果：");
+System.out.println("topic:"+recordMetadata.topic());
+System.out.println("partition:"+recordMetadata.partition());
+System.out.println("offset:"+recordMetadata.offset());
+```
+
+当producer发送消息后会调用get()方法来获取发送后的数据，但是如果发送不成功，则get将获取不到数据，此时程序会在此阻塞，例如：当前主题有两个分区编号为0，1，但你指定分区为3此时当代码执行到send时会被阻塞，代码不会向后执行
+
+### 生产者的消息发送的异步
+
+![image-20211215115313253](image/image-20211215115313253.png)
+
+```java
+// 4.2通过producer异步发送消息
+producer.send(producerRecord, new Callback() {
+    @Override
+    public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+        if (e!=null){
+            System.err.println("发送消息失败："+e.getStackTrace());
+        }
+        if (recordMetadata!=null){
+            System.out.println("同步消息发送结果：");
+            System.out.println("topic:"+recordMetadata.topic());
+            System.out.println("partition:"+recordMetadata.partition());
+            System.out.println("offset:"+recordMetadata.offset());
+        }
+    }
+});
+Thread.sleep(10000);
+```
+
+通过异步则不会影响主程序的正常运行。
+
+但是在大多数时候，为了避免消息的丢失会采用同步来发送消息。
+
+### ack机制
+
+在认为请求完成之前，生产者要求Leader收到的确认数。这控制了发送的记录的持久性。允许进行以下设置：
+
+ack=0：表示消息发送后，不论集群是否接收到消息则立即返回ack，此时容易造成kafka消息的丢失，效率最高但不安全。
+
+ack=1：这意味着leader会将记录写入其本地日志，但会在不等待所有flower的完全确认的情况下做出响应。在这种情况下，如果领导者在确认记录后立即失败，但在追随者复制它之前，则记录将丢失。表示当前消息必须被集群的leader接收后将消息存储在本地的000000000.log文件后才能进行ack应答，性能和安全性相对均衡。
+
+ack=-1/all：配置此项时，且同时配置min.insync.replicas=2(默认此配置为1，为1表示一台副本接收到)时，表示当前消息发送到集群时需要leader和1台副本（flower）同步完数据后返回ack，此时就有两个broker接收到了消息，这种方式最安全，但效率最差。
+
+配置方式：
+
+```java
+Properties pros = new Properties();
+pros.put(ProducerConfig.ACKS_CONFIG,"1");
+```
+
+### 其他主要配置
+
+发送重试配置，当生产者未收到ack时，可配置其重新发送
+
+```java
+// 如果没有收到ack则重试，此配置表示重试的次数，表示发送消息失败后允许共3次重试
+pros.put(ProducerConfig.RETRIES_CONFIG,3);
+// 表示发送失败后重试的时间间隔(300ms)
+pros.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG,300);
+```
+
+缓冲区配置
+
+```java
+// 表示缓存区大小以字节为单位
+// 如果设置了本地缓冲区，kafka本地会开启线程将消息先发送到缓冲区，可以提高消息的发送性能，默认值为32MB=33554432字节
+pros.put(ProducerConfig.BUFFER_MEMORY_CONFIG,32*1024*1024);
+// 表示批量发送消息的大小
+// kafka会从缓冲区拿数据，进行批量发送，当一个batch满了16kb则发送
+pros.put(ProducerConfig.BATCH_SIZE_CONFIG,16*1024);
+// 表示每一个batch的等待时间，默认为0ms，表示立即发送，影响性能
+// 此处配置为10毫秒，表示当10ms内，batch已经满了就发送出去
+// 如果batch在10ms内没有达到16kb，那么10ms时也必须将消息发送出去，保证了消息不能延长太久发送
+pros.put(ProducerConfig.LINGER_MS_CONFIG,10);
+```
+
+序列化配置
+
+```java
+ // 把发送的key从字符串序列化为字节数组
+pros.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+// 把发送的value从字符串序列化为字节数组
+pros.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+```
+
+### CountDownLatch的使用
+
+```java
+private static final String TOPIC_NAME = "my-replicated-topic";
+public static void main(String[] args) throws ExecutionException, InterruptedException {
+    // 1.配置属性
+    Properties pros = new Properties();
+
+    // 设置消息发往那个kafka服务
+    pros.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,"114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094");
+
+    // 把发送的key从字符串序列化为字节数组
+    pros.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    // 把发送的value从字符串序列化为字节数组
+    pros.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+    // 2.创建生产者客户端，并传入参数
+    Producer<String, String> producer = new KafkaProducer<String, String>(pros);
+
+    // 
+    int msgNum = 5;
+    final CountDownLatch countDownLatch = new CountDownLatch(msgNum);
+
+    for( int i = 1 ;i <= 5 ; i++ ){
+        // 3.创建要发送的消息
+        Order order = new Order();
+        order.setOid("10000"+i);
+        order.setInfo("msg"+i);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME,order.getOid() , JSON.toJSONString(order));
+        // 4.2通过producer异步发送消息
+        producer.send(producerRecord, new Callback() {
+            @Override
+            public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                if (e!=null){
+                    System.err.println("发送消息失败："+e.getStackTrace());
+                }
+                if (recordMetadata!=null){
+                    System.out.println("同步消息发送结果：");
+                    System.out.println("topic:"+recordMetadata.topic());
+                    System.out.println("partition:"+recordMetadata.partition());
+                    System.out.println("offset:"+recordMetadata.offset());
+                }
+                countDownLatch.countDown();
+            }
+        });
+    }
+    // 判断当前countDownLatch是不是0，如果不是则等待5秒
+    countDownLatch.await(5, TimeUnit.SECONDS);
+    producer.close();
+}
+
+```
+
+## 消费者
+
+### 消费者简单实现类
+
+```java
+public class MyKafkaConsumer {
+    private static final String TOPIC_NAME = "my-replicated-topic";
+    private static final String GROUP_NAME = "testGroup";
+    public static void main(String[] args) {
+        // 1.配置属性
+        Properties pros = new Properties();
+        // 配置服务集群
+        pros.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094");
+        // 配置消费组名
+        pros.put(ConsumerConfig.GROUP_ID_CONFIG,GROUP_NAME);
+        // 配置key序列化
+        pros.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        // 配置value序列化
+        pros.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
+        
+        // 2.创建消费者客户端
+        Consumer<String, String> consumer = new KafkaConsumer<>(pros);
+        
+        // 消费者订阅主题列表
+        consumer.subscribe(Arrays.asList(TOPIC_NAME));
+        
+        // 3.获取消息
+        while(true){
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.printf("收到的消息：partition = %d,offset = %d,key = %s,value = %s%n"
+                        ,record.partition(),record.offset(),record.key(),record.value());
+            }
+        }
+        
+    }
+    
+}
+
+```
+
+### 消费者自动提交offset
+
+kafka的客户端默认是自动提交，可通过属性进行配置
+
+```java
+// 配置提交方式（自动提交：true，手动提交：false）
+pros.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,true);
+// 配置自动提交的时间间隔1s
+pros.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,1000);
+```
+
+消费者poll下来消息后默认情况下，会自动向broker的__consumer_offsets主题提交当前主题的偏移量
+
+自动提交会丢失消息：当消费者还没有消费poll下来的消息时就自动提交了offset，此时消费者挂了，于是下一个消费者消费时就会从提交的偏移量的下一个位置消费，那么之前未被消费的消息就丢失了。
+
+### 消费者手动提交
+
+手动提交需要将ENABLE_AUTO_COMMIT_CONFIG设置为false
+
+```java
+// 配置提交方式（自动提交：true，手动提交：false）
+pros.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,false);
+```
+
+手动提交的同步提交
+
+在消费完消息后调用同步提交，当集群返回ack之前会一直阻塞，返回ack后表示提交成功，执行后续逻辑。
+
+```java
+while(true){
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+    for (ConsumerRecord<String, String> record : records) {
+        System.out.printf("收到的消息：partition = %d,offset = %d,key = %s,value = %s%n"
+                          ,record.partition(),record.offset(),record.key(),record.value());
+    }
+	// 当records没有需要消费的消息时就提交
+    if (records.count()>0){
+        consumer.commitSync();
+    }
+}
+```
+
+手动提交的异步提交
+
+```java
+while(true){
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.printf("收到的消息：partition = %d,offset = %d,key = %s,value = %s%n"
+                        ,record.partition(),record.offset(),record.key(),record.value());
+            }
+            
+            if (records.count()>0){
+//                consumer.commitSync();
+                consumer.commitAsync(new OffsetCommitCallback() {
+                    @Override
+                    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offset, Exception e) {
+                        if (e!=null){
+                            System.err.println("commit offset filed for----->>>  "+offset);
+                            System.err.println("commit offset filed exception----->>>  "+e.getStackTrace());
+                        }
+                    }
+                });
+            }
+        }
+```
+
+
 
 # kafka springboot快速搭建
 
@@ -578,14 +902,9 @@ bin/kafka-console-consumer.sh --bootstrap-server 114.116.88.252:9092,114.116.88.
 
 ## 项目初始化
 
-### 新建spring boot项目并导入依赖
+### 新建spring boot项目
 
-```xml
-<dependency>
-    <groupId>org.springframework.kafka</groupId>
-    <artifactId>spring-kafka</artifactId>
-</dependency>
-```
+并导入依赖
 
 
 
