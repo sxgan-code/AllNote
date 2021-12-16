@@ -894,17 +894,209 @@ while(true){
         }
 ```
 
+### 消费者poll消息的过程
+
+消费者与broker之间建立长链接，开始poll消息,在一次poll中建立的长连接会不停拉取消息
+
+此时可配置单次poll消息的条数
+
+```java
+// poll消息的最大条数
+pros.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,500);
+// 设置为1000ms，表示每次poll的持续等待时长
+ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+```
+
+![image-20211216104544792](image/image-20211216104544792.png)
+
+小结：
+
+​	①  如果在1s内的一次拉取就拿到500条，则结束本次poll长轮询，进行while循环
+
+​	②  如果在1秒内一次拉取没有拿到500条，且时间还在1s内则进行下一次拉取，直到拉取到500条，但多次拉取都没达到500条且时间到达1s则结束本次poll长轮询，进行while循环
+
+### 关于两次poll长轮询的时间配置
+
+```java
+// 两次poll消息的最大时间间隔30s
+pros.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,30*1000);
+```
+
+也就是当while循环第一次poll时开始计算，拉取到消息时会开始消费，但每个消费者消费消息的能力不同，虽然poll消息的时间很短，但是消费者消费的时间可能很长，通过该配置可以让broker来确认消费者的能力，当两次poll的时间间隔超过配置的时间（30s），则broker会认为该消费者消费能力弱，会将其踢出消费组，将分区分配给其他消费者。会触发rebalance机制，造成性能开销。
+
+### 消费者的健康状态检查
+
+消费者每隔一段时间会向kafka集群发送'心跳'，当消费者长时间不发送心跳，则kafka集群认为其挂掉，会将其踢出消费组，并将其分区交由其他消费者消费。
+
+```java
+// 消费者给broker发送心跳的时间间隔
+pros.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG,1000);
+// kafka如果超过10秒没有收到消费者的心跳，则把消费者踢出消费组，进行Rebalance机制，将该分区交给其他消费者消费
+pros.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG,10*1000);
+```
+
+### 消费者指定分区消费
+
+```java
+// 消费者指定分区消费
+consumer.assign(Arrays.asList(new TopicPartition(TOPIC_NAME,0)));
+```
+
+### 消费者的回溯消费
+
+```java
+// 消费者从头开始消费
+consumer.assign(Arrays.asList(new TopicPartition(TOPIC_NAME,1)));
+consumer.seekToBeginning(Arrays.asList(new TopicPartition(TOPIC_NAME,1)));
+```
+
+### 消费者指定offset消费
+
+```java
+// 消费者指定offset消费
+consumer.assign(Arrays.asList(new TopicPartition(TOPIC_NAME,1)));
+consumer.seek(new TopicPartition(TOPIC_NAME,1),1900);
+```
+
+### 消费者从指定时间点消费
+
+```java
+// 从指定的时间点开始消费（当前时间的前一个小时的消息）
+// 获取主题下分区
+List<PartitionInfo> partitionsInfo = consumer.partitionsFor(TOPIC_NAME);
+// 设置时间1小时
+Long time = new Date().getTime()-60*60*1000;
+// 将每个分区和时间绑定
+Map<TopicPartition, Long> map = new HashMap<>();
+for (PartitionInfo partition : partitionsInfo) {
+    map.put(new TopicPartition(TOPIC_NAME,partition.partition()),time);
+}
+// 获取每个分区数据(根据前面绑定时间)
+Map<TopicPartition, OffsetAndTimestamp> parMap = consumer.offsetsForTimes(map);
+
+for (Map.Entry<TopicPartition, OffsetAndTimestamp> entry : parMap.entrySet()) {
+    TopicPartition key = entry.getKey();
+    OffsetAndTimestamp value = entry.getValue();
+    if (key==null||value==null) continue;
+    long offset = value.offset();
+    System.out.println("partition:" +key.partition()+"offset:"+offset);
+    // 根据时间获取的偏移量来获取数据
+    if (value!=null){
+        consumer.assign(Arrays.asList(key));
+        consumer.seek(key,offset);
+    }
+}
+```
+
+### 新消费组的消费规则
+
+当有新消费组消费消息时，没有配置AUTO_OFFSET_RESET_CONFIG项，则默认获取从该消费组启动后发到主题的消息，但如果设置该项为`earliest` 且该消费组第一次启动，则会从头开始消费，并记录消费的位置，再次重启该消费组时,则不会从头开始，而是从上次消费到的offset位置的下一个开始消费。
+
+```java
+/*
+    当消费主题的是新的消费组，或者指定offset消费方式，但offset不存在，应如何
+    latest(默认)：只消费自己启动后发送到主题的消息
+    earliest：第一次从头开始消费，以后按照offset继续消费，区别于seekToBeginning每次从头消费
+*/
+pros.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 # kafka springboot快速搭建
 
 
 
-## 项目初始化
+## 项目环境搭建
 
-### 新建spring boot项目
+### 导入依赖
 
-并导入依赖
+```xml
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+```
+
+### 配置yml
+
+```yml
+server:
+  port: 7777
+  servlet:
+    context-path: /kafka
+spring:
+  kafka:
+    bootstrap-servers: 114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094
+    producer:
+      retries: 3 # 重试次数， 设置大于0时，生产者客户端会把发送失败的记录重新发送
+      batch-size: 16384 # 每一个batch的大小
+      buffer-memory: 33554432 # 缓冲区的大小
+      acks: 1 # ack应答方式，可取值：1,0,-1/all
+      # 配置key和value的序列化器
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: default-group # 消费组名
+      enable-auto-commit: false # 是否开启自动提交
+#      auto-offset-reset: earliest # 开启新消费组时数据获取方式
+      # 配置key和value的反序列化器
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: 500 # 单次poll记录的最大条数
+    listener:
+      # record: 当每一个记录被消费者监听器(ListenerConsumer)处理后提交
+      # batch:  当每一批poll()数据被消费者监听器(ListenerConsumer)处理后提交
+      # time:   当每一批poll()数据被消费者监听器(ListenerConsumer)处理后，距离上次提交时间大于time时提交
+      # count:  当每一批poll()数据被消费者监听器(ListenerConsumer)处理后，被处理的record的数量大于等于count时提交
+      # count_time: count || time有一个被满足时提交
+      # manual: 当每一批poll()数据被消费者监听器(ListenerConsumer)处理后，手动调用Acknowledgment.acknowledge()后提交
+      # manual_immediate: 手动调用Acknowledgment.acknowledge()后立即提交提交,通常使用这种
+      ack-mode: manual_immediate
+
+
+```
+
+### 生产者
+
+```java
+@RestController
+public class MyBootProducer {
+    private static final String TOPIC_NAME = "my-replicated-topic";
+    @Autowired
+    private KafkaTemplate<String,String> kafkaTemplate;
+    
+    @RequestMapping("/send")
+    public String sendData(){
+        kafkaTemplate.send(TOPIC_NAME,0,"key","this is a message");
+        return "success";
+    }
+}
+
+```
+
+### 消费者
+
+```java
+@Component
+public class MyBootConsumer {
+    @KafkaListener(topics = "my-replicated-topic",groupId = "my-group")
+    public void listerGroup(ConsumerRecord<String,String> record, Acknowledgment ack){
+        System.out.println("record:"+record);
+        ack.acknowledge();
+    }
+}
+```
 
 
 
