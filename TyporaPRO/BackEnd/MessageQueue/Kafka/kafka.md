@@ -218,6 +218,14 @@ bin/kafka-topics.sh --list --zookeeper localhost:2181
 
 ![image-20211206161906915](image/image-20211206161906915.png)
 
+### 查看主题详细信息
+
+```sh
+bin/kafka-topics.sh --describe --zookeeper 114.116.88.252:2181 --topic my-replicated-topic
+```
+
+
+
 ### 启动producer
 
 ```sh
@@ -1001,19 +1009,194 @@ for (Map.Entry<TopicPartition, OffsetAndTimestamp> entry : parMap.entrySet()) {
 pros.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
 ```
 
+# 六、Kafka中的机制
 
+## controller机制
 
+Controller目前主要提供多达10种的Kafka服务功能的实现：
 
+`UpdateMetadataRequest`：更新元数据请求。topic分区状态经常会发生变更(比如leader重新选举了或副本集合变化了等)。由于当前clients只能与分区的leader broker进行交互，那么一旦发生变更，controller会将最新的元数据广播给所有存活的broker。具体方式就是给所有broker发送UpdateMetadataRequest请求
 
+`CreateTopics`: 创建topic请求。当前不管是通过API方式、脚本方式抑或是CreateTopics请求方式来创建topic，做法几乎都是在Zookeeper的/brokers/topics下创建znode来触发创建逻辑，而controller会监听该path下的变更来执行真正的“创建topic”逻辑
 
+`DeleteTopics`：删除topic请求。和CreateTopics类似，也是通过创建Zookeeper下的/admin/delete_topics/<topic>节点来触发删除topic，controller执行真正的逻辑
 
+`分区重分配`：即kafka-reassign-partitions脚本做的事情。同样是与Zookeeper结合使用，脚本写入/admin/reassign_partitions节点来触发，controller负责按照方案分配分区
 
+`Preferred leader分配`：preferred leader选举当前有两种触发方式：1. 自动触发(auto.leader.rebalance.enable = true)；2. kafka-preferred-replica-election脚本触发。两者“玩法”相同，向Zookeeper的/admin/preferred_replica_election写数据，controller提取数据执行preferred leader分配
 
+`分区扩展`：即增加topic分区数。标准做法也是通过kafka-reassign-partitions脚本完成，不过用户可直接往Zookeeper中写数据来实现，比如直接把新增分区的副本集合写入到/brokers/topics/<topic>下，然后controller会为你自动地选出leader并增加分区
 
+`集群扩展`：新增broker时Zookeeper中`/brokers/ids`下会新增znode，controller自动完成服务发现的工作
 
+`broker崩溃`：同样地，controller通过Zookeeper可实时侦测broker状态。一旦有broker挂掉了，controller可立即感知并为受影响分区选举新的leader
 
+`ControlledShutdown`：broker除了崩溃，还能“优雅”地退出。broker一旦自行终止，controller会接收到一个ControlledShudownRequest请求，然后controller会妥善处理该请求并执行各种收尾工作
 
-# kafka springboot快速搭建
+`Controller leader选举`：controller必然要提供自己的leader选举以防这个全局唯一的组件崩溃宕机导致服务中断。这个功能也是通过Zookeeper的帮助实现的
+
+### leader选举
+
+在kafka集群中，当集群启动后会有一台broker作为leader，而集群中如果leader挂掉此时集群会从剩余的broker中重新选举新的leader。而这只是其中一点。选举机制是通过isr的顺序来进行。如下图：
+
+![image-20211217115342247](image/image-20211217115342247.png)
+
+如图所示，此时两个分区的leader都是1，此时如果id为1的broker挂掉了，那么controller会进行后续处理，根据ISR的顺序选举出新的leader。比如1挂掉，则会根据isr顺序选择2，isr顺序是根据其状态稳定来排的，所以我们结束掉1可以看到如下变化
+
+![image-20211217115812151](image/image-20211217115812151.png)
+
+此时leader变为2，isr只剩下2,3
+
+## Kafka Rebalance机制
+
+### 什么是 Rebalance
+
+Rebalance 本质上是一种协议，规定了一个 Consumer Group 下的所有 consumer 如何达成一致，来分配订阅 Topic 的每个分区。
+
+例如：某 Group 下有 20 个 consumer 实例，它订阅了一个具有 100 个 partition 的 Topic 。正常情况下，kafka 会为每个 Consumer 平均的分配 5 个分区。这个分配的过程就是 Rebalance。
+
+### 触发 Rebalance 的时机
+
+Rebalance 的触发条件有3个。
+
+- 组成员个数发生变化。例如有新的 consumer 实例加入该消费组或者离开组。
+- 订阅的 Topic 个数发生变化。
+- 订阅 Topic 的分区数发生变化。
+
+Rebalance 发生时，Group 下所有 consumer 实例都会协调在一起共同参与，kafka 能够保证尽量达到最公平的分配。但是 Rebalance 过程对 consumer group 会造成比较严重的影响。在 Rebalance 的过程中 consumer group 下的所有消费者实例都会停止工作，等待 Rebalance 过程完成。
+
+### Rebalance 过程分析
+
+Rebalance 过程分为两步：Join 和 Sync。
+
+1. Join 顾名思义就是加入组。这一步中，所有成员都向coordinator发送JoinGroup请求，请求加入消费组。一旦所有成员都发送了JoinGroup请求，coordinator会从中选择一个consumer担任leader的角色，并把组成员信息以及订阅信息发给leader——注意leader和coordinator不是一个概念。leader负责消费分配方案的制定。
+
+![img](image/webp.webp)
+
+1. Sync，这一步leader开始分配消费方案，即哪个consumer负责消费哪些topic的哪些partition。一旦完成分配，leader会将这个方案封装进SyncGroup请求中发给coordinator，非leader也会发SyncGroup请求，只是内容为空。coordinator接收到分配方案之后会把方案塞进SyncGroup的response中发给各个consumer。这样组内的所有成员就都知道自己应该消费哪些分区了。
+
+![img](image/webp-16397220898321.webp)
+
+### Rebalance 场景分析
+
+#### 新成员加入组
+
+![img](image/webp-16397220898322.webp)
+
+#### 组成员“崩溃”
+
+**组成员崩溃和组成员主动离开是两个不同的场景。**因为在崩溃时成员并不会主动地告知coordinator此事，coordinator有可能需要一个完整的session.timeout周期(心跳周期)才能检测到这种崩溃，这必然会造成consumer的滞后。可以说离开组是主动地发起rebalance；而崩溃则是被动地发起rebalance。
+
+![img](image/webp-16397220898323.webp)
+
+#### 组成员主动离开组
+
+![img](image/webp-16397220898324.webp)
+
+#### 提交位移
+
+![img](image/webp-16397220898325.webp)
+
+### 如何避免不必要的rebalance
+
+要避免 Rebalance，还是要从 Rebalance 发生的时机入手。我们在前面说过，Rebalance 发生的时机有三个：
+
+- 组成员数量发生变化
+- 订阅主题数量发生变化
+- 订阅主题的分区数发生变化
+
+后两个我们大可以人为的避免，发生rebalance最常见的原因是消费组成员的变化。
+
+消费者成员正常的添加和停掉导致rebalance，这种情况无法避免，但是时在某些情况下，Consumer 实例会被 Coordinator 错误地认为 “已停止” 从而被“踢出”Group。从而导致rebalance。
+
+当 Consumer Group 完成 Rebalance 之后，每个 Consumer 实例都会定期地向 Coordinator 发送心跳请求，表明它还存活着。如果某个 Consumer 实例不能及时地发送这些心跳请求，Coordinator 就会认为该 Consumer 已经 “死” 了，从而将其从 Group 中移除，然后开启新一轮 Rebalance。这个时间可以通过Consumer 端的参数 session.timeout.ms进行配置。默认值是 10 秒。
+
+除了这个参数，Consumer 还提供了一个控制发送心跳请求频率的参数，就是 heartbeat.interval.ms。这个值设置得越小，Consumer 实例发送心跳请求的频率就越高。频繁地发送心跳请求会额外消耗带宽资源，但好处是能够更加快速地知晓当前是否开启 Rebalance，因为，目前 Coordinator 通知各个 Consumer 实例开启 Rebalance 的方法，就是将 REBALANCE_NEEDED 标志封装进心跳请求的响应体中。
+
+除了以上两个参数，Consumer 端还有一个参数，用于控制 Consumer 实际消费能力对 Rebalance 的影响，即 max.poll.interval.ms 参数。它限定了 Consumer 端应用程序两次调用 poll 方法的最大时间间隔。它的默认值是 5 分钟，表示你的 Consumer 程序如果在 5 分钟之内无法消费完 poll 方法返回的消息，那么 Consumer 会主动发起 “离开组” 的请求，Coordinator 也会开启新一轮 Rebalance。
+
+通过上面的分析，我们可以看一下那些rebalance是可以避免的：
+
+**第一类非必要 Rebalance 是因为未能及时发送心跳，导致 Consumer 被 “踢出”Group 而引发的**。这种情况下我们可以设置 **session.timeout.ms 和 heartbeat.interval.ms** 的值，来尽量避免rebalance的出现。（**以下的配置是在网上找到的最佳实践，暂时还没测试过**）
+
+- 设置 session.timeout.ms = 6s。
+- 设置 heartbeat.interval.ms = 2s。
+- 要保证 Consumer 实例在被判定为 “dead” 之前，能够发送至少 3 轮的心跳请求，即 session.timeout.ms >= 3 * heartbeat.interval.ms。
+
+将 session.timeout.ms 设置成 6s 主要是为了让 Coordinator 能够更快地定位已经挂掉的 Consumer，早日把它们踢出 Group。
+
+**第二类非必要 Rebalance 是 Consumer 消费时间过长导致的**。此时，**max.poll.interval.ms** 参数值的设置显得尤为关键。如果要避免非预期的 Rebalance，你最好将该参数值设置得大一点，比你的下游最大处理时间稍长一点。
+
+总之，要为业务处理逻辑留下充足的时间。这样，Consumer 就不会因为处理这些消息的时间太长而引发 Rebalance 。
+
+### 相关概念
+
+#### coordinator
+
+Group Coordinator是一个服务，每个Broker在启动的时候都会启动一个该服务。Group Coordinator的作用是用来存储Group的相关Meta信息，并将对应Partition的Offset信息记录到Kafka内置Topic(__consumer_offsets)中。Kafka在0.9之前是基于Zookeeper来存储Partition的Offset信息(consumers/{group}/offsets/{topic}/{partition})，因为ZK并不适用于频繁的写操作，所以在0.9之后通过内置Topic的方式来记录对应Partition的Offset。
+
+每个Group都会选择一个Coordinator来完成自己组内各Partition的Offset信息，选择的规则如下：
+
+- 1，计算Group对应在__consumer_offsets上的Partition
+- 2，根据对应的Partition寻找该Partition的leader所对应的Broker，该Broker上的Group Coordinator即就是该Group的Coordinator
+
+Partition计算规则：
+
+```swift
+SWIFTpartition-Id(__consumer_offsets) = Math.abs(groupId.hashCode() % groupMetadataTopicPartitionCount)
+```
+
+其中groupMetadataTopicPartitionCount对应offsets.topic.num.partitions参数值，默认值是50个分区
+
+### 一次Rebalance所耗时间
+
+#### 测试环境
+
+1个Topic，10个partition，3个consumer
+
+在本地环境进行测试
+
+#### 测试结果
+
+经过几轮测试发现每次rebalance所消耗的时间大概在 **80ms~100ms**平均耗时在**87ms**左右。
+
+## HW和LEO
+
+### Kafka中的HW、LEO、LSO等分别代表什么？
+
+`HW` 、 `LEO` 等概念和上面所说的 `ISR`有着紧密的关系，如果不了解 ISR 可以先看下ISR相关的介绍。
+
+`HW` （`High Watermark`）俗称`高水位`，它标识了一个特定的消息偏移量（offset），消费者只能拉取到这个offset之前的消息。
+
+下图表示一个日志文件，这个日志文件中只有9条消息，第一条消息的offset（LogStartOffset）为0，最有一条消息的offset为8，offset为9的消息使用虚线表示的，代表下一条待写入的消息。日志文件的 HW 为6，表示消费者只能拉取offset在 0 到 5 之间的消息，offset为6的消息对消费者而言是不可见的。
+
+![img](image/1024146-20190908144603190-691225277.png)
+
+`LEO` （Log End Offset），标识当前日志文件中下一条待写入的消息的offset。上图中offset为9的位置即为当前日志文件的 LEO，LEO 的大小相当于当前日志分区中最后一条消息的offset值加1.分区 ISR 集合中的每个副本都会维护自身的 LEO ，而 ISR 集合中最小的 LEO 即为分区的 HW，对消费者而言只能消费 HW 之前的消息。
+
+------
+
+下面具体分析一下 ISR 集合和 HW、LEO的关系。
+
+假设某分区的 ISR 集合中有 3 个副本，即一个 leader 副本和 2 个 follower 副本，此时分区的 LEO 和 HW 都分别为 3 。消息3和消息4从生产者出发之后先被存入leader副本。
+
+![img](image/1024146-20190908144616936-817718051.png)
+
+![img](image/1024146-20190908144628328-605129794.png)
+
+在消息被写入leader副本之后，follower副本会发送拉取请求来拉取消息3和消息4进行消息同步。
+
+在同步过程中不同的副本同步的效率不尽相同，在某一时刻follower1完全跟上了leader副本而follower2只同步了消息3，如此leader副本的LEO为5，follower1的LEO为5，follower2的LEO 为4，那么当前分区的HW取最小值4，此时消费者可以消费到offset0至3之间的消息。
+
+![img](image/1024146-20190908144641107-11974415.png)
+
+当所有副本都成功写入消息3和消息4之后，整个分区的HW和LEO都变为5，因此消费者可以消费到offset为4的消息了。
+
+![img](image/1024146-20190908144655743-1749405424.png)
+
+由此可见kafka的复制机制既不是完全的同步复制，也不是单纯的异步复制。事实上，同步复制要求所有能工作的follower副本都复制完，这条消息才会被确认已成功提交，这种复制方式极大的影响了性能。而在异步复制的方式下，follower副本异步的从leader副本中复制数据，数据只要被leader副本写入就会被认为已经成功提交。在这种情况下，如果follower副本都还没有复制完而落后于leader副本，然后leader副本宕机，则会造成数据丢失。kafka使用这种ISR的方式有效的权衡了数据可靠性和性能之间的关系。
+
+# 七、springboot快速搭建
 
 
 
@@ -1063,9 +1246,9 @@ spring:
       # manual: 当每一批poll()数据被消费者监听器(ListenerConsumer)处理后，手动调用Acknowledgment.acknowledge()后提交
       # manual_immediate: 手动调用Acknowledgment.acknowledge()后立即提交提交,通常使用这种
       ack-mode: manual_immediate
-
-
 ```
+
+## 生产者与消费者
 
 ### 生产者
 
@@ -1087,6 +1270,10 @@ public class MyBootProducer {
 
 ### 消费者
 
+##### 单条消费
+
+一条记录一条记录进行消费
+
 ```java
 @Component
 public class MyBootConsumer {
@@ -1098,44 +1285,151 @@ public class MyBootConsumer {
 }
 ```
 
+##### 单条多主题，指定分区，指定偏移量消费
+
+```java
+@KafkaListener(
+    groupId = "testGroup",  // 公共消费组名
+    concurrency = "3", // 同一消费组下消费者个数，建议小于等于分区数
+    topicPartitions = {
+        @TopicPartition(
+            topic = "boot",
+            partitions ={"0"}), // 指定消费0分区
+        @TopicPartition(
+            topic = "my-replicated-topic",
+            partitions ="0", // 指定消费0分区
+            // 当消费1分区时，设置偏移量从1000开始消费
+            partitionOffsets = @PartitionOffset(partition = "1",initialOffset = "1000")),
+    })
+public void listerGroup(ConsumerRecord<String,String> record, Acknowledgment ack){
+    System.out.println("record:"+record);
+    ack.acknowledge();
+}
+```
 
 
-# Kafka Linux外网映射配置
 
-本地运行时不做更改，注意
+##### 批量进行接收
 
-但是部署在云端服务器时注意将配置更换
+编写kafkaConsumer配置类
+
+```java
+@Configuration
+public class KafkaConfig {
+    @Bean
+    KafkaListenerContainerFactory<?> batchFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new
+                ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(consumerConfigs()));
+        factory.setBatchListener(true); // 开启批量监听
+        return factory;
+    }
+    
+    @Bean
+    public Map<String, Object> consumerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "default-group");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "114.116.88.252:9092,114.116.88.252:9093,114.116.88.252:9094");
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); //设置每次接收Message的数量
+        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "100");
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 120000);
+        props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 180000);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return props;
+    }
+}
+```
+
+消费者批量接收多主题，注意配置`containerFactory = "batchFactory"` 
+
+```java
+@KafkaListeners({
+            @KafkaListener(topics = "my-replicated-topic",groupId = "testGroup",containerFactory = "batchFactory"),
+            @KafkaListener(topics = "boot",groupId = "bootGroup",containerFactory = "batchFactory")})
+    public void listerGroup(List<ConsumerRecord<String,String>> list){
+        for (ConsumerRecord<String,String> record : list) {
+            System.out.println("record:"+record);
+        }
+        System.out.println("接收到消息：");
+    }
+```
+
+
+
+# 八、kafka优化
+
+## 1、如何防止消息丢失
+
+发送方：使用同步发送，可将ack设置为`1`或`-1/all`，如果想要将其达到最安全，可将ack设置为`-1/all`并且将`min.insync.replicas`设置为分区备份数 
+
+接收方（消费者）：将自动提交改为手动提交
+
+## 2、如何防止消息的重复消费
+
+一条消息被消费者多次消费，为了避免这种显现而把生产端重试机制关闭，消费端改为手动提交，这显然是有弊端的，这会造成消息的丢失，如何避免这种现象我们可以在消费消息时进行幂等性操作，可以比较好的解决消息的重复消费。
+
+幂等性的保证：
+
+mysql使用主键来判别，在插入时主键唯一保证消息只有一条
+
+使用redis或zk的分布式锁（主流的方案）
+
+# 九、kafka-eagle监控搭建
+
+## 下载
+
+[官网](http://download.kafka-eagle.org/)：http://download.kafka-eagle.org/
+
+## 配置
+
+解压安装包
+
+```sh
+tar -zxvf efak-web-2.0.8-bin.tar.gz
+```
+
+注意配置jdk和eagle
+
+```sh
+JAVA_HOME=/home/daniel/software/jdk1.8.0_301
+PATH=$JAVA_HOME/bin:$PATH
+CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JAVA_HOME
+export PATH
+export CLASSPATH
+# zookeeper
+export ZOOKEEPER_HOME=/home/daniel/software/apache-zookeeper-3.7.0
+export PATH=$PATH:$ZOOKEEPER_HOME/bin
+# eagle
+export KE_HOME=/home/daniel/software/kafka-eagle-bin-2.0.8/efak-web-2.0.8
+PATH=$PATH:$KE_HOME/bin
+```
+
+修改配置文件
+
+```sh
+vim system-config.properties
+```
+
+修改zookeeper地址及数据库地址，注意注释调其他数据库配置信息
 
 ```properties
-# 此处使用公网ip
-advertised.listeners=PLAINTEXT://114.116.88.252:9092
+efak.zk.cluster.alias=cluster1
+cluster1.zk.list=114.116.88.252:2181
 
-zookeeper.connect=localhost:2181
-
+efak.driver=com.mysql.cj.jdbc.Driver
+efak.url=jdbc:mysql://rm-2ze5r466gf23tkopqqo.mysql.rds.aliyuncs.com/zk?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+efak.username=daniel
+efak.password=Daniel2118
 ```
 
-![image-20211207180114917](image/image-20211207180114917.png)
+## 启动
 
-## 集群搭建
-
-```json
-server.0=114.116.88.252:2888:3888
-server.1=47.93.181.157:2888:3888
+```sh
+bin/ke.sh satrt
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
