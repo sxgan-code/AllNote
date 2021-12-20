@@ -815,4 +815,69 @@ source /etc/profile
 erl
 ```
 
+# 十二、安装Redis
+
+## 1、下载
+
+[官网](https://redis.io/download)
+
+![image-20211220101225894](image/image-20211220101225894.png)
+
+## 2、安装
+
+解压压缩包
+
+```sh
+tar -zxvf redis-6.2.6.tar.gz
+```
+
+进入解压后目录后，执行make
+
+```sh
+cd redis-6.2.6
+make
+```
+
+进行安装
+
+```sh
+make PREFIX=/home/daniel/software/redis-6.2.6 install
+```
+
+![image-20211220101757581](image/image-20211220101757581.png)
+
+## 3、启动
+
+```sh
+./bin/redis-server& ./redis.conf
+```
+
+检查端口是否启动
+
+```sh
+netstat -ntlp
+```
+
+![image-20211220102503867](image/image-20211220102503867.png)
+
+## 4、外网访问配置
+
+修改redis.conf文件，配置内网地址，原来为`127.0.0.1`
+
+```sh
+bind 192.168.0.61
+```
+
+在外网访问需要关闭保护模式，需要配置`protected-mode no` 
+
+开启客户端
+
+```sh
+# 打开客户端
+./bin/redis-cli
+# 配置
+config set protected-mode no
+```
+
+![image-20211220105441789](image/image-20211220105441789.png)
 
