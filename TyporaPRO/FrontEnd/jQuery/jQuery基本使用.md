@@ -14,7 +14,9 @@ jQuery是一个非常流行的快速、小巧、功能强大的开源JavaScript�
 
 ## 2、如何使用jQuery
 
-jQuery的使用非常简单，我们只需要引入jQuery库的js文件，然后直接使用即可。你可以前往[官方网站](http://jquery.com/)下载jQuery库的js文件，你也可以直接如下在HTML页面中引入该文件的URI。
+jQuery的使用非常简单，我们只需要引入jQuery库的js文件，然后直接使用即可。你可以前往[官方网站](http://jquery.com/)下载jQuery库的js文件也可以在[jQuery](https://www.jq22.com/jquery-info122)下载，你也可以直接如下在HTML页面中引入该文件的URI。
+
+
 
 *JavaScript:*
 
