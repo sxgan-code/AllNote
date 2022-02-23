@@ -391,8 +391,6 @@ public class PayMain8001 {
 - 建MySQL数据库及表
 
   ```mysql
-  -- 建立数据库
-  CREATE DATABASE cloud2020
   -- 创建payment表
   CREATE TABLE payment(
   	id BIGINT(20) NOT NULL auto_increment,
@@ -409,7 +407,7 @@ public class PayMain8001 {
   
   SELECT * FROM payment
   ```
-
+  
 - domain层（实体类）
 
   - Payment类
@@ -769,7 +767,7 @@ public class OrderController {
 
 ### 4、测试
 
-4.1、默认端口为80，测试getbyid方法，http://localhost/order/payment/get/1直接访问
+4.1、默认端口为80，测试getbyid方法，http://localhost:/order/payment/get/1直接访问
 
 ![image-20201012094143560](image/image-20201012094143560.png)
 
