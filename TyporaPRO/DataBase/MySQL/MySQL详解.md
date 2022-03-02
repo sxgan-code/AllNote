@@ -6,8 +6,6 @@ MySQL 是最流行的关系型数据库管理系统，在 WEB 应用方面 MySQL
 
 在本教程中，会让大家快速掌握 MySQL 的基本知识，并轻松使用 MySQL 数据库。
 
-------
-
 ## 1、什么是数据库？
 
 数据库（Database）是按照数据结构来组织、存储和管理数据的仓库。
@@ -26,7 +24,6 @@ RDBMS 即关系数据库管理系统(Relational Database Management System)的�
 > - 4.许多的行和列组成一张表单
 > - 5.若干的表单组成database
 
-------
 
 ## 2、RDBMS 术语
 
@@ -54,8 +51,6 @@ MySQL 为关系型数据库(Relational Database Management System), 这种所谓
 - 行(row): 每一行用来描述某条记录的具体信息;
 - 值(value): 行的具体信息, 每个值必须与该列的数据类型相同;
 - **键(key)**: 键的值在当前列中具有唯一性。
-
-------
 
 ## 3、MySQL数据库
 
@@ -207,8 +202,6 @@ Enter password: ******
 
 # 三、MySQL 连接
 
-------
-
 ## 1、使用mysql二进制方式连接
 
 您可以使用MySQL二进制方式进入到mysql命令提示符下来连接MySQL数据库。
@@ -325,8 +318,6 @@ Database "RUNOOB" dropped
 
 在你连接到 MySQL 数据库后，可能有多个可以操作的数据库，所以你需要选择你要操作的数据库。
 
-------
-
 ## 3、选择数据库
 
 在 mysql> 提示窗口中可以很简单的选择特定的数据库。你可以使用SQL命令来选择指定的数据库。
@@ -354,8 +345,6 @@ mysql>
 MySQL 中定义数据字段的类型对你数据库的优化是非常重要的。
 
 MySQL 支持多种类型，大致可以分为三类：数值、日期/时间和字符串(字符)类型。
-
-------
 
 ## 1、数值类型
 
@@ -953,13 +942,13 @@ mysql> SELECT a.runoob_id, a.runoob_author, b.runoob_count FROM runoob_tbl a RIG
 
 MySQL 中处理 NULL 使用 IS NULL 和 IS NOT NULL 运算符。
 
-> **注意：**
->
-> ```
-> select * , columnName1+ifnull(columnName2,0) from tableName;
-> ```
->
-> columnName1，columnName2 为 int 型，当 columnName2 中，有值为 null 时，columnName1+columnName2=null， ifnull(columnName2,0) 把 columnName2 中 null 值转为 0。
+**注意：**
+
+```
+select * , columnName1+ifnull(columnName2,0) from tableName;
+```
+
+columnName1，columnName2 为 int 型，当 columnName2 中，有值为 null 时，columnName1+columnName2=null， ifnull(columnName2,0) 把 columnName2 中 null 值转为 0。
 
 # 九、MySQL 事务
 
@@ -1235,8 +1224,6 @@ INDEX [indexName] (username(length))
 DROP INDEX [indexName] ON mytable; 
 ```
 
-------
-
 ## 2、唯一索引
 
 它与前面的普通索引类似，不同的就是：索引列的值必须唯一，但允许有空值。如果是组合索引，则列值的组合必须唯一。它有以下几种创建方式：
@@ -1257,13 +1244,9 @@ ALTER table mytable ADD UNIQUE [indexName] (username(length))
 
 ```sql
 CREATE TABLE mytable(  
- 
-ID INT NOT NULL,   
- 
-username VARCHAR(16) NOT NULL,  
- 
-UNIQUE [indexName] (username(length))  
- 
+    ID INT NOT NULL,   
+    username VARCHAR(16) NOT NULL,  
+    UNIQUE [indexName] (username(length))  
 );  
 ```
 
@@ -1273,19 +1256,21 @@ UNIQUE [indexName] (username(length))
 
 有四种方式来添加数据表的索引：
 
-- ALTER TABLE tbl_name ADD PRIMARY KEY (column_list):
-
-   
+- `ALTER TABLE tbl_name ADD PRIMARY KEY (column_list)`:
 
   该语句添加一个主键，这意味着索引值必须是唯一的，且不能为NULL。
 
-  
+- `ALTER TABLE tbl_name ADD UNIQUE index_name (column_list)`:
 
-- **ALTER TABLE tbl_name ADD UNIQUE index_name (column_list):** 这条语句创建索引的值必须是唯一的（除了NULL外，NULL可能会出现多次）。
+  这条语句创建索引的值必须是唯一的（除了NULL外，NULL可能会出现多次）。
 
-- **ALTER TABLE tbl_name ADD INDEX index_name (column_list):** 添加普通索引，索引值可出现多次。
+- `ALTER TABLE tbl_name ADD INDEX index_name (column_list)`: 
 
-- **ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list):**该语句指定了索引为 FULLTEXT ，用于全文索引。
+  添加普通索引，索引值可出现多次。
+
+- `ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list):`
+
+  该语句指定了索引为 FULLTEXT ，用于全文索引。
 
 以下实例为在表中添加索引。
 
@@ -1298,8 +1283,6 @@ mysql> ALTER TABLE testalter_tbl ADD INDEX (c);
 ```sql
 mysql> ALTER TABLE testalter_tbl DROP INDEX c;
 ```
-
-------
 
 ## 4、使用 ALTER 命令添加和删除主键
 
@@ -1318,8 +1301,6 @@ mysql> ALTER TABLE testalter_tbl DROP PRIMARY KEY;
 
 删除主键时只需指定PRIMARY KEY，但在删除索引时，你必须知道索引名。
 
-------
-
 ## 5、显示索引信息
 
 你可以使用 SHOW INDEX 命令来列出表中的相关的索引信息。可以通过添加 \G 来格式化输出信息。
@@ -1334,8 +1315,6 @@ mysql> SHOW INDEX FROM table_name\G
 # 十二、MySQL 函数
 
 MySQL 有很多内置的函数，以下列出了这些函数的说明。
-
-------
 
 ## 1、MySQL 字符串函数
 
@@ -1372,8 +1351,6 @@ MySQL 有很多内置的函数，以下列出了这些函数的说明。
 | TRIM(s)                               | 去掉字符串 s 开始和结尾处的空格                              | 去掉字符串 RUNOOB 的首尾空格：`SELECT TRIM('    RUNOOB    ') AS TrimmedString;` |
 | UCASE(s)                              | 将字符串转换为大写                                           | 将字符串 runoob 转换为大写：`SELECT UCASE("runoob"); -- RUNOOB` |
 | UPPER(s)                              | 将字符串转换为大写                                           | 将字符串 runoob 转换为大写：`SELECT UPPER("runoob"); -- RUNOOB` |
-
-------
 
 ## 2、MySQL 数字函数
 
@@ -1415,8 +1392,6 @@ MySQL 有很多内置的函数，以下列出了这些函数的说明。
 | SUM(expression)                    | 返回指定字段的总和                                           | 计算 OrderDetails 表中字段 Quantity 的总和：`SELECT SUM(Quantity) AS TotalItemsOrdered FROM OrderDetails;` |
 | TAN(x)                             | 求正切值(参数是弧度)                                         | `SELECT TAN(1.75);  -- -5.52037992250933`                    |
 | TRUNCATE(x,y)                      | 返回数值 x 保留到小数点后 y 位的值（与 ROUND 最大的区别是不会进行四舍五入） | `SELECT TRUNCATE(1.23456,3) -- 1.234`                        |
-
-------
 
 ## 3、MySQL 日期函数
 
@@ -1472,8 +1447,6 @@ MySQL 有很多内置的函数，以下列出了这些函数的说明。
 | WEEKOFYEAR(d)                     | 计算日期 d 是本年的第几个星期，范围是 0 到 53                | `SELECT WEEKOFYEAR('2011-11-11 11:11:11') -> 45`             |
 | YEAR(d)                           | 返回年份                                                     | `SELECT YEAR("2017-06-15"); -> 2017`                         |
 | YEARWEEK(date, mode)              | 返回年份及第几周（0到53），mode 中 0 表示周天，1表示周一，以此类推 | `SELECT YEARWEEK("2017-06-15"); -> 201724`                   |
-
-------
 
 ## 4、MySQL 高级函数
 

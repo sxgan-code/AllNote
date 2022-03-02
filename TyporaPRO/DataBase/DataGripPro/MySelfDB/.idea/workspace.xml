@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1241456c-842c-4774-8103-4cd5535cdce2" name="Default Changelist" comment="" />
+    <list default="true" id="1241456c-842c-4774-8103-4cd5535cdce2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../ArithmeticAndStructure/算法与数据结构/算法与数据结构.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../ArithmeticAndStructure/算法与数据结构/算法与数据结构.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../FrontEnd/VUE/vue基础语法.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../FrontEnd/VUE/vue基础语法.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../InterviewLibrary/JavaAll/java.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../InterviewLibrary/JavaAll/java.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -9,6 +14,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="25mJjbokE2fua2itMbQmEmrJBB8" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -24,7 +37,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
-    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
 </project>

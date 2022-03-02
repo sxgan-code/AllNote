@@ -3382,7 +3382,7 @@ quickSort(strDate,left,j);
 /
  * @param args
  /
-  public static void main(String[] args){
+    public static void main(String[] args){
 	String[] strVoid=new String[]{"11","66","22","0","55","22","0","32"};
 	QuickSort sort=new QuickSort();
 	sort.quickSort(strVoid,0,strVoid.length-1);
@@ -3390,7 +3390,7 @@ quickSort(strDate,left,j);
 		System.out.println(strVoid[i]+" ");
 	}
     }
-  }
+    }
 
 ### 11、有数组a[n]，用java代码将数组元素顺序颠倒
 

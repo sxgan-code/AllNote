@@ -54,6 +54,7 @@
   ```
 
 ### 1.3 vue的扩展插件
+
 1) vue-cli: vue 脚手架 
 
 2) vue-resource(axios): ajax 请求 
@@ -842,7 +843,7 @@ index  代表数组索引
      <a href="http://www.baidu.com" @click.prevent.stop="add1">百度</a>
    <input type="button" @click.stop="add1" value="加">
   </div>
-  ```
+```
   
   
 
@@ -862,7 +863,7 @@ index  代表数组索引
 <div v-on:click.self="doThat">...</div>
 
 
-  ```
+```
 
 ==使用修饰符时，顺序很重要；相应的代码会以同样的顺序产生。因此，用 v-on:click.prevent.self 会阻止所有的点击，而 v-on:click.self.prevent 只会阻止对元素自身的点击。==
 
