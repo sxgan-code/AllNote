@@ -601,9 +601,9 @@ dear"
 
 ### #define 预处理器
 
-下面是使用 #define 预处理器定义常量的形式：
+下面是使用` #define `预处理器定义常量的形式：
 
-```
+```c
 #define identifier value
 ```
 
@@ -611,7 +611,7 @@ dear"
 
 您可以使用 **const** 前缀声明指定类型的常量，如下所示：
 
-```
+```c
 const type variable = value;
 ```
 
@@ -2180,13 +2180,13 @@ int main( )
 
 # 十八、typedef
 
-C 语言提供了 **typedef** 关键字，您可以使用它来为类型取一个新的名字。下面的实例为单字节数字定义了一个术语 **BYTE**：
+C 语言提供了 **`typedef`** 关键字，您可以使用它来为类型取一个新的名字。下面的实例为单字节数字定义了一个术语 **BYTE**：
 
 ```c
 typedef unsigned char BYTE;
 ```
 
-在这个类型定义之后，标识符 BYTE 可作为类型 **unsigned char** 的缩写，例如：
+在这个类型定义之后，标识符 `BYTE` 可作为类型 **`unsigned char`** 的缩写，例如：
 
 ```c
 BYTE  b1, b2;
@@ -2202,7 +2202,7 @@ typedef unsigned char byte;
 
 ## 1、typedef vs #define
 
-**#define** 是 C 指令，用于为各种数据类型定义别名，与 **typedef** 类似，但是它们有以下几点不同：
+**`#define`** 是 C 指令，用于为各种数据类型定义别名，与 **typedef** 类似，但是它们有以下几点不同：
 
 - **typedef** 仅限于为类型定义符号名称，**#define** 不仅可以为类型定义别名，也能为数值定义别名，比如您可以定义 1 为 ONE。
 - **typedef** 是由编译器执行解释的，**#define** 语句是由预编译器进行处理的。
