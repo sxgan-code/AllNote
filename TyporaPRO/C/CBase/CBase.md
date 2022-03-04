@@ -1602,6 +1602,61 @@ int main(void)
 16807 282475249 1622650073 984943658 1144108930 470211272 101027544 1457850878 1458777923 2007237709 
 ```
 
+##  5、*p++和\*(p++)的区别
+
+1、`*p++`与`*(p++)`是等价的，表示取p所指单元的值，p指向下一单元，即p自加1。
+
+2、`*p++`是指下一个地址。
+
+3、`(*p)++`是指将`*p`所指的数据的值加一。
+
+C编译器认为`*`和`++`是同优先级操作符，且都是从右至左结合的，所以`*p++`中的`++`只作用在`p`上，和`*(p++)`意思一样；在`(*p)++`中，由于`()`的优先级比`*`和`++`都高，所以`++`作用在`()`内的表达式`*p`上。
+
+比如有:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main()
+{
+    int x,y,a[]={22,6,3,9,52},*p=a,*q=a;// 此时*q和*p指向同一块地址
+
+
+    printf("++*p的值为：%d\n", ++*p);
+    x=*p++;
+    printf("执行这一句后，*p的值为：%d\n", *p);
+    printf("x的值为：%d\n", x); // 1
+
+    printf("*q的值为：%d\n", *q); 
+    y=(*q)++;
+    printf("执行这一句后，*q的值为：%d\n", *q);
+    printf("y的值为：%d\n", y); // 1
+
+    for (int i = 0; i < 5; i++)
+    {
+        printf("%d\n", a[i]);
+    }
+    return 0;
+}
+/*
+++*p的值为：23
+执行这一句后，*p的值为：6
+x的值为：23
+*q的值为：23
+执行这一句后，*q的值为：24
+y的值为：23
+24
+6
+3
+9
+52
+*/
+```
+
+
+
 # 十五、字符串
 
 在 C 语言中，字符串实际上是使用空字符 `\0` 结尾的一维字符数组。因此，`\0`是用于标记字符串的结束。
@@ -2217,7 +2272,60 @@ int main()
 }
 ```
 
-## 4、getchar() & putchar() 函数
+## 4、其他格式化输出
+
+- **`format`** -- 这是字符串，包含了要被写入到标准输出 `stdout `的文本。它可以包含嵌入的 format 标签，format 标签可被随后的附加参数中指定的值替换，并按需求进行格式化。format 标签属性是 **`%[flags][width][.precision][length]specifier`**，具体讲解如下：
+
+| 格式字符 | 意义                                       |
+| :------- | :----------------------------------------- |
+| d        | 以十进制形式输出带符号整数(正数不输出符号) |
+| o        | 以八进制形式输出无符号整数(不输出前缀0)    |
+| x,X      | 以十六进制形式输出无符号整数(不输出前缀Ox) |
+| u        | 以十进制形式输出无符号整数                 |
+| f        | 以小数形式输出单、双精度实数               |
+| e,E      | 以指数形式输出单、双精度实数               |
+| g,G      | 以%f或%e中较短的输出宽度输出单、双精度实数 |
+| c        | 输出单个字符                               |
+| s        | 输出字符串                                 |
+| p        | 输出指针地址                               |
+| lu       | 32位无符号整数                             |
+| llu      | 64位无符号整数                             |
+
+
+
+| flags（标识） | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| -             | 在给定的字段宽度内左对齐，默认是右对齐（参见 width 子说明符）。 |
+| +             | 强制在结果之前显示加号或减号（+ 或 -），即正数前面会显示 + 号。默认情况下，只有负数前面会显示一个 - 号。 |
+| 空格          | 如果没有写入任何符号，则在该值前面插入一个空格。             |
+| #             | 与 o、x 或 X 说明符一起使用时，非零值前面会分别显示 0、0x 或 0X。 与 e、E 和 f 一起使用时，会强制输出包含一个小数点，即使后边没有数字时也会显示小数点。默认情况下，如果后边没有数字时候，不会显示显示小数点。 与 g 或 G 一起使用时，结果与使用 e 或 E 时相同，但是尾部的零不会被移除。 |
+| 0             | 在指定填充 padding 的数字左边放置零（0），而不是空格（参见 width 子说明符）。 |
+
+
+
+| width（宽度） | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| (number)      | 要输出的字符的最小数目。如果输出的值短于该数，结果会用空格填充。如果输出的值长于该数，结果不会被截断。 |
+| *             | 宽度在 format 字符串中未指定，但是会作为附加整数值参数放置于要被格式化的参数之前。 |
+
+
+
+| .precision（精度） | 描述                                                         |
+| :----------------- | :----------------------------------------------------------- |
+| .number            | 对于整数说明符（d、i、o、u、x、X）：precision 指定了要写入的数字的最小位数。如果写入的值短于该数，结果会用前导零来填充。如果写入的值长于该数，结果不会被截断。精度为 0 意味着不写入任何字符。 对于 e、E 和 f 说明符：要在小数点后输出的小数位数。 对于 g 和 G 说明符：要输出的最大有效位数。 对于 s: 要输出的最大字符数。默认情况下，所有字符都会被输出，直到遇到末尾的空字符。 对于 c 类型：没有任何影响。 当未指定任何精度时，默认为 1。如果指定时不带有一个显式值，则假定为 0。 |
+| .*                 | 精度在 format 字符串中未指定，但是会作为附加整数值参数放置于要被格式化的参数之前。 |
+
+
+
+| length（长度） | 描述                                                         |
+| :------------- | :----------------------------------------------------------- |
+| h              | 参数被解释为短整型或无符号短整型（仅适用于整数说明符：i、d、o、u、x 和 X）。 |
+| l              | 参数被解释为长整型或无符号长整型，适用于整数说明符（i、d、o、u、x 和 X）及说明符 c（表示一个宽字符）和 s（表示宽字符字符串）。 |
+| L              | 参数被解释为长双精度型（仅适用于浮点数说明符：e、E、f、g 和 G）。 |
+
+- **附加参数** -- 根据不同的 format 字符串，函数可能需要一系列的附加参数，`每个参数包含了一个要被插入的值，替换了 format 参数中指定的每个 % 标签。参数的个数应与 % 标签的个数相同`。
+
+## 5、getchar() & putchar() 函数
 
 **`int getchar(void)`** 函数从屏幕读取下一个可用的字符，并把它返回为一个整数。这个函数在同一个时间内只会读取一个单一的字符。您可以在循环内使用这个方法，以便从屏幕上读取多个字符。
 
@@ -2242,7 +2350,7 @@ int main( )
 
 当上面的代码被编译和执行时，它会等待您输入一些文本，当您输入一个文本并按下回车键时，程序会继续并只会读取一个单一的字符
 
-5、gets() & puts() 函数
+## 6、gets() & puts() 函数
 
 **`char \*gets(char \*s)`** 函数从 **stdin** 读取一行到 **s** 所指向的缓冲区，直到一个终止符或 EOF。
 
@@ -2266,7 +2374,7 @@ int main( )
 
 当上面的代码被编译和执行时，它会等待您输入一些文本，当您输入一个文本并按下回车键时，程序会继续并读取一整行直到该行结束
 
-## 5、scanf() 和 printf() 函数
+## 7、scanf() 和 printf() 函数
 
 **`int scanf(const char \*format, ...)`** 函数从标准输入流 **`stdin`** 读取输入，并根据提供的 **`format`** 来浏览输入。
 
@@ -2444,6 +2552,731 @@ size_t fwrite(const void *ptr, size_t size_of_elements,
 ```
 
 这两个函数都是用于存储块的读写 - 通常是数组或结构体。
+
+# 二十一、预处理器
+
+**C 预处理器**不是编译器的组成部分，但是它是编译过程中一个单独的步骤。简言之，C 预处理器只不过是一个文本替换工具而已，它们会指示编译器在实际编译之前完成所需的预处理。我们将把 C 预处理器（C Preprocessor）简写为 CPP。
+
+所有的预处理器命令都是以井号（#）开头。它必须是第一个非空字符，为了增强可读性，预处理器指令应从第一列开始。下面列出了所有重要的预处理器指令：
+
+| 指令     | 描述                                                        |
+| :------- | :---------------------------------------------------------- |
+| #define  | 定义宏                                                      |
+| #include | 包含一个源代码文件                                          |
+| #undef   | 取消已定义的宏                                              |
+| #ifdef   | 如果宏已经定义，则返回真                                    |
+| #ifndef  | 如果宏没有定义，则返回真                                    |
+| #if      | 如果给定条件为真，则编译下面代码                            |
+| #else    | #if 的替代方案                                              |
+| #elif    | 如果前面的 #if 给定条件不为真，当前条件为真，则编译下面代码 |
+| #endif   | 结束一个 #if……#else 条件编译块                              |
+| #error   | 当遇到标准错误时，输出错误消息                              |
+| #pragma  | 使用标准化方法，向编译器发布特殊的命令到编译器中            |
+
+## 1、预处理器实例
+
+分析下面的实例来理解不同的指令。
+
+```c
+#define MAX_ARRAY_LENGTH 20
+```
+
+这个指令告诉 CPP 把所有的 `MAX_ARRAY_LENGTH `替换为 20。使用 *#define* 定义常量来增强可读性。
+
+```c
+#include <stdio.h>
+#include "myheader.h"
+```
+
+这些指令告诉 CPP 从**系统库**中获取 stdio.h，并添加文本到当前的源文件中。下一行告诉 CPP 从`本地目录`中获取 **myheader.h**，并添加内容到当前的源文件中。
+
+```c
+#undef  FILE_SIZE
+#define FILE_SIZE 42
+```
+
+这个指令告诉 CPP 取消已定义的 `FILE_SIZE`，并重新定义它为 42。
+
+```c
+#ifndef MESSAGE
+   #define MESSAGE "You wish!"
+#endif
+```
+
+这个指令告诉 CPP 只有当 `MESSAGE `未定义时，才定义 `MESSAGE`。
+
+```c
+#ifdef DEBUG
+   /* Your debugging statements here */
+#endif
+```
+
+这个指令告诉 CPP 如果定义了 `DEBUG`，则执行处理语句。在编译时，如果您向 gcc 编译器传递了 `DDEBUG` 开关量，这个指令就非常有用。它定义了 `DEBUG`，您可以在编译期间随时开启或关闭调试。
+
+## 2、预定义宏
+
+`ANSI C` 定义了许多宏。在编程中您可以使用这些宏，但是不能直接修改这些预定义的宏。
+
+| 宏       | 描述                                                |
+| :------- | :-------------------------------------------------- |
+| __DATE__ | 当前日期，一个以 "MMM DD YYYY" 格式表示的字符常量。 |
+| __TIME__ | 当前时间，一个以 "HH:MM:SS" 格式表示的字符常量。    |
+| __FILE__ | 这会包含当前文件名，一个字符串常量。                |
+| __LINE__ | 这会包含当前行号，一个十进制常量。                  |
+| __STDC__ | 当编译器以 ANSI 标准编译时，则定义为 1。            |
+
+让我们来尝试下面的实例：
+
+```c
+#include <stdio.h>
+int main()
+{
+   printf("File :%s\n", __FILE__ );
+   printf("Date :%s\n", __DATE__ );
+   printf("Time :%s\n", __TIME__ );
+   printf("Line :%d\n", __LINE__ );
+   printf("ANSI :%d\n", __STDC__ );
+   return 0;
+}
+```
+
+```c
+File :size.c
+Date :Mar  4 2022
+Time :10:31:21
+Line :8
+ANSI :1
+```
+
+## 3、预处理器运算符
+
+C 预处理器提供了下列的运算符来帮助您创建宏：
+
+### 宏延续运算符（\）
+
+一个宏通常写在一个单行上。但是如果宏太长，一个单行容纳不下，则使用宏延续运算符（\）。
+
+```c
+#define  message_for(a, b)  \
+    printf(#a " and " #b ": We love you!\n")
+```
+
+### 字符串常量化运算符（#）
+
+在宏定义中，当需要把一个宏的参数转换为字符串常量时，则使用字符串常量化运算符（`#`）。在宏中使用的该运算符有一个特定的参数或参数列表。
+
+```c
+#include <stdio.h>
+
+#define  message_for(a, b)  \
+    printf(#a " and " #b ": We love you!\n")
+
+int main(void)
+{
+   message_for(Carole, Debra); 
+   return 0;
+}
+/*
+Carole and Debra: We love you!
+*/
+```
+
+### 标记粘贴运算符（##）
+
+宏定义内的标记粘贴运算符（##）会合并两个参数。`它允许在宏定义中两个独立的标记被合并为一个标记`。例如：
+
+```c
+#include <stdio.h>
+
+#define tokenpaster(n) printf ("token" #n " = %d", token##n)
+
+int main(void)
+{
+   int token34 = 40;
+   
+   tokenpaster(34);
+   return 0;
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+token34 = 40
+```
+
+这是怎么发生的，因为这个实例会从编译器产生下列的实际输出：
+
+```c
+printf ("token34 = %d", token34);
+```
+
+这个实例演示了 `token##n` 会连接到` token34 `中，在这里，我们使用了`字符串常量化运算符（#）`和`标记粘贴运算符（##）`。
+
+### defined() 运算符
+
+预处理器`defined`运算符是用在常量表达式中的，用来确定一个标识符是否已经使用 `#define` 定义过。如果指定的标识符已定义，则值为真（非零）。如果指定的标识符未定义，则值为假（零）。
+
+```c
+#include <stdio.h>
+
+#if !defined (MESSAGE)
+   #define MESSAGE "You wish!"
+#endif
+
+int main(void)
+{
+   printf("Here is the message: %s\n", MESSAGE);  
+   return 0;
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+Here is the message: You wish!
+```
+
+## 4、参数化的宏
+
+CPP 一个强大的功能是可以使用参数化的宏来模拟函数。例如，下面的代码是计算一个数的平方：
+
+```c
+int square(int x) {
+   return x * x;
+}
+```
+
+我们可以使用宏重写上面的代码，如下：
+
+```c
+#define square(x) ((x) * (x))
+```
+
+在使用带有参数的宏之前，必须使用 `#define` 指令定义。参数列表是括在`圆括号内`，且必须紧跟在宏名称的后边。`宏名称和左圆括号之间不允许有空格`。例如：
+
+```c
+#include <stdio.h>
+
+#define MAX(x,y) ((x) > (y) ? (x) : (y))
+
+int main(void)
+{
+   printf("Max between 20 and 10 is %d\n", MAX(10, 20));  
+   return 0;
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+Max between 20 and 10 is 20
+```
+
+# 二十二、头文件
+
+头文件是扩展名为 `.h` 的文件，包含了 C 函数声明和宏定义，被多个源文件中引用共享。有两种类型的头文件：程序员编写的头文件和编译器自带的头文件。
+
+在程序中要使用头文件，需要使用 C 预处理指令 **`#include`** 来引用它。前面我们已经看过 **`stdio.h`** 头文件，它是编译器自带的头文件。
+
+引用头文件相当于复制头文件的内容，但是我们不会直接在源文件中复制头文件的内容，因为这么做很容易出错，特别在程序是由多个源文件组成的时候。
+
+A simple practice in C 或 C++ 程序中，建议把所有的常量、宏、系统全局变量和函数原型写在头文件中，在需要的时候随时引用这些头文件。
+
+## 1、引用头文件的语法
+
+使用预处理指令 **`#include`** 可以引用用户和系统头文件。它的形式有以下两种：
+
+``` c
+#include <file>
+```
+
+这种形式用于引用系统头文件。它在`系统目录的标准列表`中搜索名为 file 的文件。在编译源代码时，您可以通过 -I 选项把目录前置在该列表前。
+
+```c
+#include "file"
+```
+
+这种形式用于引用用户头文件。它在包含当前文件的目录中搜索名为 file 的文件。在编译源代码时，您可以通过 -I 选项把目录前置在该列表前。
+
+## 2、引用头文件的操作
+
+**`#include`** 指令会指示 C 预处理器浏览指定的文件作为输入。预处理器的输出包含了已经生成的输出，被引用文件生成的输出以及 **`#include`** 指令之后的文本输出。例如，如果您有一个头文件 `header.h`，如下：
+
+```c
+char *test (void);
+```
+
+和一个使用了头文件的主程序 `program.c`，如下：
+
+```c
+int x;
+#include "header.h"
+
+int main (void)
+{
+   puts (test ());
+}
+```
+
+编译器会看到如下的代码信息：
+
+```c
+int x;
+char *test (void);
+
+int main (void)
+{
+   puts (test ());
+}
+```
+
+## 3、只引用一次头文件
+
+如果一个头文件被引用两次，编译器会处理两次头文件的内容，这将产生错误。为了防止这种情况，标准的做法是把文件的整个内容放在条件编译语句中，如下：
+
+```c
+#ifndef HEADER_FILE
+#define HEADER_FILE
+
+the entire header file file
+
+#endif
+```
+
+这种结构就是通常所说的包装器 **`#ifndef`**。当再次引用头文件时，条件为假，因为 `HEADER_FILE `已定义。此时，预处理器会跳过文件的整个内容，编译器会忽略它。
+
+## 4、有条件引用
+
+有时需要从多个不同的头文件中选择一个引用到程序中。例如，需要指定在不同的操作系统上使用的配置参数。您可以通过一系列条件来实现这点，如下：
+
+```c
+#if SYSTEM_1
+   # include "system_1.h"
+#elif SYSTEM_2
+   # include "system_2.h"
+#elif SYSTEM_3
+   ...
+#endif
+```
+
+但是如果头文件比较多的时候，这么做是很不妥当的，预处理器使用宏来定义头文件的名称。这就是所谓的**有条件引用**。它不是用头文件的名称作为 **`#include`** 的直接参数，您只需要使用宏名称代替即可：
+
+```c
+ #define SYSTEM_H "system_1.h"
+ ...
+ #include SYSTEM_H
+```
+
+`SYSTEM_H` 会扩展，预处理器会查找 `system_1.h`，就像 **`#include`** 最初编写的那样。`SYSTEM_H` 可通过` -D `选项被您的 `Makefile `定义。
+
+# 二十三、强制类型转换
+
+强制类型转换是把变量从一种类型转换为另一种数据类型。例如，如果您想存储一个 long 类型的值到一个简单的整型中，您需要把 long 类型强制转换为 int 类型。您可以使用**强制类型转换运算符**来把值显式地从一种类型转换为另一种类型，如下所示：
+
+```c
+(type_name) expression
+```
+
+请看下面的实例，使用强制类型转换运算符把一个整数变量除以另一个整数变量，得到一个浮点数：
+
+```c
+#include <stdio.h>
+ 
+int main()
+{
+   int sum = 17, count = 5;
+   double mean;
+ 
+   mean = (double) sum / count;
+   printf("Value of mean : %f\n", mean );
+ 
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+Value of mean : 3.400000
+```
+
+这里要注意的是强制类型转换运算符的优先级大于除法，因此 **sum** 的值首先被转换为 **double** 型，然后除以 count，得到一个类型为 double 的值。
+
+类型转换可以是隐式的，由编译器自动执行，也可以是显式的，通过使用**强制类型转换运算符**来指定。在编程时，有需要类型转换的时候都用上强制类型转换运算符，是一种良好的编程习惯。
+
+## 1、整数提升
+
+整数提升是指把小于 **int** 或 **unsigned int** 的整数类型转换为 **int** 或 **unsigned int** 的过程。请看下面的实例，在 int 中添加一个字符：
+
+```
+#include <stdio.h>
+ 
+int main()
+{
+   int  i = 17;
+   char c = 'c'; /* ascii 值是 99 */
+   int sum;
+ 
+   sum = i + c;
+   printf("Value of sum : %d\n", sum );
+ 
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```
+Value of sum : 116
+```
+
+在这里，sum 的值为 116，因为编译器进行了整数提升，在执行实际加法运算时，把 'c' 的值转换为对应的 ascii 值。
+
+## 2、常用的算术转换
+
+**常用的算术转换**是隐式地把值强制转换为相同的类型。编译器首先执行**整数提升**，如果操作数类型不同，则它们会被转换为下列层次中出现的最高层次的类型：
+
+![Usual Arithmetic Conversion](image/usual_arithmetic_conversion.png)
+
+常用的算术转换不适用于赋值运算符、逻辑运算符 && 和 ||。让我们看看下面的实例来理解这个概念：
+
+```c
+#include <stdio.h>
+ 
+int main()
+{
+   int  i = 17;
+   char c = 'c'; /* ascii 值是 99 */
+   float sum;
+ 
+   sum = i + c;
+   printf("Value of sum : %f\n", sum );
+ 
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+Value of sum : 116.000000
+```
+
+在这里，c 首先被转换为整数，但是由于最后的值是 float 型的，所以会应用常用的算术转换，编译器会把 i 和 c 转换为浮点型，并把它们相加得到一个浮点数。
+
+# 二十四、错误处理
+
+C 语言不提供对错误处理的直接支持，但是作为一种系统编程语言，它以返回值的形式允许您访问底层数据。在发生错误时，大多数的 C 或 UNIX 函数调用返回 1 或 NULL，同时会设置一个错误代码 **errno**，该错误代码是全局变量，表示在函数调用期间发生了错误。您可以在 errno.h 头文件中找到各种各样的错误代码。
+
+所以，C 程序员可以通过检查返回值，然后根据返回值决定采取哪种适当的动作。开发人员应该在程序初始化时，把 errno 设置为 0，这是一种良好的编程习惯。0 值表示程序中没有错误。
+
+## 1、errno、perror() 和 strerror()
+
+C 语言提供了 **perror()** 和 **strerror()** 函数来显示与 **errno** 相关的文本消息。
+
+- **`perror()`** 函数显示您传给它的字符串，后跟一个冒号、一个空格和当前 errno 值的文本表示形式。
+- **`strerror()`** 函数，返回一个指针，指针指向当前 errno 值的文本表示形式。
+
+让我们来模拟一种错误情况，尝试打开一个不存在的文件。您可以使用多种方式来输出错误消息，在这里我们使用函数来演示用法。另外有一点需要注意，您应该使用 **stderr** 文件流来输出所有的错误。
+
+```c
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+ 
+extern int errno ;
+ 
+int main ()
+{
+   FILE * pf;
+   int errnum;
+   pf = fopen ("unexist.txt", "rb");
+   if (pf == NULL)
+   {
+      errnum = errno;
+      fprintf(stderr, "错误号: %d\n", errno);
+      perror("通过 perror 输出错误");
+      fprintf(stderr, "打开文件错误: %s\n", strerror( errnum ));
+   }
+   else
+   {
+      fclose (pf);
+   }
+   return 0;
+}
+```
+
+当上面的代码被编译（编译时会报错但不影响执行）和执行时，它会产生下列结果：
+
+```c
+错误号: 2
+通过 perror 输出错误: No such file or directory
+打开文件错误: No such file or directory
+```
+
+## 2、被零除的错误
+
+在进行除法运算时，如果不检查除数是否为零，则会导致一个运行时错误。
+
+为了避免这种情况发生，下面的代码在进行除法运算前会先检查除数是否为零：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+ 
+main()
+{
+   int dividend = 20;
+   int divisor = 0;
+   int quotient;
+ 
+   if( divisor == 0){
+      fprintf(stderr, "除数为 0 退出运行...\n");
+      exit(-1);
+   }
+   quotient = dividend / divisor;
+   fprintf(stderr, "quotient 变量的值为 : %d\n", quotient );
+ 
+   exit(0);
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+除数为 0 退出运行...
+```
+
+## 3、程序退出状态
+
+通常情况下，程序成功执行完一个操作正常退出的时候会带有值 `EXIT_SUCCESS`。在这里，`EXIT_SUCCESS `是宏，它被定义为 `0`。
+
+如果程序中存在一种错误情况，当您退出程序时，会带有状态值 `EXIT_FAILURE`，被定义为 `-1`。所以，上面的程序可以写成：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+ 
+int main()
+{
+   int dividend = 20;
+   int divisor = 5;
+   int quotient;
+ 
+   if( divisor == 0){
+      fprintf(stderr, "除数为 0 退出运行...\n");
+      exit(EXIT_FAILURE);
+   }
+   quotient = dividend / divisor;
+   fprintf(stderr, "quotient 变量的值为: %d\n", quotient );
+ 
+   exit(EXIT_SUCCESS);
+   return 0;
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+quotient 变量的值为 : 4
+```
+
+# 二十五、可变参数
+
+有时，您可能会碰到这样的情况，您希望函数带有可变数量的参数，而不是预定义数量的参数。C 语言为这种情况提供了一个解决方案，它允许您定义一个函数，能根据具体的需求接受可变数量的参数。下面的实例演示了这种函数的定义。
+
+```c
+int func(int, ... ) 
+{
+   .
+   .
+   .
+}
+ 
+int main()
+{
+   func(2, 2, 3);
+   func(3, 2, 3, 4);
+}
+```
+
+请注意，函数 **`func()`** 最后一个参数写成省略号，即三个点号（`...`），省略号之前的那个参数是 **`int`**，`代表了要传递的可变参数的总数`。为了使用这个功能，您需要使用 **`stdarg.h`** 头文件，该文件提供了实现可变参数功能的函数和宏。具体步骤如下：
+
+- 定义一个函数，最后一个参数为省略号，省略号前面可以设置自定义参数。
+- 在函数定义中创建一个 **`va_list`** 类型变量，该类型是在 `stdarg.h` 头文件中定义的。
+- 使用 **`int`** 参数和 **`va_start`** 宏来初始化 **`va_list`** 变量为一个参数列表。宏 `va_start `是在 `stdarg.h` 头文件中定义的。
+- 使用 **`va_arg`** 宏和 **`va_list`** 变量来访问参数列表中的每个项。
+- 使用宏 **`va_end`** 来清理赋予 **`va_list`** 变量的内存。
+
+现在让我们按照上面的步骤，来编写一个带有可变数量参数的函数，并返回它们的平均值：
+
+```c
+#include <stdio.h>
+#include <stdarg.h>
+ 
+double average(int num,...)
+{
+ 
+    va_list valist;
+    double sum = 0.0;
+    int i;
+ 
+    /* 为 num 个参数初始化 valist */
+    va_start(valist, num);
+ 
+    /* 访问所有赋给 valist 的参数 */
+    for (i = 0; i < num; i++)
+    {
+       sum += va_arg(valist, int);
+    }
+    /* 清理为 valist 保留的内存 */
+    va_end(valist);
+ 
+    return sum/num;
+}
+ 
+int main()
+{
+   printf("Average of 2, 3, 4, 5 = %f\n", average(4, 2,3,4,5));
+   printf("Average of 5, 10, 15 = %f\n", average(3, 5,10,15));
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果。应该指出的是，函数 **average()** 被调用两次，每次第一个参数都是表示被传的可变参数的总数。省略号被用来传递可变数量的参数。
+
+```c
+Average of 2, 3, 4, 5 = 3.500000
+Average of 5, 10, 15 = 10.000000
+```
+
+# 二十六、内存管理
+
+ C 中的动态内存管理。C 语言为内存的分配和管理提供了几个函数。这些函数可以在 `<stdlib.h>` 头文件中找到。
+
+| 序号 | 函数和描述                                                   |
+| :--- | :----------------------------------------------------------- |
+| 1    | **void \*calloc(int num, int size);** 在内存中动态地分配 num 个长度为 size 的连续空间，并将每一个字节都初始化为 0。所以它的结果是分配了 num*size 个字节长度的内存空间，并且每个字节的值都是0。 |
+| 2    | **void free(void \*address);** 该函数释放 address 所指向的内存块,释放的是动态分配的内存空间。 |
+| 3    | **void \*malloc(int num);** 在堆区分配一块指定大小的内存空间，用来存放数据。这块内存空间在函数执行完成后不会被初始化，它们的值是未知的。**num** -- 内存块的大小，以字节为单位。 |
+| 4    | **void \*realloc(void \*address, int newsize);** 该函数重新分配内存，把内存扩展到 **newsize**。 |
+
+**注意：**`void *` 类型表示未确定类型的指针。C、C++ 规定 `void *` 类型`可以通过类型转换强制转换为任何其它类型的指针`。
+
+## 1、动态分配内存
+
+编程时，如果您预先知道数组的大小，那么定义数组时就比较容易。例如，一个存储人名的数组，它最多容纳 100 个字符，所以您可以定义数组，如下所示：
+
+```c
+char name[100];
+```
+
+但是，如果您预先不知道需要存储的文本长度，例如您想存储有关一个主题的详细描述。在这里，我们需要定义一个指针，该指针指向未定义所需内存大小的字符，后续再根据需求来分配内存，
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+ 
+int main()
+{
+   char name[100];
+   char *description;
+ 
+   strcpy(name, "Zara Ali");
+ 
+   /* 动态分配内存 */
+   description = (char *)malloc( 200 * sizeof(char) );
+   if( description == NULL )
+   {
+      fprintf(stderr, "Error - unable to allocate required memory\n");
+   }
+   else
+   {
+      strcpy( description, "Zara ali a DPS student in class 10th");
+   }
+   printf("Name = %s\n", name );
+   printf("Description: %s\n", description );
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+Name = Zara Ali
+Description: Zara ali a DPS student in class 10th
+```
+
+上面的程序也可以使用 **calloc()** 来编写，只需要把 malloc 替换为 calloc 即可，如下所示：
+
+```c
+calloc(200, sizeof(char));
+```
+
+当动态分配内存时，您有完全控制权，可以传递任何大小的值。而那些预先定义了大小的数组，一旦定义则无法改变大小。
+
+## 2、重新调整内存的大小和释放内存
+
+当程序退出时，操作系统会自动释放所有分配给程序的内存，但是，建议您在不需要内存时，都应该调用函数 **`free()`** 来释放内存。
+
+或者，您可以通过调用函数 **`realloc()`** 来增加或减少已分配的内存块的大小。
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+ 
+int main()
+{
+   char name[100];
+   char *description;
+ 
+   strcpy(name, "Zara Ali");
+ 
+   /* 动态分配内存 */
+   description = (char *)malloc( 30 * sizeof(char) );
+   if( description == NULL )
+   {
+      fprintf(stderr, "Error - unable to allocate required memory\n");
+   }
+   else
+   {
+      strcpy( description, "Zara ali a DPS student.");
+   }
+   /* 假设您想要存储更大的描述信息 */
+   description = (char *) realloc( description, 100 * sizeof(char) );
+   if( description == NULL )
+   {
+      fprintf(stderr, "Error - unable to allocate required memory\n");
+   }
+   else
+   {
+      strcat( description, "She is in class 10th");
+   }
+   
+   printf("Name = %s\n", name );
+   printf("Description: %s\n", description );
+ 
+   /* 使用 free() 函数释放内存 */
+   free(description);
+}
+```
+
+当上面的代码被编译和执行时，它会产生下列结果：
+
+```c
+Name = Zara Ali
+Description: Zara ali a DPS student.She is in class 10th
+```
+
+您可以尝试一下不重新分配额外的内存，`strcat()` 函数会生成一个错误，因为存储 `description `时可用的内存不足。
+
+
+
+
+
+
+
+
+
+
 
 
 
