@@ -459,7 +459,7 @@ n个节点连接成一个链表，即为线性表   $(a_1,\cdot\cdot\cdot,a_{i-1
 
 ![图片](image/640-16466439618272.png)
 
-### 单链表的代码结构
+### 单链表的代码
 
 **单链表节点**
 
@@ -494,7 +494,7 @@ public class SinglyNode<T> {
 
 ```
 
-**单链表**
+**单链表基本操作**
 
 ```java
 public class SinglyList<T> {
