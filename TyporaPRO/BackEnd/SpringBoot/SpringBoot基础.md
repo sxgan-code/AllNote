@@ -288,7 +288,7 @@ tomcat已经起步，端口监听8080，web应用的虚拟工程名称为空
 
 ### 3.1.1 分析spring-boot-starter-parent
 
-按住Ctrl点击pom.xml中的spring-boot-starter-parent，跳转到了spring-boot-starter-parent的pom.xml，xml配置如下（只摘抄了部分重点配置）：
+按住Ctrl点击pom.xml中的`spring-boot-starter-parent`，跳转到了`spring-boot-starter-parent`的pom.xml，xml配置如下（只摘抄了部分重点配置）：
 
 ```xml
 <parent>
@@ -299,7 +299,7 @@ tomcat已经起步，端口监听8080，web应用的虚拟工程名称为空
 </parent>
 ```
 
-按住Ctrl点击pom.xml中的spring-boot-starter-dependencies，跳转到了spring-boot-starter-dependencies的pom.xml，xml配置如下（只摘抄了部分重点配置）：
+按住Ctrl点击pom.xml中的`spring-boot-starter-dependencies`，跳转到了`spring-boot-starter-dependencies`的pom.xml，xml配置如下（只摘抄了部分重点配置）：
 
 ```xml
 <properties>
@@ -354,11 +354,11 @@ tomcat已经起步，端口监听8080，web应用的虚拟工程名称为空
 </build>
 ```
 
-从上面的spring-boot-starter-dependencies的pom.xml中我们可以发现，一部分坐标的版本、依赖管理、插件管理已经定义好，所以我们的SpringBoot工程继承spring-boot-starter-parent后已经具备版本锁定等配置了。所以起步依赖的作用就是进行依赖的传递。
+从上面的`spring-boot-starter-dependencies`的pom.xml中我们可以发现，一部分坐标的版本、依赖管理、插件管理已经定义好，所以我们的SpringBoot工程继承`spring-boot-starter-parent`后已经具备版本锁定等配置了。所以起步依赖的作用就是进行依赖的传递。
 
 ### 3.1.2 分析spring-boot-starter-web
 
-按住Ctrl点击pom.xml中的spring-boot-starter-web，跳转到了spring-boot-starter-web的pom.xml，xml配置如下（只摘抄了部分重点配置）：
+按住Ctrl点击`pom.xml`中的`spring-boot-starter-web`，跳转到了`spring-boot-starter-web`的`pom.xml`，xml配置如下（只摘抄了部分重点配置）：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -417,13 +417,13 @@ tomcat已经起步，端口监听8080，web应用的虚拟工程名称为空
 
 ```
 
-从上面的spring-boot-starter-web的pom.xml中我们可以发现，spring-boot-starter-web就是将web开发要使用的spring-web、spring-webmvc等坐标进行了“打包”，这样我们的工程只要引入spring-boot-starter-web起步依赖的坐标就可以进行web开发了，同样体现了依赖传递的作用。
+从上面的`spring-boot-starter-web`的`pom.xml`中我们可以发现，`spring-boot-starter-web`就是将web开发要使用的`spring-web`、`spring-webmvc`等坐标进行了“`打包`”，这样我们的工程只要引入`spring-boot-starter-web`起步依赖的坐标就可以进行web开发了，同样体现了依赖传递的作用。
 
 
 
 ## 3.2 自动配置原理解析
 
-按住Ctrl点击查看启动类MySpringBootApplication上的注解@SpringBootApplication
+按住Ctrl点击查看启动类`MySpringBootApplication`上的注解`@SpringBootApplication`
 
 ```java
 @SpringBootApplication
@@ -462,11 +462,11 @@ public @interface SpringBootApplication {
 
 其中，
 
-@SpringBootConfiguration：等同与@Configuration，既标注该类是Spring的一个配置类
+`@SpringBootConfiguration`：等同与`@Configuration`，既标注该类是Spring的一个配置类
 
-@EnableAutoConfiguration：SpringBoot自动配置功能开启
+`@EnableAutoConfiguration：SpringBoot`自动配置功能开启
 
-按住Ctrl点击查看注解@EnableAutoConfiguration
+按住Ctrl点击查看注解`@EnableAutoConfiguration`
 
 ```java
 @Target(ElementType.TYPE)
@@ -480,9 +480,9 @@ public @interface EnableAutoConfiguration {
 }
 ```
 
-其中，@Import(AutoConfigurationImportSelector.class) 导入了AutoConfigurationImportSelector类
+其中，`@Import(AutoConfigurationImportSelector.class) `导入了`AutoConfigurationImportSelector`类
 
-按住Ctrl点击查看AutoConfigurationImportSelector源码
+按住Ctrl点击查看`AutoConfigurationImportSelector`源码
 
 ```java
 public String[] selectImports(AnnotationMetadata annotationMetadata) {
@@ -509,11 +509,11 @@ protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
 
 ```
 
-其中，SpringFactoriesLoader.loadFactoryNames 方法的作用就是从META-INF/spring.factories文件中读取指定类对应的类名称列表 
+其中，`SpringFactoriesLoader.loadFactoryNames `方法的作用就是从`META-INF/spring.factories`文件中读取指定类对应的类名称列表 
 
 ![](img\11.png)
 
-spring.factories 文件中有关自动配置的配置信息如下：
+`spring.factories` 文件中有关自动配置的配置信息如下：
 
 ```
 ... ... ...
@@ -528,9 +528,9 @@ org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration,\
 ... ... ...
 ```
 
-上面配置文件存在大量的以Configuration为结尾的类名称，这些类就是存有自动配置信息的类，而SpringApplication在获取这些类名后再加载
+上面配置文件存在大量的以`Configuration`为结尾的类名称，这些类就是存有自动配置信息的类，而SpringApplication在获取这些类名后再加载
 
-我们以ServletWebServerFactoryAutoConfiguration为例来分析源码：
+我们以`ServletWebServerFactoryAutoConfiguration`为例来分析源码：
 
 ```java
 @Configuration
@@ -550,9 +550,9 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 其中，
 
-@EnableConfigurationProperties(ServerProperties.class) 代表加载ServerProperties服务器配置属性类
+`@EnableConfigurationProperties(ServerProperties.class) `代表加载`ServerProperties`服务器配置属性类
 
-进入ServerProperties.class源码如下：
+进入`ServerProperties.class`源码如下：
 
 ```java
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -575,7 +575,7 @@ public class ServerProperties {
 
 其中，
 
-prefix = "server" 表示SpringBoot配置文件中的前缀，SpringBoot会将配置文件中以server开始的属性映射到该类的字段中。映射关系如下：
+`prefix = "server"` 表示SpringBoot配置文件中的前缀，SpringBoot会将配置文件中以server开始的属性映射到该类的字段中。映射关系如下：
 
 ![](img\12.png)
 
@@ -585,11 +585,11 @@ prefix = "server" 表示SpringBoot配置文件中的前缀，SpringBoot会将配
 
 ### 4.1.1 SpringBoot配置文件类型和作用
 
-SpringBoot是基于约定的，所以很多配置都有默认值，但如果想使用自己的配置替换默认配置的话，就可以使用application.properties或者application.yml（application.yaml）进行配置。
+SpringBoot是基于约定的，所以很多配置都有默认值，但如果想使用自己的配置替换默认配置的话，就可以使用`application.properties`或者`application.yml`（`application.yaml`）进行配置。
 
-SpringBoot默认会从Resources目录下加载application.properties或application.yml（application.yaml）文件
+SpringBoot默认会从`Resources`目录下加载`application.properties`或`application.yml`（`application.yaml`）文件
 
-其中，application.properties文件是键值对类型的文件，之前一直在使用，所以此处不在对properties文件的格式进行阐述。除了properties文件外，SpringBoot还可以使用yml文件进行配置，下面对yml文件进行讲解。
+其中，`application.properties`文件是键值对类型的文件，之前一直在使用，所以此处不在对`properties`文件的格式进行阐述。除了`properties`文件外，SpringBoot还可以使用`yml`文件进行配置，下面对yml文件进行讲解。
 
 ### 4.1.2 application.yml配置文件
 
@@ -690,7 +690,7 @@ YML文件的扩展名可以使用.yml或者.yaml。
 
 ### 4.1.3 SpringBoot配置信息的查询
 
-上面提及过，SpringBoot的配置文件，主要的目的就是对配置信息进行修改的，但在配置时的key从哪里去查询呢？我们可以查阅SpringBoot的官方文档
+上面提及过，SpringBoot的配置文件，主要的目的就是对配置信息进行修改的，但在配置时的`key`从哪里去查询呢？我们可以查阅SpringBoot的官方文档
 
 文档URL：https://docs.spring.io/spring-boot/docs/2.0.1.RELEASE/reference/htmlsingle/#common-application-properties
 
@@ -739,18 +739,18 @@ spring.elasticsearch.jest.username= # Login username.
 
 ```
 
-我们可以通过配置application.poperties 或者 application.yml 来修改SpringBoot的默认配置
+我们可以通过配置`application.poperties` 或者 `application.yml` 来修改SpringBoot的默认配置
 
 例如：
 
-application.properties文件
+`application.properties`文件
 
 ```properties
 server.port=8888
 server.servlet.context-path=demo
 ```
 
-application.yml文件
+`application.yml`文件
 
 ```yaml
 server:
