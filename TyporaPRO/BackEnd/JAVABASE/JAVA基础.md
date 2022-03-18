@@ -16,11 +16,11 @@
 
 ## **3、Java语言的特点：跨平台性什么是跨平台性?**
 
-平台:OS--Operation System 操作系统 ，通过Java语言编写的应用程序在不同的操作系统平台上都可以运行。
+平台:`OS--Operation System` 操作系统 ，通过Java语言编写的应用程序在不同的操作系统平台上都可以运行。
 
 Java语言跨平台原理：
 
-各种平台上装有不同JVM虚拟机  =>Java virtual machine
+各种平台上装有不同JVM虚拟机  =>`Java virtual machine`
 
 传统编程语言:平台相关(非跨平台)
 
@@ -34,19 +34,19 @@ Java语言跨平台原理：
 
 **明确什么是JRE,JDK** 
 
-**（jre）java runtime environment**
+`（jre）java runtime environment`
 
-**（jdk）java development kit**
+`（jdk）java development kit`
 
 下载JDK 安装JDK 配置环境变量 验证
 
 ## **5.什么是JRE,JDK?**
 
-JRE(Java Runtime Environment Java运行环境) ：包括Java虚拟机(JVM Java Virtual Machine)和Java程序所需的核心类库等
+`JRE(Java Runtime Environment Java运行环境) `：包括Java虚拟机(JVM Java Virtual Machine)和Java程序所需的核心类库等
 
-JDK(Java Development Kit Java开发工具包) ：JDK是提供给Java开发人员使用的,其中包含了java的开发工具,也包括了JRE。所以安装了JDK,就不用在单独安装JRE了
+`JDK(Java Development Kit Java开发工具包)` ：JDK是提供给Java开发人员使用的,其中包含了java的开发工具,也包括了JRE。所以安装了JDK,就不用在单独安装JRE了
 
-其中的开发工具： 编译工具(javac.exe) 打包工具(jar.exe) 等
+其中的开发工具： 编译工具`(javac.exe) `打包工具`(jar.exe)` 等
 
 ![img](image/26-525667418.png)
 
@@ -62,7 +62,7 @@ JDK(Java Development Kit)：Java开发工具包
 
 进入控制台窗口,在任意目录下输入命令
 
-```
+```shell
 java -version
 ```
 
@@ -90,9 +90,9 @@ java -version
 
 如果出现java -version 的信息,配置成功
 
-1、检查“系统变量：JAVA_HOME ”的配置，确认-变量值，是本地的jdk的安装路径； 
+1、检查“系统变量：`JAVA_HOME` ”的配置，确认-变量值，是本地的jdk的安装路径； 
 
-2、检查“系统变量：CLASSPATH”的配置，确认-变量值： 
+2、检查“系统变量：`CLASSPATH`”的配置，确认-变量值： 
 
 ```java
 %JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar; 
@@ -264,7 +264,7 @@ public class Hello{
 
 ### **1首先是JDK**
 
-JDK(Java Development Kit) 是 Java 语言的软件开发工具包(SDK)。 **在JDK的安装目录下有一个jre目录**，里面有两个文件夹bin和lib，在这里可以认为**bin里的就是jvm，lib中则是jvm工作所需要的类库，而jvm和 lib合起来就称为jre。**
+`JDK(Java Development Kit) `是 Java 语言的软件开发工具包(SDK)。 **在JDK的安装目录下有一个jre目录**，里面有两个文件夹bin和lib，在这里可以认为**bin里的就是jvm，lib中则是jvm工作所需要的类库，而jvm和 lib合起来就称为jre。**
 
 ### **2JRE**
 
@@ -3970,8 +3970,6 @@ Exception thrown  :java.lang.ArrayIndexOutOfBoundsException: 3
 Out of the block
 ```
 
-------
-
 ## 多重捕获块
 
 一个 try 代码块后面跟随多个 catch 代码块的情况就叫多重捕获。
@@ -3998,8 +3996,6 @@ try{   // 程序代码 }catch(异常类型1 异常的变量名1){  // 程序代�
 
 try {    file = new FileInputStream(fileName);    x = (byte) file.read(); } catch(FileNotFoundException f) { // Not valid!    f.printStackTrace();    return -1; } catch(IOException i) {    i.printStackTrace();    return -1; }
 
-------
-
 ## throws/throw 关键字：
 
 如果一个方法没有捕获到一个检查性异常，那么该方法必须使用 throws 关键字来声明。throws 关键字放在方法签名的尾部。
@@ -4015,8 +4011,6 @@ import java.io.*; public class className {  public void deposit(double amount) t
 例如，下面的方法声明抛出 RemoteException 和 InsufficientFundsException：
 
 import java.io.*; public class className {   public void withdraw(double amount) throws RemoteException,                              InsufficientFundsException   {       // Method implementation   }   //Remainder of class definition }
-
-------
 
 ## finally关键字
 
