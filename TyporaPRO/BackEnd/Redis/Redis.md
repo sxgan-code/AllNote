@@ -32,9 +32,11 @@ Redis 与其他 key - value 缓存产品有以下三个特点：
 
 丰富的特性 – `Redis`还支持 `publish/subscribe,` 通知, `key `过期等等特性。
 
+# 二、Redis安装
 
 
-# 二、Redis常用命令
+
+# 三、Redis常用命令
 
 ## 1、Redis 配置
 
@@ -314,7 +316,7 @@ Redis `zset `和 `set `一样也是`string`类型元素的集合,且`不允许�
 4) "b"
 ```
 
-# 三、Redis命令详解
+# 四、Redis命令详解
 
 ## 1、启动命令
 
@@ -570,7 +572,7 @@ PONG
 #迭代有序集合中的元素（包括元素成员和元素分值）
 ```
 
-# 四、Redis的发布订阅
+# 五、Redis的发布订阅
 
 Redis 发布订阅 (`pub/sub`) 是一种消息通信模式：发送者 (pub) 发送消息，订阅者 (sub) 接收消息
 
