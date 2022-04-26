@@ -864,6 +864,10 @@ public class QuickStartController {
 
 注意：使用@ConfigurationProperties方式可以进行配置文件与实体字段的自动映射，但需要字段必须提供set方法才可以，而使用@Value注解修饰的字段不需要提供set方法
 
+## 4.3、自定义配置文件
+
+
+
 
 
 # 五、SpringBoot与整合其他技术
