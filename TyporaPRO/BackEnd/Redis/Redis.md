@@ -34,6 +34,37 @@ Redis 与其他 key - value 缓存产品有以下三个特点：
 
 # 二、Redis安装
 
+上传redis安装包到linux并解压
+
+```sh
+tar -zxvf redis-6.2.6.tar.gz
+```
+
+进入解压后目录后，执行make
+
+```sh
+cd redis-6.2.6
+make
+```
+
+进行安装
+
+```sh
+make PREFIX=/home/daniel/software/redis-6.2.6 install
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 三、Redis常用命令
