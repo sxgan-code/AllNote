@@ -428,7 +428,6 @@ mvn -v
 
 ```xml
 <!-- java版本 --> 
-  <profiles>
 	 <profile>
 	  <id>jdk-1.8</id>
 	  <activation>
