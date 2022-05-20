@@ -202,7 +202,6 @@ content {
 #write h1,
 #write h2 {
     text-align: left;
-    text-transform: uppercase;
 }
 
 #write h1 {
