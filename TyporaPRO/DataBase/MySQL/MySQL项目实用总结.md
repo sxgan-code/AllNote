@@ -207,3 +207,46 @@ SELECT DATE_SUB(CURDATE(),INTERVAL -1 WEEK)
 SELECT DATE_SUB(CURDATE(),INTERVAL -1 MONTH)
 SELECT DATE_SUB(NOW(),INTERVAL -1 MONTH)
 ```
+
+# 四、MySql同一局域网连接
+
+当处于同一局域网时，一台电脑需要连接另一台电脑的mysql数据库时，需要以下设置；
+
+## 1、数据库配置
+
+打开`MySQL client`终端，输入密码
+
+![image-20220529232929354](image/image-20220529232929354.png)
+
+切换至mysql数据库；
+
+```sql
+use mysql;
+
+-- 执行命令 修改user表中host的值更改为%
+select host from user where user = 'root';  -- 查询出host列为localhost
+update user set host='%' where user = 'root';
+-- 刷新
+flush privileges;
+```
+
+
+
+## 2、防火墙配置
+
+打开Windows安全中心---》高级选项
+
+![image-20220529233527058](image/image-20220529233527058.png)
+
+![image-20220529233718137](image/image-20220529233718137.png)
+
+设置3306端口
+
+![image-20220529233802315](image/image-20220529233802315.png)
+
+默认下一步即可
+
+最后注意刷星列表
+
+![image-20220529233909425](image/image-20220529233909425.png)
+
