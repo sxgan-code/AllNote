@@ -22,3 +22,7 @@ AppData文件夹默认是看不见的
 
 
 # 二、快捷键
+
+## 1、windows版
+
+![img](image/960fa17df8e7fc818ac5f2c2488163b3.png)
