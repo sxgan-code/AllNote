@@ -150,7 +150,7 @@ sudo systemctl restart docker
 
 
 
-## 2.1.下载
+## 1、下载
 
 Linux下需要通过命令下载：
 
@@ -161,13 +161,13 @@ curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compos
 
 如果下载速度较慢，或者下载失败，可以使用课前资料提供的docker-compose文件：
 
-![image-20210417133020614](image/image-20210417133020614.png)
+![image-20220609165848789](image/image-20220609165848789.png)
 
 上传到`/usr/local/bin/`目录也可以。
 
+![image-20220609170319737](image/image-20220609170319737.png)
 
-
-## 2.2.修改文件权限
+## 2、修改文件权限
 
 修改文件权限：
 
@@ -176,11 +176,7 @@ curl -L https://github.com/docker/compose/releases/download/1.23.1/docker-compos
 chmod +x /usr/local/bin/docker-compose
 ```
 
-
-
-
-
-## 2.3.Base自动补全命令：
+## 3、Base自动补全命令：
 
 ```sh
 # 补全命令
@@ -190,14 +186,10 @@ curl -L https://raw.githubusercontent.com/docker/compose/1.29.1/contrib/completi
 如果这里出现错误，需要修改自己的hosts文件：
 
 ```sh
-echo "199.232.68.133 raw.githubusercontent.com" >> /etc/hosts
+echo "192.168.0.61 raw.githubusercontent.com" >> /etc/hosts
 ```
 
-
-
-
-
-# 3.Docker镜像仓库
+# 四、Docker镜像仓库
 
 搭建镜像仓库可以基于Docker官方提供的DockerRegistry来实现。
 
