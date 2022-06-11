@@ -88,7 +88,7 @@ CORS需要浏览器和服务器同时支持。目前，所有浏览器都支持�
 
 上面说到，CORS请求默认不发送Cookie和HTTP认证信息。如果要把Cookie发到服务器，一方面要服务器同意，指定`Access-Control-Allow-Credentials`字段。
 
-> ```http
+> ```javascript
 > Access-Control-Allow-Credentials: true
 > ```
 
