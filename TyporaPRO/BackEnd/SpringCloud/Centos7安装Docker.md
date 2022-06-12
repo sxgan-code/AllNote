@@ -199,7 +199,7 @@ echo "192.168.0.61 raw.githubusercontent.com" >> /etc/hosts
 
 ## 3.1.简化版镜像仓库
 
-Docker官方的Docker Registry是一个基础版本的Docker镜像仓库，具备仓库管理的完整功能，但是没有图形化界面。
+Docker官方的`Docker Registry`是一个基础版本的`Docker`镜像仓库，具备仓库管理的完整功能，但是没有图形化界面。
 
 搭建方式比较简单，命令如下：
 
@@ -216,9 +216,9 @@ docker run -d \
 
 命令中挂载了一个数据卷registry-data到容器内的/var/lib/registry 目录，这是私有镜像库存放数据的目录。
 
-访问http://YourIp:5000/v2/_catalog 可以查看当前私有镜像服务中包含的镜像
+访问http://114.116.88.252:5000/v2/_catalog 可以查看当前私有镜像服务中包含的镜像
 
-
+![image-20220612232004409](image/image-20220612232004409.png)
 
 ## 3.2.带有图形化界面版本
 
