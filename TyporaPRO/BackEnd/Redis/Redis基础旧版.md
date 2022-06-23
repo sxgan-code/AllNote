@@ -53,20 +53,6 @@ make
 make PREFIX=/home/daniel/software/redis-6.2.6 install
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # 三、Redis常用命令
 
 ## 1、Redis 配置
