@@ -33,8 +33,8 @@ su -l daniel
 
 在/home/daniel/software目录下开启终端，解压jdk安装包
 
-```
-daniel@daniel:~/software$ tar -zxvf jdk-9.0.1_linux-x64_bin.tar.gz 
+```sh
+tar -zxvf jdk-9.0.1_linux-x64_bin.tar.gz 
 ```
 
 ## 1、配置环境
@@ -43,8 +43,8 @@ daniel@daniel:~/software$ tar -zxvf jdk-9.0.1_linux-x64_bin.tar.gz
 
 所以，我们要将jdk配置到`/etc/profile`，才可以在任何一个目录访问jdk
 
-```
-daniel@daniel:~/software$ vim /etc/profile
+```sh
+vim /etc/profile
 ```
 
 按i进入编辑，在profile文件尾部添加如下内容
@@ -63,13 +63,13 @@ export CLASSPATH
 通过命令source /etc/profile让profile文件立即生效
 
 ```sh
-daniel@daniel:~/software$ source /etc/profile
+source /etc/profile
 ```
 
 ## 2、测试是否安装成功
 
 ```sh
-daniel@daniel:~/software$ java -version
+java -version
 ```
 
 
