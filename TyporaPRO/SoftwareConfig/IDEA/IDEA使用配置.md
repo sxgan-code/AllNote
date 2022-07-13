@@ -26,3 +26,27 @@ AppData文件夹默认是看不见的
 ## 1、windows版
 
 ![img](image/960fa17df8e7fc818ac5f2c2488163b3.png)
+
+# 三、IDEA插件
+
+1、Lombok
+
+2、Mybatis Log Plugin
+
+3、Free Mybatis Plugin
+
+4、RestfulToolkit
+
+5、GsonFormat
+
+6、Grep Console
+
+7、Alibaba Java Coding Guidelines
+
+8、Maven Helper
+
+9、Statistic
+
+10、element
+
+11、Vue.js
