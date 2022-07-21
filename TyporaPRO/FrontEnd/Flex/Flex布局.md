@@ -6,13 +6,13 @@ FlexiableBox即是弹性盒，用来进行弹性布局，一般跟rem连起来�
 
 布局的传统解决方案，依赖[display](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.mozilla.org%2Fen-US%2Fdocs%2FWeb%2FCSS%2Fdisplay)属性 +[position](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.mozilla.org%2Fen-US%2Fdocs%2FWeb%2FCSS%2Fposition)属性 +[float](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.mozilla.org%2Fen-US%2Fdocs%2FWeb%2FCSS%2Ffloat)属性。它对于那些特殊布局非常不方便，比如，[垂直居中](https://links.jianshu.com/go?to=https%3A%2F%2Fcss-tricks.com%2Fcentering-css-complete-guide%2F)就不容易实现。
 
-![image-20210902100427956](image/image-20210902100427956.png)
+<img src="image/image-20210902100427956.png" alt="image-20210902100427956" style="zoom:67%;" />
 
 
 
 2009年，W3C提出了一种新的方案—-Flex布局，可以简便、完整、响应式地实现各种页面布局。目前，它已经得到了所有浏览器的支持，这意味着，现在就能很安全地使用这项功能。
 
-![image-20210902100452205](image/image-20210902100452205.png)
+<img src="image/image-20210902100452205.png" alt="image-20210902100452205" style="zoom:67%;" />
 
 Flex布局将成为未来布局的首选方案。本文介绍Flex布局的语法。
 
