@@ -641,21 +641,34 @@ globalShortcut.register('Ctrl+O', () => {
 })
 ```
 
-
 # 八、渲染进程和主线程通讯
 
-定义按钮
+## 1、渲染进程点击触发主线程
+
+`index.html`定义按钮
 
 ```html
 <div class="maxWindow no-drag" onclick="maxWindow()"></div>
 ```
 
-事件函数
+`index.js`中导入`ipcRenderer`
+
+```js
+const { shell,ipcRenderer } = require('electron')
+```
+
+然后定义事件函数
 
 ```js
 function maxWindow() {
   ipcRenderer.send('max-window')
 }
+```
+
+`main.js`导入`ipcMain`
+
+```js
+const {app, BrowserWindow,globalShortcut,ipcMain} = require("electron")
 ```
 
 主线程定义事件
@@ -666,41 +679,84 @@ ipcMain.on('max-window', () => {
   })
 ```
 
-传参
+## 2、渲染进程和主线程传参
+
+渲染进程根据点击传参
 
 ```js
+// 渲染进程和主线程通讯
 let windowSize = 'unmax-window'
 function maxWindow() {
-  windowSize = windowSize === 'max-window' ?'unmax-window':'max-window'
-  ipcRenderer.send('max-window',windowSize)
+    windowSize = (windowSize === 'unmax-window' ? 'max-window' : 'unmax-window')
+    ipcRenderer.send('max-window',windowSize)
 }
 ```
 
-接收参数
+主进程接收参数
 
 ```js
-ipcMain.on('max-window', (event,arg) => {
-    console.log(arg)
-    if(arg === 'unmax-window') return mainWindow.maximize();
+// 接收渲染进程事件触发
+ipcMain.on('max-window', (event,args) => {
+    console.log(args)
+    if(args === 'unmax-window') return mainWindow.maximize();
     mainWindow.unmaximize()
-  })
+})
 ```
 
-# 09. electron打包
+# 九、electron打包
 
-+ 安装electron-packager
+官方提供了三种打包方式
 
-  ```js
-  cnpm i electron-packager -D
-  ```
+> [electron-forge](https://github.com/electron-userland/electron-forge)
+>
+> [electron-builder](https://github.com/electron-userland/electron-builder)
+>
+> [electron-packager](https://github.com/electron/electron-packager)
 
-+ 添加打包任务
+本次使用的是`electron-forge`进行打包
 
-  ```js
-  "build": "electron-packager ./ HelloWorld --platform=win32 --arch=x64 --out ./outApp --overwrite --icon=./favicon.ico"
-  ```
+## 1、安装
 
-# 10 .electron结合框架开发
+安装electron-packager
+
+```js
+npm install --save-dev @electron-forge/cli
+
+```
+
+## 2、添加打包语句
+
+添加打包语句
+
+```js
+npx electron-forge import
+```
+
+<img src="image/image-20220724224215678.png" alt="image-20220724224215678" style="zoom:67%;" />
+
+## 3、配置打包参数
+
+```json
+"packagerConfig": {
+    "name": "Daniel",
+    "packageManager": "Test",
+    "icon": "src/logo/favicon",
+    "asar": true,
+    "overwrite": true
+},
+```
+
+<img src="image/image-20220724225259664.png" alt="image-20220724225259664" style="zoom:67%;" />
+
+## 4、使用make命令打包
+
+```sh
+npm run make
+```
+
+
+
+# 十、electron结合框架开发
 
 + 利用vue脚手架初始化项目
 
@@ -746,5 +802,3 @@ ipcMain.on('max-window', (event,arg) => {
   ```js
   mainWindow.loadURL('http://localhost:3000/')
   ```
-
-# 
