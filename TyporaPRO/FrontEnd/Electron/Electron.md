@@ -134,40 +134,111 @@ mainWindow2.webContents.openDevTools()
 
 # 六、自定义原生菜单
 
-## 5.1 自定义菜单
+## 1、主进程自定义菜单
 
-详细文档：https://www.electronjs.org/docs/api/menu
+详细文档：https://www.electronjs.org/zh/docs/api/menu
+
+在主进程中创建菜单模板并加载，值得注意的是在主进程中的菜单会在所有渲染进程中展示
 
 ```js
-const electron = require('electron')
+const {app,BrowserWindow,Menu} = require("electron") // 采用对象的方式导入
+// 控制应用程序的事件生命周期
+// const app = electron.app
 
-const { app, Menu } = electron
+// 热更新
+const reloader = require('electron-reloader')
+reloader(module)
+// 当 Electron 完成初始化时，触发一次
+app.on('ready', () => {
+    const mainWindow = new BrowserWindow({
+        width: 800,
+        height: 800
+    })
+    mainWindow.loadFile('./src/index.html');
+
+
+    // const mainWindow2 = new BrowserWindow({
+    //     width: 800,
+    //     height: 800
+    // })
+    // mainWindow2.webContents.openDevTools()
+    //
+    // mainWindow2.loadFile('./src/index2.html');
+
+    // 定义菜单
+    const template = [
+        {
+            label: '文件',
+            submenu: [
+                {
+                    label: '新建窗口'
+                }
+            ]
+        },
+        {
+            label: '编辑',
+            submenu: [
+                {
+                    label: '新建窗口'
+                }
+            ]
+        }
+    ]
+    const menu = Menu.buildFromTemplate(template)
+
+    Menu.setApplicationMenu(menu)
+})
+```
+
+### 抽离自定义菜单
+
+与`main.js`同级新建文件`menu.js`，注意导入`electron`中的`Menu`
+
+```js
+const { Menu} = require('electron');
+
 const template = [
-  {
-    label: '文件',
-    submenu: [
-      {
-        label: '新建窗口'
-      }
-    ]
-  },
-  {
-    label: '编辑',
-    submenu: [
-      {
-        label: '新建窗口'
-      }
-    ]
-  }
+    {
+        label: '文件',
+        submenu: [
+            {
+                label: '新建窗口'
+            }
+        ]
+    },
+    {
+        label: '编辑',
+        submenu: [
+            {
+                label: '新建窗口'
+            }
+        ]
+    }
 ]
 const menu = Menu.buildFromTemplate(template)
 
 Menu.setApplicationMenu(menu)
 ```
 
-## 5.2 给菜单定义点击事件
+在main.js中导入菜单menu.js文件
 
-1、点击打开新窗口
+```js
+require('./menu')
+```
+
+
+
+## 2、主进程菜单定义点击事件
+
+### 点击打开新窗口
+
+创建新窗口需要在`menu.js`导入`BrowserWindow`
+
+```js
+const { Menu,BrowserWindow} = require('electron');
+```
+
+在`menu.js`中的`template`菜单里添加点击事件打开新窗口，在src下新建`new.html`
 
 ```js
 submenu: [
@@ -178,156 +249,133 @@ submenu: [
         width: 300,
         height: 300
       })
-      newMainWindow.loadFile('./new.html')
+      newMainWindow.loadFile('./src/new.html')
     }
   }
 ]
 ```
 
-2、点击打开浏览器
+### 点击打开浏览器
 
-`shell` 模块提供了集成其他桌面客户端的关联功能.
+`shell` 模块提供了集成其他桌面客户端的关联功能，我们在`menu.js`中导入`shell`
 
 ```js
 const { BrowserWindow, Menu, shell } = require('electron')
-const template = [
-  {
-    label: '文件',
+```
+
+在menu.js中的template中新建菜单
+
+```js
+{
+    label: '打开浏览器',
     submenu: [
-      {
-        label: '文件1',
-        click () {
-          // 点击打开新窗口
-          const mainWindow2 = new BrowserWindow({
-            width: 600,
-            height: 600
-          })
-        
-          mainWindow2.loadFile('./index.html')
+        {
+            label: '打开百度',
+            click: ()=>{
+                // 点击打开浏览器
+                shell.openExternal('https://www.baidu.com/')
+            }
         }
-      }
-    ]
-  },
-  {
-    label: 'csdn',
-    click () {
-      // 点击打开浏览器
-      shell.openExternal('https://www.csdn.net/')
-    }
-  }
-]
-```
-
-
-
-## 5.3 抽离菜单定义
-
-```js
-const { BrowserWindow, Menu} = require('electron')
-const template = [
-  {
-    label: '文件',
-    submenu: [
-      {
-        label: '新建窗口',
-        click: ()=>{
-          const newMainWindow = new BrowserWindow({
-            width: 300,
-            height: 300
-          })
-          newMainWindow.loadFile('./new.html')
-        }
-      }
-    ]
-  },
-  {
-    label: '编辑',
-    submenu: [
-      {
-        label: '新建窗口'
-      }
-    ]
-  }
-]
-const menu = Menu.buildFromTemplate(template)
-
-Menu.setApplicationMenu(menu)
-```
-
-```js
-require('./menu')
-```
-
-#### 打开调式
-
-mainWindow.webContents.openDevTools()
-
-## 5.4 自定义顶部菜单
-
-+ 通过frame创建无边框窗口
-
-  ```js
-  const mainWindow = new electron.BrowserWindow({
-      frame: false
-  })
-  ```
-
-+ 自定义窗口
-
-  ```html
-  <div class="custom-menu">
-    <ul>
-        <li>新建窗口</li>
-        <li>关于我们</li>
-      </ul>
-    </div>
-  ```
-
-  ```css
-  * {
-    margin: 0;
-    padding: 0;
-  }
-  .custom-menu {
-    height: 50px;
-    width: 100%;
-    background: pink;
-  }
-  
-  .custom-menu ul {
-    list-style: none;
-  }
-  
-  .custom-menu ul li {
-    float: left;
-    width: 50px;
-    line-height: 50px;
-    text-align: center;
-    margin-left: 10px;
-  }
-  ```
-
-  添加-webkit-app-region: drag;实现拖拽
-
-## 5.5 点击创建新窗口
-
-```js
-// html
-<li class="new-window">新建窗口</li>
-
-// js
-// remote 通过remote使用主进程的方法
-const { remote: {BrowserWindow} } = require('electron')
-const newWindow = document.querySelector('.new-window')
-newWindow.onclick = function () {
-  new BrowserWindow({
-    width: 200,
-    height: 300
-  })
+     ]
 }
 ```
 
-能够在html中使用node方法
+## 3、无边框（自定义菜单）
+
+### 开启无边框
+
+通过`frame`创建无边框窗口
+
+```js
+const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 800,
+    frame: false // 无边框模式
+})
+```
+
+### 自定义窗口
+
+index.html中添加头部菜单
+
+```html
+<div class="custom-menu">
+    <ul>
+        <li>新建窗口</li>
+        <li>关于我们</li>
+    </ul>
+</div>
+```
+
+在src文件夹下新建css文件夹并且新建文件`index.css`，并在`index.html`中导入该样式
+
+```css
+* {
+    margin: 0;
+    padding: 0;
+}
+.custom-menu {
+    height: 50px;
+    width: 100%;
+    background: pink;
+}
+
+.custom-menu ul {
+    list-style: none;
+}
+
+.custom-menu ul li {
+    float: left;
+    width: 70px;
+    line-height: 50px;
+    text-align: center;
+    margin-left: 10px;
+}
+```
+
+### 实现拖拽
+
+在需要拖拽的菜单栏（`.custom-menu`）添加样式
+
+```css
+.custom-menu {
+    height: 50px;
+    width: 100%;
+    background: pink;
+    -webkit-app-region: drag; // 整个菜单栏可拖拽
+}
+```
+
+==注意添加拖拽后点击效果会失效，在需要点击的子元素上需要关闭拖拽==
+
+```css
+.custom-menu ul li {
+    float: left;
+    width: 70px;
+    line-height: 50px;
+    text-align: center;
+    margin-left: 10px;
+    -webkit-app-region: no-drag;  // li点击元素去除拖拽，不然后面无法实现点击事件
+}
+```
+
+
+
+## 4、点击创建新窗口
+
+在html中`新建窗口`添加`class="new-window"`
+
+==注意：移除新建窗口元素的拖拽效果==
+
+```css
+-webkit-app-region: no-drag;
+```
+
+### 12版本以前
+
+12版本更新的时候废弃了remote，所以此方式适用于12版之前
+
+在src下新建文件夹js并在此文件夹下新建`index.js`，问题来了，主进程在main.js中，自定义js是无法使用node中的方法，所以我们需要在主进程中`开启node模块`和`开启remote模块`，让自定义文件中可以使用node的方法
 
 ```js
 const mainWindow = new BrowserWindow({
@@ -342,170 +390,301 @@ const mainWindow = new BrowserWindow({
 })
 ```
 
-## 5.6 点页面打开浏览器
+开启node模块后，我们可以通过`remote`使用主进程方法，并达到主进程菜单的效果，在`index.js`中添加点击事件打开新窗口
 
-+ html
-
-  ```html
-  <a id="a1" href="https://www.itheima.com">打开浏览器</a>
-  ```
-
-+ js
-
-  ```js
-  const { shell } = require('electron')
-  const allA = document.querySelectorAll('a')
-  
-  allA.forEach(item => {
-    item.onclick = function (e) {
-      e.preventDefault()
-      console.log(item)
-      shell.openExternal(item.href)
-    }
+```js
+// remote 通过remote使用主进程的方法
+const { remote: {BrowserWindow} } = require('electron')
+const newWindow = document.querySelector('.new-window')
+newWindow.onclick = function () {
+  new BrowserWindow({
+    width: 200,
+    height: 300
   })
-  ```
+}
+```
 
-# 6. 打开对话框读取文件
+### 12版本以后
 
-## 6.1 读取文件
+12版本更新的时候废弃了remote，所以需要单独安装remote
 
-+ 定义点击事件
+首先在项目根目录下安装`@electron/remote`包：
 
-  ```js
-  <button onclick="openFile()">打开</button>
-  ```
+```sh
+npm install @electron/remote --savesh
+```
 
-+ 定义事件函数
+在主进程中进行初始化：
 
-  打开对话框文档：https://www.electronjs.org/docs/api/dialog
+```js
+require("@electron/remote/main").initialize();
+require("@electron/remote/main").enable(mainWindow.webContents);
+```
 
-  ```js
-  // 打开对话框
-  function openFile() {
-    const res = dialog.showOpenDialogSync({
-      title: '选择文件',
-      buttonLabel: '哈哈',
-      filters: [
-        { name: 'Custom File Type', extensions: ['js'] },
-    ]
+并在主进程`webPreferences`中设置`enableRemoteModule`和`contextIsolation`：
+
+```js
+webPreferences: {
+    nodeIntegration: true,
+    contextIsolation: false,
+    enableRemoteModule: true, // 使用remote模块
+},
+```
+
+在渲染进程中自定义的`index.js`中修改导入方式就好了
+
+```js
+const BrowserWindow = require("@electron/remote").BrowserWindow;
+```
+
+完整示例
+
+```js
+// ./main.js
+const mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 800,
+    frame: false,
+    webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        enableRemoteModule: true, // 使用remote模块
+    },
+})
+require("@electron/remote/main").initialize(); // 初始化
+require("@electron/remote/main").enable(mainWindow.webContents);
+
+// ./src/js/index.js 文件
+const { BrowserWindow } = require("@electron/remote")
+
+const newWindow = document.querySelector('.new-window')
+console.log(newWindow)
+newWindow.onclick = function () {
+    console.log(123)
+    new BrowserWindow({
+        width: 200,
+        height: 300
     })
-  
-    const fileContent = fs.readFileSync(res[0])
-    dropEl.innerText = fileContent
+}
+```
+
+
+
+## 5、打开浏览器
+
+在菜单栏添加`a`表签菜单打开浏览器
+
+```html
+<li class="new-window">新建窗口</li>
+<li>关于我们</li>
+<li><a id="a1" href="https://www.baidu.com">打开百度</a></li>
+<li><a id="a2" href="https://www.bilibili.com">哔哩哔哩</a></li>
+```
+
+我们发现点击后会在窗口内打开页面，如何让其在浏览器中打开页面呢
+
+我们在index.js中使用`shell`来实现
+
+```js
+const { shell } = require('electron')
+const allA = document.querySelectorAll('a')
+
+allA.forEach(item => {
+  item.onclick = function (e) {
+    e.preventDefault()
+    console.log(item)
+    shell.openExternal(item.href)
   }
-  ```
+})
+```
 
-## 6.2 保存文件
+# 六、打开对话框读取文件
 
-+ 定义点击事件
+本次使用版本为electron：19.0.9，旧版方法已不适用
 
-  ```html
-  <button onclick="saveFile()">保存</button>
-  ```
+## 1、读取文件
 
-+ 事件函数
+定义点击事件
 
-  ```js
-  // 保存对话框
-  function saveFile() {
-    const res = remote.dialog.showSaveDialogSync({
-      title: '保存文件',
-      buttonLabel: '保存文件',
-      filters: [
-        { name: 'index', extensions: ['js'] },
-      ]
+```js
+<button onclick="openFile()">打开</button>
+<textarea id="textEl"></textarea>
+```
+
+打开对话框文档：https://www.electronjs.org/docs/api/dialog
+
+我们需要在index.js中导入dialog和fs
+
+```js
+const fs = require("node:fs");
+const {BrowserWindow,dialog} = require("@electron/remote")
+```
+
+定义事件函数，获取textarea节点并将选中文件的内容打印到节点中
+
+```js
+// 打开对话框
+const textEl = document.querySelector('#textEl')
+function openFile() {
+    dialog.showOpenDialog({
+        title: '选择文件',
+        buttonLabel: '确认',
+        filters: [
+            { name: 'Custom File Type', extensions: ['js'] },
+        ]
+    }).then(result => {
+        console.log(result)
+        console.log(result.canceled)
+        console.log(result.filePaths)
+        const fileContent = fs.readFileSync(result.filePaths[0])
+        textEl.innerText = fileContent
+    }).catch(err => {
+        console.log(err)
     })
-    fs.writeFileSync(res, dropEl.value)
-  }
-  ```
+}
+```
 
-# 7. 定义快捷键
+## 2、保存文件
 
-## 7.1 主线程定义
+同样我们需要在index.js中导入dialog和fs，前面在读取文件中已经导入
 
-+ 引入
+定义点击事件
 
-  ```js
-  const { app, BrowserWindow, globalShortcut } = require('electron')
-  ```
+```html
+<button onclick="saveFile()">保存</button>
+```
 
-+ 在ready中注册快捷键
+事件函数
 
-  ```js
-  const ret = globalShortcut.register('CommandOrControl+X', () => {
-    console.log('CommandOrControl+X is pressed + 打印结果在命令行')
-  })
-  ```
-
-+ 定义快捷键最大、最小、关闭窗口
-
-  ```js
-  globalShortcut.register('CommandOrControl+T',()=>{
-      mainWindow.unmaximize();
+```js
+// 保存文件
+function saveFile(){
+    dialog.showSaveDialog({
+        title: '保存文件',
+        buttonLabel: '保存文件',
+        filters: [
+            { name: 'index', extensions: ['js'] },
+        ]
+    }).then(result => {
+        console.log(result)
+        console.log(result.canceled);
+        console.log(result.filePath);
+        fs.writeFileSync(result.filePath, textEl.value)
+    }).catch(err =>{
+        console.log(err)
     })
-    globalShortcut.register('CommandOrControl+H',()=>{
-      mainWindow.close()
+}
+```
+
+# 七、定义快捷键
+
+## 1、主线程定义
+
+### 在main.js引入
+
+```js
+const { app, BrowserWindow, globalShortcut } = require('electron')
+```
+
+### 在ready中注册快捷键
+
+```js
+const ret = globalShortcut.register('CommandOrControl+X', () => {
+  console.log('CommandOrControl+X is pressed ---> Print the results on the command line')
+})
+```
+
+### 定义快捷键最大化、缩小、最小化、关闭窗口
+
+```js
+// 定义快捷键
+    // 不做任何操作 Ctrl+X
+    const ret = globalShortcut.register('CommandOrControl+X', () => {
+        console.log('CommandOrControl+X is pressed ---> Print the results on the command line')
     })
+    // 窗口最大化 Ctrl+M
     globalShortcut.register('CommandOrControl+M',()=>{
-      mainWindow.maximize()
+        mainWindow.maximize()
+        console.log('CommandOrControl+M is pressed ---> Maximize window')
     })
-  ```
+    // 窗口缩小 Ctrl+T
+    globalShortcut.register('CommandOrControl+T',()=>{
+        mainWindow.unmaximize();
+        console.log('CommandOrControl+T is pressed ---> Unmaximize window')
+    })
+    // 窗口最小化 Ctrl+J
+    globalShortcut.register('CommandOrControl+J',()=>{
+        mainWindow.minimize();
+        console.log('CommandOrControl+J is pressed ---> Minimize window')
+    })
+    // 窗口关闭 Ctrl+H
+    globalShortcut.register('CommandOrControl+H',()=>{
+        mainWindow.close()
+        console.log('CommandOrControl+H is pressed ---> Close window')
+    })
+```
 
-## 7.2 渲染进程定义
+## 2、渲染进程定义
 
-+ 通过remote注册
+通过`remote`注册,所以引入`globalShortcut`
 
-  ```js
-  // 定义快捷键
-  remote.globalShortcut.register('Ctrl+O', () => {
-    console.log('ctrl+o')
+```js
+const {BrowserWindow,dialog,globalShortcut } = require("@electron/remote")
+```
+
+定义快捷键
+
+```js
+// 定义快捷键
+globalShortcut.register('Ctrl+O', () => {
+  console.log('ctrl+o')
+})
+```
+
+
+# 八、渲染进程和主线程通讯
+
+定义按钮
+
+```html
+<div class="maxWindow no-drag" onclick="maxWindow()"></div>
+```
+
+事件函数
+
+```js
+function maxWindow() {
+  ipcRenderer.send('max-window')
+}
+```
+
+主线程定义事件
+
+```js
+ipcMain.on('max-window', () => {
+    mainWindow.maximize()
   })
-  ```
+```
 
+传参
 
-# 8. 渲染进程和主线程通讯
+```js
+let windowSize = 'unmax-window'
+function maxWindow() {
+  windowSize = windowSize === 'max-window' ?'unmax-window':'max-window'
+  ipcRenderer.send('max-window',windowSize)
+}
+```
 
-+ 定义按钮
+接收参数
 
-  ```html
-  <div class="maxWindow no-drag" onclick="maxWindow()"></div>
-  ```
-
-+ 事件函数
-
-  ```js
-  function maxWindow() {
-    ipcRenderer.send('max-window')
-  }
-  ```
-
-+ 主线程定义事件
-
-  ```js
-  ipcMain.on('max-window', () => {
-      mainWindow.maximize()
-    })
-  ```
-
-+ 传参
-
-  ```js
-  let windowSize = 'unmax-window'
-  function maxWindow() {
-    windowSize = windowSize === 'max-window' ?'unmax-window':'max-window'
-    ipcRenderer.send('max-window',windowSize)
-  }
-  ```
-
-+ 接收参数
-
-  ```js
-  ipcMain.on('max-window', (event,arg) => {
-      console.log(arg)
-      if(arg === 'unmax-window') return mainWindow.maximize();
-      mainWindow.unmaximize()
-    })
-  ```
+```js
+ipcMain.on('max-window', (event,arg) => {
+    console.log(arg)
+    if(arg === 'unmax-window') return mainWindow.maximize();
+    mainWindow.unmaximize()
+  })
+```
 
 # 09. electron打包
 
