@@ -27,7 +27,7 @@ npm init
 安装electron
 
 ```sh
-npm i electron –S
+npm i electron -s
 ```
 
 ## 2、配置为入口文件
@@ -758,47 +758,71 @@ npm run make
 
 # 十、electron结合框架开发
 
-+ 利用vue脚手架初始化项目
+利用vue脚手架初始化项目
 
-+ 在项目中安装electron
+## 1、在项目中安装electron
 
-  cnpm i electron
+```sh
+npm i electron
+```
 
-+ 添加electron启动配置
 
-  ```js
-  "main": "main.js",
-  "scripts": {
-     "start": "react-scripts start",
-     "build": "react-scripts build",
-     "test": "react-scripts test",
-     "eject": "react-scripts eject",
-     "electron": "electron ."
-    },
-  ```
 
-+ 配置main.js
+## 2、添加electron启动配置
 
-  ```js
-  const {app, BrowserWindow} = require('electron')
-  
-  function createWindow () {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600
-    })
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
-  }
-  
-  app.on('ready', () => {
-    createWindow()
+```json
+"name": "mymusic-client",
+"version": "0.1.0",
+"private": true,
+"main": "main.js", # 加载
+"description": "MyMusic",  # 必须参数
+"author": "Daniel", # 必须参数
+"scripts": {
+    "dev": "vue-cli-service serve --host 127.0.0.1 --port 80",
+    "serve": "vue-cli-service serve --host 127.0.0.1 --port 80",
+    "build": "vue-cli-service build",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+},
+```
+
+添加打包参数配置
+
+```json
+"packagerConfig": {
+        "name": "Daniel",
+        "packageManager": "Test",
+        "icon": "src/logo/favicon",
+        "asar": true,
+        "overwrite": true
+      },
+```
+
+
+
+## 3、配置main.js
+
+```js
+const {app, BrowserWindow} = require('electron')
+
+function createWindow () {
+  // Create the browser window.
+  const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600
   })
-  ```
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+}
 
-+ 加载vue项目
+app.on('ready', () => {
+  createWindow()
+})
+```
 
-  ```js
-  mainWindow.loadURL('http://localhost:3000/')
-  ```
+## 4、加载vue项目
+
+```js
+mainWindow.loadURL('http://localhost:3000/')
+```
