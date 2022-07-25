@@ -300,32 +300,32 @@ HTTP/1.1 200 OK
 
 表示请求已被成功接受，处理。
 
-- 200 OK客户端请求成功
-- 204 No Content：无内容。服务器成功处理，但未返回内容。一般用在只是客户端向服务器发送信息，而服务器不用向客户端返回什么信息的情况。不会刷新页面。
-- 206 Partial Content：服务器已经完成了部分GET请求（客户端进行了范围请求）。响应报文中包含Content-Range指定范围的实体内容
+- `200 `OK客户端请求成功
+- `204 `No Content：无内容。服务器成功处理，但未返回内容。一般用在只是客户端向服务器发送信息，而服务器不用向客户端返回什么信息的情况。不会刷新页面。
+- `206 `Partial Content：服务器已经完成了部分GET请求（客户端进行了范围请求）。响应报文中包含Content-Range指定范围的实体内容
 
 ### 3xx重定向
 
-- 301 Moved Permanently：永久重定向，表示请求的资源已经永久的搬到了其他位置。
-- 302 Found：临时重定向，表示请求的资源临时搬到了其他位置
-- 303 See Other：临时重定向，应使用GET定向获取请求资源。303功能与302一样，区别只是303明确客户端应该使用GET访问
-- 307 Temporary Redirect：临时重定向，和302有着相同含义。POST不会变成GET
-- 304 Not Modified：表示客户端发送附带条件的请求（GET方法请求报文中的IF…）时，条件不满足。返回304时，不包含任何响应主体。虽然304被划分在3XX，但和重定向一毛钱关系都没有
+- `301 `Moved Permanently：永久重定向，表示请求的资源已经永久的搬到了其他位置。
+- `302 `Found：临时重定向，表示请求的资源临时搬到了其他位置
+- `303 `See Other：临时重定向，应使用GET定向获取请求资源。303功能与302一样，区别只是303明确客户端应该使用GET访问
+- `307 `Temporary Redirect：临时重定向，和302有着相同含义。POST不会变成GET
+- `304 `Not Modified：表示客户端发送附带条件的请求（GET方法请求报文中的IF…）时，条件不满足。返回304时，不包含任何响应主体。虽然304被划分在3XX，但和重定向一毛钱关系都没有
 
 ### 4xx客户端错误
 
-- 400 Bad Request：客户端请求有语法错误，服务器无法理解。
-- 401 Unauthorized：请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用。
-- 403 Forbidden：服务器收到请求，但是拒绝提供服务
-- 404 Not Found：请求资源不存在。比如，输入了错误的url
-- 415 Unsupported media type：不支持的媒体类型
+- `400 `Bad Request：客户端请求有语法错误，服务器无法理解。
+- `401 `Unauthorized：请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用。
+- `403 `Forbidden：服务器收到请求，但是拒绝提供服务
+- `404 `Not Found：请求资源不存在。比如，输入了错误的url
+- `415 `Unsupported media type：不支持的媒体类型
 
 ### 5xx服务器端错误
 
 服务器未能实现合法的请求。
 
-- 500 Internal Server Error：服务器发生不可预期的错误。
-- 503 Server Unavailable：服务器当前不能处理客户端的请求，一段时间后可能恢复正常，
+- `500` Internal Server Error：服务器发生不可预期的错误。
+- `503 `Server Unavailable：服务器当前不能处理客户端的请求，一段时间后可能恢复正常，
 
 # 响应头：
 
@@ -401,19 +401,19 @@ HTTP/1.1 200 OK
 
 常见的Content-Type：
 
-- Content-Type	解释
-- text/html	html格式
-- text/plain	纯文本格式
-- text/css	CSS格式
-- text/javascript	js格式
-- image/gif	gif图片格式
-- image/jpeg	jpg图片格式
-- image/png	png图片格式
-- application/x-www-form-urlencoded	POST专用：普通的表单提交默认是通过这种方式。form表单数据被编码为key/value格式发送到服务器。
-- application/json	POST专用：用来告诉服务端消息主体是序列化后的 JSON 字符串
-- text/xml	POST专用：发送xml数据
-- multipart/form-data	POST专用：下面讲解
-- application/x-www-form-urlencoded 
+- `Content-Type`	解释
+- `text/html`	html格式
+- `text/plain`	纯文本格式
+- `text/css`	CSS格式
+- `text/javascript`	js格式
+- `image/gif`	gif图片格式
+- `image/jpeg`	jpg图片格式
+- `image/png`	png图片格式
+- `application/x-www-form-urlencoded`	POST专用：普通的表单提交默认是通过这种方式。form表单数据被编码为key/value格式发送到服务器。
+- `application/json`	POST专用：用来告诉服务端消息主体是序列化后的 JSON 字符串
+- `text/xml`	POST专用：发送xml数据
+- `multipart/form-data`	POST专用：下面讲解
+- `application/x-www-form-urlencoded `
 
 最常见的post提交数据的方式。浏览器原生的form表单，如果不设置enctype属性，那么最终就会以application/x-www-form-urlencoded 方式提交数据
 
