@@ -720,8 +720,7 @@ ipcMain.on('max-window', (event,args) => {
 安装electron-packager
 
 ```js
-npm install --save-dev @electron-forge/cli
-
+npm install --save-dev @electron-forge/cli@6.0.0-beta.64
 ```
 
 ## 2、添加打包语句
@@ -826,3 +825,82 @@ app.on('ready', () => {
 ```js
 mainWindow.loadURL('http://localhost:3000/')
 ```
+
+# 十一、Electron安装问题
+
+## 1、获取npm命令
+
+### 方式1
+
+1. 安装nvm
+2. 安装node(以最新版为例)
+   `nvm install latest`
+3. 确认一下命令是否可用
+   `node -v` 和 `npm -v`
+
+### 方式2
+
+直接去nodejs官网下载
+
+## 2、安装electron步骤
+
+### 1、安装electron
+
+在需要安装electron的目录下使用命令`npm install electron`进行electron的安装。
+
+如果安装成功了，请原路返回， 不远送了；
+如果error出现了, 我的错误信息如下 。
+
+> .....RequestError: read ECONNRESET.....
+> npm ERR! code ELIFECYCLE
+> npm ERR! errno 1
+> npm ERR! electron@17.2.0 postinstall: `node install.js`
+> npm ERR! Exit status 1
+> npm ERR!
+> npm ERR! Failed at the electron@17.2.0 postinstall script.
+> npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+> npm ERR! A complete log of this run can be found in:
+> npm ERR! E:\nodejs\npm_cache_logs\2022-03-25T15_49_12_347Z-debug.log
+
+这个时候，不要急不要慌，其实我们并没有失败，一切都在意料之中，我们只是利用他来帮我们实现基础架构，接下来正文开始。
+
+### 2、手动下载出错的文件
+
+   方式1） 打开浏览器键入下述网址， 点击你想要的版本号， 然后找到适合你电脑的包点击即可下载了。看准了下载^`electron`开头的。
+`https://registry.npmmirror.com/binary.html?path=electron/`
+
+` ` 方式2）手动拼接url(只需将x.x.x替换为你需要的版本号)，然后复制粘贴到浏览器地址栏或其他可提供下载的工具中。``
+
+win64: 
+
+```
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-win32-x64.zip
+```
+
+linux64:
+
+```
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-linux-x64.zip
+```
+
+mac amd(一般是这个):
+
+```
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-darwin-x64.zip
+```
+
+mac arm64（如M1芯片）:
+
+```
+https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-darwin-arm64.zip
+```
+
+### 3. 表演开始
+
+1. 进入目录 `yourProjects/node_modules/electron`
+2. 新建文件夹 `dist`
+3. 新建文件`path.txt`，根据自己的系统类型输入：
+   windows系统输入： `electron.exe`
+   mac系统输入：`Electron.app/Contents/MacOS/Electron`
+   linux系统输入：`electron`
+4. 解压缩刚下载的文件到dist目录
