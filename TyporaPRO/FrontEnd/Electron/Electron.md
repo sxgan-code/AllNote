@@ -717,10 +717,14 @@ ipcMain.on('max-window', (event,args) => {
 
 ## 1、安装
 
+```sh
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+```
+
 安装electron-packager
 
 ```js
-npm install --save-dev @electron-forge/cli@6.0.0-beta.64
+npm install --save-dev @electron-forge/cli
 ```
 
 ## 2、添加打包语句
@@ -825,6 +829,92 @@ app.on('ready', () => {
 ```js
 mainWindow.loadURL('http://localhost:3000/')
 ```
+
+## 5、完整版
+
+```json
+{
+  "name": "mymusic-client",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "description": "MyMusic",
+  "author": "Daniel",
+  "homepage": "./",
+  "scripts": {
+    "dev": "vue-cli-service serve --host 127.0.0.1 --port 80",
+    "serve": "vue-cli-service serve --host 127.0.0.1 --port 80",
+    "build": "vue-cli-service build",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "dependencies": {
+    "animate.css": "^4.1.1",
+    "axios": "^0.24.0",
+    "bootstrap": "^3.4.1",
+    "core-js": "^3.6.5",
+    "echarts": "^5.2.2",
+    "electron-squirrel-startup": "^1.0.0",
+    "element-ui": "^2.15.6",
+    "es6-promise": "^4.2.8",
+    "jquery": "^3.6.0",
+    "qs": "^6.10.3",
+    "vue": "^2.6.11",
+    "vue-router": "^3.5.3",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.64",
+    "@electron-forge/maker-deb": "^6.0.0-beta.64",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.64",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.64",
+    "@electron-forge/maker-zip": "^6.0.0-beta.64",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "electron": "^19.0.9",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "name": "Daniel",
+        "packageManager": "Test",
+        "icon": "src/assets/logo/favicon",
+        "asar": true,
+        "overwrite": true
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "mymusic_client"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  }
+}
+
+```
+
+
 
 # 十一、Electron安装问题
 
