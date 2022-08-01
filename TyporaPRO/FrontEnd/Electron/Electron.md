@@ -361,7 +361,7 @@ index.html中添加头部菜单
 
 
 
-## 4、点击创建新窗口
+## 4、点击创建新窗口（版本有区分）
 
 在html中`新建窗口`添加`class="new-window"`
 
@@ -421,7 +421,7 @@ require("@electron/remote/main").initialize();
 require("@electron/remote/main").enable(mainWindow.webContents);
 ```
 
-并在主进程`webPreferences`中设置`enableRemoteModule`和`contextIsolation`：
+并在主进程的`BrowserWindow`的`webPreferences`中设置`enableRemoteModule`和`contextIsolation`：
 
 ```js
 webPreferences: {

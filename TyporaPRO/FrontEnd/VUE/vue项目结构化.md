@@ -2074,3 +2074,21 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
+# 九、VUE的其他问题
+
+## 1、Vue引入公共js
+
+新建公共文件夹，在main.js引入
+
+```js
+// 引入公共js
+import commonJs from './assets/js/common'
+Vue.prototype.$common = commonJs
+```
+
+
+
+
+
+
+
