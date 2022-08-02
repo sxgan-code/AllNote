@@ -2078,17 +2078,53 @@ public class CorsConfig implements WebMvcConfigurer {
 
 ## 1、Vue引入公共js
 
-新建公共文件夹，在main.js引入
+新建公共文件夹，编写公共js
+
+### common.js
 
 ```js
-// 引入公共js
-import commonJs from './assets/js/common'
-Vue.prototype.$common = commonJs
+const {ipcRenderer} = window.require('electron')
+let windowSize ='unmax-window';
+export function maxWindow() {
+    console.log(1111)
+    windowSize = (windowSize === 'unmax-window' ? 'max-window' : 'unmax-window')
+    ipcRenderer.send('max-window', windowSize)
+}
 ```
 
+在抽离vue的js文件中引入
 
+```js
+import {defineComponent} from 'vue'
+import {maxWindow}  from '../../assets/js/common'
+export default defineComponent({
+    name: "Login",
+    components: {},
+    data() {
+        return {}
+    },
+    methods: {
+        maxWin(){
+            maxWindow()
+        }
+    },
 
+});
+```
 
+vue文件
+
+```
+<script>
+import { defineComponent } from 'vue'
+import login from "./js/login";
+
+export default defineComponent({
+  ...login
+})
+
+</script>
+```
 
 
 
