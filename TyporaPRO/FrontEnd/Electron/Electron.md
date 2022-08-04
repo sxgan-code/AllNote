@@ -713,21 +713,33 @@ ipcMain.on('max-window', (event,args) => {
 >
 > [electron-packager](https://github.com/electron/electron-packager)
 
+## 1、electron-packager
+
+### 安装
+
+```sh
+npm install --save-dev electron-packager
+```
+
+
+
+## 2、electron-forge
+
 本次使用的是`electron-forge`进行打包
 
-## 1、安装
+### 安装
 
 ```sh
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
 
-安装electron-packager
+安装electron-forge
 
 ```js
 npm install --save-dev @electron-forge/cli
 ```
 
-## 2、添加打包语句
+### 添加打包语句
 
 添加打包语句
 
@@ -737,7 +749,7 @@ npx electron-forge import
 
 <img src="image/image-20220724224215678.png" alt="image-20220724224215678" style="zoom:67%;" />
 
-## 3、配置打包参数
+### 配置打包参数
 
 ```json
 "packagerConfig": {
@@ -751,7 +763,7 @@ npx electron-forge import
 
 <img src="image/image-20220724225259664.png" alt="image-20220724225259664" style="zoom:67%;" />
 
-## 4、使用make命令打包
+### 使用make命令打包
 
 ```sh
 npm run make
