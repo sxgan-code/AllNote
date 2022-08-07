@@ -828,7 +828,7 @@ function createWindow () {
     height: 600
   })
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+      // mainWindow.webContents.openDevTools()
 }
 
 app.on('ready', () => {
@@ -951,18 +951,21 @@ mainWindow.loadURL('http://localhost:3000/')
 在需要安装electron的目录下使用命令`npm install electron`进行electron的安装。
 
 如果安装成功了，请原路返回， 不远送了；
+
 如果error出现了, 我的错误信息如下 。
 
-> .....RequestError: read ECONNRESET.....
-> npm ERR! code ELIFECYCLE
-> npm ERR! errno 1
-> npm ERR! electron@17.2.0 postinstall: `node install.js`
-> npm ERR! Exit status 1
-> npm ERR!
-> npm ERR! Failed at the electron@17.2.0 postinstall script.
-> npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-> npm ERR! A complete log of this run can be found in:
-> npm ERR! E:\nodejs\npm_cache_logs\2022-03-25T15_49_12_347Z-debug.log
+```
+.....RequestError: read ECONNRESET.....
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! electron@17.2.0 postinstall: `node install.js`
+npm ERR! Exit status 1
+npm ERR!
+npm ERR! Failed at the electron@17.2.0 postinstall script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+npm ERR! A complete log of this run can be found in:
+npm ERR! E:\nodejs\npm_cache_logs\2022-03-25T15_49_12_347Z-debug.log
+```
 
 这个时候，不要急不要慌，其实我们并没有失败，一切都在意料之中，我们只是利用他来帮我们实现基础架构，接下来正文开始。
 
@@ -1006,3 +1009,76 @@ https://registry.npmmirror.com/-/binary/electron/x.x.x/electron-vx.x.x-darwin-ar
    mac系统输入：`Electron.app/Contents/MacOS/Electron`
    linux系统输入：`electron`
 4. 解压缩刚下载的文件到dist目录
+
+
+
+# 十二、Electron-vue3手动搭建
+
+## 1、安装全局vue-cli
+
+```sh
+npm install -g @vue/cli
+```
+
+## 2、创建vue项目
+
+```sh
+vue create demo
+```
+
+如果遇到如下情况，请重新以管理员启动 Windows PowerShell 
+
+![image-20220807115851041](image/image-20220807115851041.png)
+
+### 原因：
+
+ 首次在计算机上启动 Windows PowerShell 时，现用执行策略很可能是 `Restricted`(默认设置)。`Restricted `策略不允许任何脚本运行，防止执行不信任的脚本。
+
+### 解决办法：
+
+ 重新打开编辑器，以管理员身份运行，输入命令
+
+```sh
+ set-executionpolicy remotesigned
+```
+
+再次执行命令创建vue项目就可以了
+
+## 3、安装electron
+
+```sh
+npm i electron
+```
+
+## 4、安装electron-package
+
+```sh
+npm install --save-dev electron-packager
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

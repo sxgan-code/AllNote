@@ -235,6 +235,7 @@ nvm install v8.16.2
 
 ```
 nvm install v12.8.0
+nvm install v16.16.0
 ```
 
 使用nvm use <版本号> 切换需要使用的 NodeJS 版本，切换成功后可以使用 node -v 和 npm -v 命令查看是否切换成功。
