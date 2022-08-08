@@ -1,4 +1,4 @@
-一、概述
+# 一、概述
 
 ## 1、Java Web概念
 
@@ -8,7 +8,7 @@ Internet上供外界访问的Web资源分为：**静态web资源（如html 页�
 
 搭建Java Web应用的开发环境-----部署`Tomcat`服务器、用eclipse创建Server服务、构建Java Web项目、建立第一个JSP文件、 运行JSP文件。
 
-![img](image/3801213fb80e7bec54e787ed9a67ae389b504fc23d2f)
+<img src="image/3801213fb80e7bec54e787ed9a67ae389b504fc23d2f" alt="img"  />
 
 第一个要点是掌握tomcat的安装和部署。在Windows系统上安装Tomcat相对简单，下载压缩包解压缩到任意目录即可（目录名称不要含有中文字符）。进入tomcat的bin目录，可以直接运行startup.bat启动tomcat服务。
 
@@ -272,7 +272,23 @@ public class HelloTest extends HttpServlet {
 #### web.xml
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?><web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"         version="4.0">    <!-- 配置servlet类路径 -->    <servlet>        <servlet-name>HelloTest</servlet-name>        <servlet-class>com.sxgan.servlet.HelloTest</servlet-class>    </servlet>     <!--//配置访问方式-->    <servlet-mapping>        <servlet-name>HelloTest</servlet-name>        <url-pattern>/hello</url-pattern>    </servlet-mapping>    <!--配置默认的项目页面-->    <welcome-file-list>        <welcome-file>index.jsp</welcome-file>        <welcome-file>index.html</welcome-file>    </welcome-file-list></web-app>
+<?xml version="1.0" encoding="UTF-8"?><web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+                                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+                                               version="4.0">    <!-- 配置servlet类路径 -->
+    <servlet>
+        <servlet-name>HelloTest</servlet-name>
+        <servlet-class>com.sxgan.servlet.HelloTest</servlet-class>
+    </servlet>     <!--//配置访问方式-->
+    <servlet-mapping>
+        <servlet-name>HelloTest</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>    <!--配置默认的项目页面-->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
 ```
 
 ## 3、执行原理
