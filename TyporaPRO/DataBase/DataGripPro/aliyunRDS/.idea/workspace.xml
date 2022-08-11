@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b588a602-75b0-444a-8a57-9b96469d5bf5" name="Default Changelist" comment="" />
+    <list default="true" id="b588a602-75b0-444a-8a57-9b96469d5bf5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../BackEnd/SpringCloud/1.SpringCould基本项目搭建.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../BackEnd/SpringCloud/1.SpringCould基本项目搭建.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,7 +30,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
 </project>
