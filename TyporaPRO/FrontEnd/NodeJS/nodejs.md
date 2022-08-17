@@ -426,16 +426,211 @@ fs.writeFile("../file/hello.txt","你好，Node.js",(err)=>{
 ```js
 fs.writeFile("../file/hello11.txt","你好，Node.js111",(err)=>{
     if (err) {
-        console.log("文件写入成功！！！")
-        console.log(err)
-    }else {
         console.log("文件写入失败！！！")
+        console.log(err)
+    } else {
+        console.log("文件写入成功！！！")
         console.log(err);
     }
 })
 ```
 
 ==值的注意的是，当所写入的文件不存在时，程序会自动在该路径创建文件进行写入操作==
+
+### 练习
+
+现有一组数据如下
+
+```
+小明=97 小红=88 小李=87 小张=96 小刘=99
+```
+
+现在需要将其转换成以下格式
+
+```
+小明：97 
+小红：88 
+小李：87 
+小张：96 
+小刘：99
+```
+
+代码
+
+```js
+fs.readFile("../file/未格式化数据.txt", "utf-8", (err, data) => {
+    if (err) {
+        return console.log("文件读取失败，错误信息为：", err.message)
+    }
+    console.log("文件读取成功,数据为：", data)
+    var str = data.replaceAll(" ", "\n").replaceAll('=', '：');
+    console.log(str)
+    fs.writeFile("../file/格式化数据.txt", str, (err) => {
+        if (err) {
+            console.log("文件写入失败！！！")
+            console.log(err)
+        } else {
+            console.log("文件写入成功！！！")
+            console.log(err);
+        }
+    })
+})
+```
+
+## 4、路径问题
+
+如果使用`__dirname`获取路径，提供的操作路径是以 ./ 或 ../ 开头的相对路径时，很容易出现路径动态拼接错误的问题
+
+原因是`__dirname`会以执行 node 命令时所处的目录，动态拼接出被操作文件的完整路径
+
+在使用 fs 模块操作文件时，直接提供完整的路径，不要提供 ./ 或 ../ 开头的相对路径，从而防止路径动态拼接的问题。
+
+# 六、path 路径模块
+
+## 1、什么是 path 路径模块
+
+path 模块是` Node.js `官方提供的、用来处理路径的模块。它提供了一系列的方法和属性，用来满足用户对路径的处理需求。
+
+例如： 
+
+> `path.join() `方法，用来将多个路径片段拼接成一个完整的路径字符串
+>
+> `path.basename() `方法，用来从路径字符串中，将文件名解析出来
+
+如果要在 JavaScript 代码中，使用 path 模块来处理路径，则需要使用如下的方式先导入它
+
+## 2、path.join() 
+
+使用 path.join() 方法，可以把多个路径片段拼接为完整的路径字符串，语法格式如下
+
+```
+path.join(...paths)
+```
+
+> `...paths <string> `路径片段的序列
+>
+> 返回值: `<string>`
+
+使用 `path.join()` 方法，可以把多个路径片段拼接为完整的路径字符串
+
+### 示例
+
+```js
+var pathStr = path.join('/a','/b','../c','/d')
+var pathStr2 = path.join('/a','/b','./c','/d')
+console.log(pathStr) // \a\c\d
+console.log(pathStr2) // \a\b\c\d
+```
+
+==注意==：今后凡是涉及到路径拼接的操作，都要使用` path.join() `方法进行处理。不要直接使用` + `进行字符串的拼接，并且注意分隔符使用`/`，不要使用成了转义符号`\`
+
+## 3、path.basename()
+
+使用 `path.basename() `方法，可以获取路径中的最后一部分，经常通过这个方法获取路径中的文件名，语法格式如下
+
+```js
+path.basename(path[,ext])
+```
+
+> `path <string>` 必选参数，表示一个路径的字符串
+>
+> `ext <string> `可选参数，表示文件扩展名
+>
+> 返回: `<string> `表示路径中的最后一部分
+
+### 示例
+
+```js
+var pathStr = '/a/b/c/index.html'
+var basename = path.basename(pathStr);
+var basename2 = path.basename(pathStr,'.html');
+console.log(basename); // index.html
+console.log(basename2); // index
+```
+
+## 4、path.extname()
+
+使用 `path.extname() `方法，可以获取路径中的扩展名部分，语法格式如下
+
+```js
+path.extname(path)
+```
+
+### 示例
+
+```js
+var pathStr = '/a/b/c/index.html'
+var extname = path.extname(pathStr);
+console.log(extname);  //.html
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
