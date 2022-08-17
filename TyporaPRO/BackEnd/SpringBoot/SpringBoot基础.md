@@ -1890,3 +1890,72 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
+# SpringBoot项目启动初始化
+
+如何在springboot项目启动，初始化方法加载参数
+
+## 1、@PostConstruct
+
+被`@PostConstruct`修饰的方法会在服务器加载`Servlet`的时候运行，并且只会被服务器调用一次，类似于Servlet的`inti()`方法。被`@PostConstruct`修饰的方法会在构造函数之后，`init()`方法之前运行。
+
+在配置有`@Configuration`的配置类中配置，项目启动后会通过该方法初始化
+
+```java
+@PostConstruct
+public void environmentVariables() throws IOException {
+    String basePath = new File("./").getCanonicalPath();
+    // 对于windows 需要修正一下目录名
+    if (!basePath.startsWith("/")) {
+        basePath = "/" + basePath;
+    }
+    log.info("base path: {}", basePath);
+    System.setProperty("spring.app.home-path", basePath + "/resources/");
+}
+```
+
+其实从依赖注入的字面意思就可以知道，要将对象p注入到对象a，那么首先就必须得生成对象a和对象p，才能执行注入。所以，如果一个类A中有个成员变量p被@Autowried注解，那么`@Autowired注入是发生在A的构造方法执行完之后的`。
+
+如果想在生成对象时完成某些初始化操作，而偏偏这些初始化操作又依赖于依赖注入，那么就无法在构造函数中实现。为此，可以使用`@PostConstruct`注解一个方法来完成初始化，`@PostConstruct`注解的方法将会在`依赖注入完成后被自动调用`。
+
+![image-20220817115146972](image/image-20220817115146972.png)
+
+## 2、@PreDestroy
+
+被`@PreDestroy`修饰的方法会在服务器卸载`Servlet`的时候运行，并且只会被服务器调用一次，类似于Servlet的`destroy()`方法。被`@PreDestroy`修饰的方法会在`destroy()`方法之后运行，在Servlet被彻底卸载之前。
+
+## 3、实现CommandLineRunner接口
+
+
+
+<img src="image/image-20220817113412246.png" alt="image-20220817113412246" style="zoom:67%;" />
+
+<img src="image/image-20220817113439724.png" alt="image-20220817113439724" style="zoom:67%;" />
+
+![image-20220817113506979](image/image-20220817113506979.png)
+
+## 4、springboot的启动类
+
+简单粗暴，直接通过启动类进行配置
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
