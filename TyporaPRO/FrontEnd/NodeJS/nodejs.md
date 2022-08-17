@@ -270,3 +270,230 @@ nvm use <version>           // 切换到使用指定的nodejs版本
 nvm v                       // 显示nvm版本
 nvm install stable          // 安装最新稳定版
 ```
+
+# 四、Node.js简介
+
+为什么 JavaScript 在浏览器中可以操作 DOM 和 BOM？因为每个浏览器都内置了 DOM、BOM 这样的 API 函数，因此，浏览器中的 JavaScript 才可以调用它们。
+
+## 1、什么是 Node.js
+
+[官网](https://nodejs.org/zh-cn/)
+
+Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.Node.js 
+
+是一个基于 `Chrome V8` 引擎的 JavaScript 运行环境。
+
+
+
+> 浏览器是 JavaScript 的前端运行环境。
+>
+> Node.js 是 JavaScript 的后端运行环境。
+>
+> Node.js 中无法调用 DOM 和 BOM 等浏览器内置 API。
+
+Node.js 作为一个 JavaScript 的运行环境，仅仅提供了基础的功能和 API。
+
+然而，基于 Node.js 提供的这些基础能，很多强大的工具和框架如雨后春笋，层出不穷，所以学会了 Node.js ，可以让前端程序员胜任更多的工作和岗位：
+
+> 基于 Express 框架（http://www.expressjs.com.cn/），可以快速构建 Web 应用
+>
+> 基于 Electron 框架（https://electronjs.org/），可以构建跨平台的桌面应用
+>
+> 基于 restify 框架（http://restify.com/），可以快速构建 API 接口项目
+>
+> 读写和操作数据库、创建实用的命令行工具辅助前端开发、etc…
+
+总之：Node.js 是大前端时代的“大宝剑”，有了 Node.js 这个超级 buff 的加持，前端程序员的行业竞争力会越来越强！
+
+## 2、Node.js的学习过程
+
+### 浏览器中的 JavaScript 学习路径：
+
+JavaScript 基础语法 + 浏览器内置 API（DOM + BOM） + 第三方库（jQuery、art-template 等）
+
+### Node.js 的学习路径：
+
+JavaScript 基础语法 + Node.js 内置 API 模块（fs、path、http等）+ 第三方 API 模块（express、mysql 等）
+
+# 五、fs 文件系统模块
+
+## 1、什么是 fs 文件系统模块
+
+fs 模块是` Node.js `官方提供的、用来操作文件的模块。它提供了一系列的方法和属性，用来满足用户对文件的操作需求。
+
+例如：
+
+> `fs.readFile()` 方法，用来读取指定文件中的内容 
+>
+> `fs.writeFile()` 方法，用来向指定的文件中写入内容
+
+## 2、fs.readFile() 
+
+如果要在 JavaScript 代码中，使用 fs 模块来操作文件，则需要使用如下的方式先导入它：
+
+```js
+const fs = require("node:fs")
+```
+
+使用` fs.readFile() `方法，可以读取指定文件中的内容，语法格式如下：
+
+```js
+fs.readFile(path[,options],callback)
+```
+
+> 参数1：必选参数，字符串，表示文件的路径。
+>
+> 参数2：可选参数，表示以什么编码格式来读取文件。
+>
+> 参数3：必选参数，文件读取完成后，通过回调函数拿到读取的结果。
+
+### 读取示例
+
+01第一个程序.js
+
+```js
+fs.readFile("../file/hello.txt", "utf-8", (err, data) => {
+    console.log(err)
+    console.log("-------------------")
+    console.log(data)
+})
+```
+
+执行该文件
+
+```sh
+>node 01第一个程序.js
+null
+-------------------
+Hello world!!!
+# 如果执行一个不存在的文件
+>node 01第一个程序.js
+[Error: ENOENT: no such file or directory, open 'D:\IDEA_PRO\Daniel\FrontCode\AcNodejsLearn\file\hello1.txt'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\IDEA_PRO\\Daniel\\FrontCode\\AcNodejsLearn\\file\\hello1.txt'
+}
+-------------------
+undefined
+```
+
+我们发现如果执行正常，获取到文件内容后会返回到`data`中，此时`err`参数(异常对象)会返回`null`，相反如果获取一个不存在的文件`err`参数会打印一个异常对象，而data是`undefined`
+
+### 判断文件是否读取成功
+
+可以判断 `err `对象是否为 `null`，从而知晓文件读取的结果：
+
+```js
+fs.readFile("../file/hello.txt", "utf-8", (err, data) => {
+    if (err) {
+        return console.log("文件读取失败，错误信息为：", err.message)
+    }
+    console.log("文件读取成功,数据为：", data)
+})
+```
+
+##  3、fs.writeFile()
+
+使用` fs.writeFile() `方法，可以向指定的文件中写入内容，语法格式如下
+
+```js
+fs.writeFile(file,data[,options],callback)
+```
+
+> 参数1：必选参数，需要指定一个文件路径的字符串，表示文件的存放路径。
+>
+> 参数2：必选参数，表示要写入的内容。
+>
+> 参数3：可选参数，表示以什么格式写入文件内容，默认值是 utf8。
+>
+> 参数4：必选参数，文件写入完成后的回调函数。
+
+### 写入示例
+
+```js
+fs.writeFile("../file/hello.txt","你好，Node.js",(err)=>{
+    console.log(err)
+})
+```
+
+注意：此处写入会覆盖文件所有内容
+
+### 判断写入是否成功
+
+可以判断 err 对象是否为 null，从而知晓文件写入的结果
+
+```js
+fs.writeFile("../file/hello11.txt","你好，Node.js111",(err)=>{
+    if (err) {
+        console.log("文件写入成功！！！")
+        console.log(err)
+    }else {
+        console.log("文件写入失败！！！")
+        console.log(err);
+    }
+})
+```
+
+==值的注意的是，当所写入的文件不存在时，程序会自动在该路径创建文件进行写入操作==
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
